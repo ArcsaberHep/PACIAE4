@@ -81,8 +81,8 @@ The released code are available on https://github.com/ArcsaberHep/PACIAE4/releas
 
 ## Released papers
 
- - **Recent version: A brief introduction to PACIAE 4.0. (waiting...)
- - ** An introduction to the parton and hadron cascade model PACIAE 3.0, [Phys. Rev. C 108 (2023) 6, 064909](https://journals.aps.org/prc/abstract/10.1103/PhysRevC.108.064909) or [2309.05110 [hep-ph]](https://arxiv.org/abs/2309.05110)
+ - **Recent version**: A brief introduction to PACIAE 4.0. (waiting...)
+ - An introduction to the parton and hadron cascade model PACIAE 3.0, [Phys. Rev. C 108 (2023) 6, 064909](https://journals.aps.org/prc/abstract/10.1103/PhysRevC.108.064909) or [2309.05110 [hep-ph]](https://arxiv.org/abs/2309.05110)
 <br/>
 
  - **Past version:** Revisiting the centrality definition and observable centrality dependence of relativistic heavy-ion collisions in PACIAE model, [Comput. Phys. Commun. 284 (2023) 108615](https://doi.org/10.1016/j.cpc.2022.108615) or [arXiv:2212.04087 [nucl-th]](https://doi.org/10.48550/arXiv.2212.04087)

@@ -7,7 +7,7 @@
 
 # The parton and hadron cascade model PACIAE 4
 
- ***PACIAE 4*** (***Parton And-hadron China Institute of Atomic Energy 4***) is the new generation of ***PACIAE 3***. In ***PACIAE 4***, the modern C++-based PYTHIA-8 is interfaced in. More physics and features are availble. Now ***PACIAE 4*** is written in a mix of Fortran and C++ languages. ****PACIAE 4**** is a multipurpose Monte Carlo event generator developed to describe a wide range of collisions, including lepton-lepton, lepton-hadron, lepton-nucleus, hadron-hadron, hadron-nucleus, and nucleus-nucleus collisions. It is built based on PYTHIA-6.428 & PYTHIA-8, and incorporates parton and hadron rescattering stages to take care of the nuclear medium effects. 
+ ***PACIAE 4*** (***Parton And-hadron China Institute of Atomic Energy 4***) is a new generation of ***PACIAE 3***. In ***PACIAE 4***, the modern C++-based PYTHIA-8 is interfaced in. More physics and features are availble. Now ***PACIAE 4*** is written in a mix of Fortran and C++ languages. ****PACIAE 4**** is a multipurpose Monte Carlo event generator developed to describe a wide range of collisions, including lepton-lepton, lepton-hadron, lepton-nucleus, hadron-hadron, hadron-nucleus, and nucleus-nucleus collisions. It is built based on PYTHIA-6.428 & PYTHIA-8, and incorporates parton and hadron rescattering stages to take care of the nuclear medium effects. 
 
 ## Installation
 

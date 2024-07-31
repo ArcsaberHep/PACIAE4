@@ -17,7 +17,9 @@ Just download the file and decompress it. Then you can get the PACIAE 4 source c
 
 We encourage users to run the program on LINUX.
 First and formost, the PYTHIA 8 library is indispensable
+
 ...(waiting to update)
+
 There are two ways to run the program.
  1. Manul running. Use the "make" tool to complie the soruce code, link and generate the PACIAE program. Then execute it. GFortran and g++ compilers have been pre-specified inside "Makefile"on LINUX as an example:
     - Compile code, link and generate the programs by the command:

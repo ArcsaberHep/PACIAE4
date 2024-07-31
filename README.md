@@ -28,7 +28,7 @@ There are two ways to run the program.
             make
         ```
         One can choose `make -j` to compile in parallel. The executable program "xPaciae.x" and the input file "usu.dat" will be generated in folder "sim" (simulation). Enter the "sim".
-    - Modify the input file of usu.dat according to your wish.
+    - Modify the input file of "usu.dat" according to your wish.
     - Run the program by the command:
         ```
             ./xPaciae.x

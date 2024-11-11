@@ -1,0 +1,47 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Local components
+.vscode/
+*.x
+*.dat
+*.bak
+*.pdf
+*.doc
+.md
+.log
+
+# Does not ignore the following files and directories.
+!README.md
+!README.pdf
+!usu.dat

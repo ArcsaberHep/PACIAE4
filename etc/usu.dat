@@ -1,0 +1,825 @@
+1000,100,0        ! neve,nout,nosc
+2212,2212     ! KF_proj,KF_targ. E.g. e-: 11; e+: -11; p: 2212; n: 2112; Au(79,197): 1000791970; Pb(82,208): 1000822080.
+6,1,10         ! i_mode,ifram,nchan
+2760,0         ! win(energy_A),energy_B
+0,20,2,10     ! bmin,bmax,psno,nmax
+1,0.85,0.9    ! kjp21,x_ratio,decpro
+20,7,2,40,0   ! ispmax,isdmax,iflmax,n_bin_hist,i_y_or_eta
+0,0,0,0,0,0,0,0,0,0   ! KF code of particles not to decay (1-10)
+0,0,0,0,0,0,0,0,0,0   ! KF code of particles not to decay (11-ispmax)
+211,-211,321,-321,3122,-3122,3312,-3312,3334,-3334   ! KF code of particles to be analyzed online (1-10)
+2212,-2212,2112,-2112,3212,-3212,3112,3222,333,443   ! KF code of particles to be analyzed online (11-ispmax)
+0.35,0.25,0.35,0.5,2.5,0.25,2.5  ! ( asd(i), i=1,isdmax )
+-0.8,0.8                        ! afl(1,1,1), afl(1,1,2)
+0.15,999.                          ! afl(1,2,1), afl(1,2,2)
+-0.8,0.8                        ! afl(2,1,1), afl(2,1,2)
+0.15,999.                          ! afl(2,2,1), afl(2,2,2)
+-0.8,0.8                        ! afl(3,1,1), afl(3,1,2)
+0.15,999.                          ! afl(3,2,1), afl(3,2,2)
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8
+0.15,999.
+-0.8,0.8                        ! afl(ispmax,1,1), afl(ispmax,1,2)
+0.15,999.                          ! afl(ispmax,2,1), afl(ispmax,2,2)
+0.00001,2               ! ddt,i_mm
+0,7,0                   ! iparres,i_inel_proc,i_time_shower
+1.2,0.,0.5,200.         ! para(7),ttaup,taujp,para(10)
+1,1                     ! i_sigma_AQM,kjp20
+0.,40.,25.,21.,10.,2.   ! para1_1,para1_2,para(2),para(3),para(4),para(5)
+7.2,4.,14.,8.           ! para(13),para(14),para(15),para(16)
+1,0.47,0.4,1000,1,0.68,0.98,0.68,0.98,1   ! adj1(1)-adj1(10)
+0.1,0,0,0,1.,1,1.5,0,0.03,1       ! adj1(11)-adj1(20)
+0,4.,1,0.15,0.4,1,800000.,1.,5,1          ! adj1(21)-adj1(30)
+0,0,0,0.335,0.45,0,100.,3.,0.66,4           ! adj1(31)-adj1(40)
+5,2,2,8,0                    ! kjp22,kjp23,kjp24,i_color_reconnection,i_tune
+0.,0.,1.,0.2,0.05            ! parecc,smadel,cp0,cr0,seco
+1,1,1,0                      ! i_deex,n_deex_step,i_pT_coal,i_pT_endpoint
+0.77,0.05,0.005,0.08         ! a_FF,aPS_c,aPS_b,bmrat
+1,1,0.225,0,0,0                ! prob_ratio_q
+
+######################        Annotation of usu.dat         ####################
+# neve,nout,nosc (D=xxx, xxx/10, 0)
+#  neve: number of events to be generated
+#  nout: output the event logs (main.out, rms.out) per nout events
+#  nosc: OSCAR standard output (oscar.out)
+#        = 0 : no OSCAR output, see subroutine oscar
+#        = 1 : OSCAR1997A (final_id_p_x, just PACIAE final output)
+#        = 2 : OSCAR1999A (full_event_history)
+#        = 3 : OSCAR2013A (full_event_history, dummy now)
+#
+# KF_proj,KF_targ (D=1000791970, 1000791970)
+#  KF_proj: PDG id (KF code) of the projectile
+#  KF_targ: PDG id (KF code) of the target
+#           E.g.
+#             subatomic particles:
+#                 p: 2212,  pbar: -2212;
+#                 n: 2112,  nbar: -2212;
+#                e-: 11,      e+: -11;
+#              nu_e: 12, nu_ebar: -12;
+#                ...
+#             nuclei: (100ZZZAAA0)
+#                197Au: 1000791970; 208Pb: 1000822080;
+#                 96Zr: 1000400960;  96Ru: 1000440960;
+#                   2H: 1000010020;   4He: 1000020040;
+#                  12C: 1000060120;   16O: 1000080160;
+#                 63Cu: 1000290630; 107Ag: 1000471070;
+#                129Xe: 1000541290;  238U: 1000922380; ... .
+#           Cf.
+#           1. PDG RPP2024: Phys.Rev.D 110 (2024) 3, 030001
+#            https://pdg.lbl.gov/2024/reviews/rpp2024-rev-monte-carlo-numbering.pdf
+#           2. PYTHIA 6.4 munual:  JHEP 05 (2006) 026
+#            https://arxiv.org/abs/hep-ph/0603175
+#           3. PYTHIA 8 online manual:
+#            https://pythia.org//latest-manual/ParticleData.html
+#           4. The end part of "usu.dat".
+#
+# i_mode,ifram,nchan (D=6, 1, 10)
+#  i_mode: =1, PACIAE low-energy hadronic simulation A-framework (E_CMS < 3 GeV)
+#          =2, PYTHIA-like pure hadronic simulation B-framework based on PYTHIA 6
+#          =3, PACIAE parton-hadron cascade simulation C-framework based on PYTHIA 6
+#          =4, PACIAE experimental mode for pA/Ap simulation D-framework based on PYTHIA 6
+#          =5, PYTHIA-like pure hadronic simulation B-framework based on PYTHIA 8
+#          =6, PACIAE parton-hadron cascade simulation C-framework based on PYTHIA 8
+#          =7, dummy now
+#          =8, PYTHIA-like pure hadronic simulation B-framework based on PYTHIA8/Angantyr
+#          =9, PACIAE parton-hadron cascade simulation C-framework based on PYTHIA8/Angantyr
+#  ifram: to choose the collision system frame type
+#         =0, fixed target with the incident momentum +pz (win)
+#         =1, collider with CMS energy (win)
+#         =2, back-to-back beams with +Z energy_A (win) and -Z energy_B.
+#             This option could be used for the fixed-target (energy_B=0) or the
+#             asymmetric collision systems like pA/Ap in the Lab frame.
+#  nchan: to choose which subset of subprocesses to include in
+#         the generration
+#         =0, inelastic (INEL)
+#         =1, Non-Single Difractive (NSD)
+#         =2, Drell-Yan process
+#         =3, J/psi production (color singlet)
+#         =4, heavy-flavor production
+#         =5, direct photon
+#         =6, soft only
+#         =7, W+/- production
+#         =8: PYTHIA default (MSEL=1)
+#         =9: Z0 production
+#         =10: inelastic, non-diffractive (minimum-bias)
+#         <0: -MSEL defined in PYTHIA 6
+#        -61: NRQCD charmonium production
+#        -62: NRQCD bottomonium production
+#        -63: NRQCD onia production (charm- and bottom-)
+#     others: requires the user to specify in the program or "pythia6_extra.cfg" /
+#                                                            "pythia8_extra.cfg" files.
+#
+# win(energy_A),energy_B (D=200., 0.)
+#  win = incident momentum +pz (GeV) if ifram=0 (fixed target)
+#      = cms energy (GeV) if ifram=1 (collider)
+#      = (energy_A) energy of +Z beam if ifram=2 of the back-to-back collision
+#  energy_B: energy of -Z beam if ifram=2 of the back-to-back collision
+#
+# bmin,bmax,psno,nmax (D=0., 20., 2, 10)
+#  bmin: minimum impact parameters (fm)
+#  bmax: maximum impact parameters
+#  psno: =0 fixed impact parameter
+#        =1 impact parameter is sampled by the systematic sampling method
+#        =2 randomly sampled impact parameter
+#        =3 for PYTHIA8/Angantyr mode, the original Gaussian sampling method
+#           This option will generate weighted events and set a large range of
+#            0 < b < 20+ fm automatically.
+#  nmax: the number of intervals segmented in [bmin,bmax] when psno=1
+#
+# kjp21,x_ratio,decpro (D=1, 0.85/0.1, 0.9)
+#  kjp21: =0, without hadron rescattering
+#         =1, with hadron rescattering via PACIAE
+#  x_ratio: PARAM(6), ratio of inel. cross section to total cross
+#           section of hadron-hadron scattering, with default value of
+#           D=0.85 for the high energy and
+#           D=0.1 for the low energy A-framework
+#  decpro: is the Delta particle decay probability in low energy A-framework
+#
+# ispmax,isdmax,iflmax,n_bin_hist,i_y_or_eta (D=20, 7, 2, 40, 1)
+#  ispmax: the maximum number of particle KF code to be counted
+#  isdmax: the maximum number of statistical distributions
+#  iflmax: the maximum number of the kinematic cuts
+#  ispmax: the maximum number of bins for histograms
+#  i_y_or_eta: select y or eta in partial phase-space statistics (analy.f90)
+#            = 0, y
+#            = 1, eta
+#
+# KF_woDecay(i,i=1,ispmax): KF code of particles specified not to decay.
+# ispkf(i): KF code of i-th particle to be counted online
+#  id/KF code: particle code used in PYTHIA and PACIAE,
+#           (list at the end and see details in reference: arXiv:hep-ph/0603175)
+# asd(i=1,isdmax): interval of the i-th distribution, i.e. bin width
+#  for pp, pbarp, pA(Ap), AB etc.
+#      (D=0.35, 0.5, 0.35, 0.5, 25, 0.5, 25)
+#      i=1: rapidity distribution (dN/dy v.s. y)
+#       =2: invariant transverse momentum distribution (1/pT*dN/dpT v.s. pT)
+#       =3: pseudorapidity distribution (dN/deta v.s. eta)
+#       =4: transverse mass distribution (1/mT*dN/dmT v.s. mT)
+#       =5: event-wise multiplicity distribution (dNev/dmult)
+#       =6: transverse momentum distribution (dN/dpT v.s. pT)
+#       =7: mean transverse momentum distribution (<pT> v.s. mult)
+#  for ep, nu_ep, etc.
+#      i=1: Q^2=-q^2 (fq2 in code) distribution
+#       =2: W^2 (w21) distribution
+#       =3: y (yyl) distribution
+#       =4: p_h (pph) distribution
+#       =5: z (zl) distribution
+#
+# afl(j,i,1): lower-boundary of i-th window for j-th particle
+# afl(j,i,2): upper-boundary of i-th window for j-th particle
+#  for pp, pbarp, pA(Ap), AB etc.
+#      i=1, rapidity/pseudorapidity window (D= -1.,1. ) (depends on i_y_or_eta)
+#       =2, transverse momentum            (D= 0.,50. )
+#  for ep, nu_ep, etc.
+#      i=1, Q^2=-q^2 window
+#       =2, W^2
+#       =3, y
+#       =4, p_h (hadron momentum)
+#       =5: z
+#
+# ddt,i_mm (D=0.00001, 2)
+#  ddt: minimum distinguishble collision time interval used in 
+#       partonic initiation in parini.f90
+#  i_mm: only the hadrons below numb(i_mm) (cf. 'filt' in parini.f90)
+#        join in updating the hh collision time list (cf. parini.f90).
+#        Originally i_mm=2, i.e. only p (proton) and n (neutron) join in
+#        updating the collision time list in parton initialization;
+#        if i_mm=6, p, n, pbar, nbar, pi+ and pi- will join in updating
+#        the collision time list in parton initialization.
+#
+# iparres, i_inel_proc, i_time_shower (D=0, 7, 0)
+#  iparres: =0, consider only the elastic collisions in the parton rescattering,
+#               with diquarks breaking-up
+#           =1, elastic + inelastic, with diquarks breaking-up
+#           =2, elastic only, without diquarks breaking-up
+#           =3, elastic + inelastic, without diquarks breaking-up
+#  i_inel_proc: = 6, with inelastic processes 4, 6, and 7 if iparres=1/3
+#               = 7, with inelastic process 7 only if iparres=1/3 (in parcas.f90)
+#  i_time_shower: = 0, w/o final state time-like parton shower if iparres=1/3
+#                 = 1, w/ final state time-like parton shower if iparres=1/3
+#
+# para(7), ttaup, taujp, para(10) (D=1.2, 0., 0.5, 200.)
+#  para(7): proper formation time in rest-frame of particle
+#  ttaup: extra factor of the formation time of particles
+#         (for protons in parini, for all of hadrons in hadcas)
+#  taujp: extra factor of the formation time of J/psi
+#  para(10): largest allowed size of partonic (hadronic) rescattering
+#            region which is product of para(10) and target radius
+#
+# i_sigma_AQM, kjp20 (D=1, 1)
+#  i_sigma_AQM: = 1, uses input total cross sections of piN, KN, pi+pi,
+#                    Jpsi(psi')+N, Jpsi(psi')+N, Jpsi(psi')+pi/rho,
+#                    and AQM cross sections for D+N/pi/rho in hadcas.
+#                    Ignores the channels which are not well defined.
+#               = 2, uses input cross sections of piN, KN, ... ,
+#                    AQM cross sections for D+N/pi/rho and the channels
+#                    which are not well defined (treated as elastic).
+#               = 3, uses AQM cross sections of piN, KN,... and D+N/pi/rho.
+#                    Ignores the channels which are not well defined.
+#               = 4, uses AQM cross sections of piN, KN, ..., D+N/pi/rho,
+#                    and the channels which are not well defined (treated
+#                    as elastic).
+#  kjp20: choice the cross sections in hadron rescattering (hadcas.f90)
+#         =0, energy dependent ones
+#         =1, constant cross sections for piN -> K+Sigma/Lambda/Delta,
+#             piN -> pi+Delta and NN -> N+Delta in hadcas.
+#
+# para1_1,para1_2,para(2),para(3),para(4),para(5) (D=0, 40, 25, 21, 10, 2)
+#  para1_1: NN total cross section used in constructing the initial collision list
+#           <= 0, it will be evaluated in the program (PAXTOT)
+#           >  0, accept the input one
+#  para1_2: NN total cross section used in hadron cascade
+#  para(2): total cross-section of pi-N
+#  para(3): total cross-section of K-N
+#  para(4): total cross-section of pi-pi
+#  para(5): the cross-section of pi-pi -> K-Kbar
+#
+# para(13),para(14),para(15),para(16) (D=7.2, 4., 14., 8.)
+#  para(13): total cross-section of J/psi + N
+#  para(14): total cross-section of J/psi + pi/rho
+#  para(15): total cross-section of psi' + N
+#  para(16): total cross-section of psi' + pi/rho
+#
+# adj1(i), i=1,40: switches and parameters
+# --------------------------------------------------------------------------------
+# For PYTHIA 6 new model (PYEVNW):
+#     D= 1-10 :  1., 0.47, 0.4,  1000,   1, 0.35,     0.8, 0.35,  0.8, 1.
+#        11-20: 0.1,    0,   0,     0,  1.,    1,     1.5,    0, 0.03, 1
+#        21-30:   0,   4.,   1,  0.15, 0.4,    1, 800000.,   1.,    5, 0
+#        31-40:   0,    0,   0,  0.33,   0,    0,    100.,   3., 0.66, 4.
+# --------------------------------------------------------------------------------
+# For PYTHIA 8 / Angantyr:
+#     D= 1-10 :  1., 0.47, 0.4,  1000,    1, 0.68,    0.98, 0.68, 0.98, 1.
+#        11-20: 0.1,    0,   0,     0,   1.,    1,     1.5,    0, 0.03, 1
+#        21-30:   0,   4.,   1,  0.15,  0.4,    1, 800000.,   1.,    5, 0
+#        31-40:   0,    0,   0, 0.335, 0.45,    0,    100.,   3., 0.66, 4.
+# --------------------------------------------------------------------------------
+#     i=1: K factor in parton rescattering; K=0: no parton rescattering.
+#       2: alpha_s, effective coupling constant in parton rescattering.
+#       3: mu^2 (tcut in program), the regulation factor introduced in 
+#          the parton-parton differential cross section (parcas).
+#       4: idw, the number of intervals in the numerical integration.
+#       5: choice of nuclear shadowing or nPDF for partons in nuclei, 
+#          available only for the ion-collisions.
+#              =0: without nuclear shadowing or nPDF.
+#          For PYTHIA 6:
+#              =1, Wang's nuclear shadowing (PLB 527 (2002) 85).
+#              =2, EPS09 shadowing. (not available temporarily)
+#              =other, same as 1
+#          For PYTHIA 8:
+#              =-1, only Isospin effect.
+#              = 1, EPS09, LO nPDF.
+#              = 1, EPS09, NLO nPDF.
+#              = 1, EPPS16, NLO nPDF.
+#          EPS/EPPS shadowing requirs for grid files. There is only one default
+#              EPS09 LO grid file for Pb208 in PYTHIA 8. One needs add other 
+#              grid files manually for other nulei or NLO nPDF.
+#       6: 'a' in the Lund fragmentation function of the string fragmentation model (PARJ(41) in PYTHIA).
+#       7: 'b' in the Lund fragmentation function of the string fragmentation model (PARJ(42) in PYTHIA).
+#       8: 'a' in the Lund deexcitation function of the coalescence model. See adj1(29).
+#       9: 'b' in the Lund deexcitation function of the coalescence model. See adj1(29).
+#       10: K factor PARP(31) in PYTHIA.
+#       11: time accuracy used in the hadronic rescattering.
+#       12: model for hadronization:
+#           =0, string fragmentation.
+#           =1, Monte Carlo coalescence model;
+#           =2, with gluon splitting & quark deexcitation before parcas and 
+#               hadronized by coalescence model (same as adj1(12)=1 + kjp22=2);
+#           =3, with gluon splitting & quark deexcitation before parcas and 
+#               hadronized by string frafmentation.
+#           The subclasses please see "kjp22".
+#       13: not used.
+#       14: not used.
+#       15: string tension of qqbar simple string (D= 1 GeV/fm ~ 0.2 GeV^2).
+#       16: allowable number of generations of the quark deexcitation in the
+#           Monte Carlo coalescence model.
+#           0 = without quark/anti-quark deexcitation.
+#           1 = deexcites only the original 1-th q/qbars.
+#           2 = same as 1, and deexcites the newly 2-th q/qbars excited from 1-th.
+#           3/4/... = ...
+#       17: the threshold energy in the deexcitation of energetic quark in
+#           the Monte Carlo coalescence model.
+#       18: =0, rest partons hadronize by string fragmentation via PYTHIA 6.
+#           =1, rest partons hadronize by coalescence.
+#           <0, no treatment for the rest partons.
+#       19: time accuracy used in the parton rescattering.
+#       20: the optional parton-parton cross section in the parton rescattering:
+#           =0, LO pQCD parton-parton cross section,
+#           =1, keeping only leading divergent terms in the LO pQCD parton-parton
+#               cross section (B. Zhang, Comput. Phys. Commun. 109 (1998) 193),
+#           =2, the same as 0 but flat scattering angle distribution is assumed,
+#           =3, the same as 1 but flat scattering angle distribution is assumed.
+#       21: with or without phase space constraint in the Monte Carlo coalescence model:
+#           =0, without phase space constraint,
+#           =1, with complete phase space constraint,
+#           =2, with spatial phase space constraint only,
+#           =3, with momentum phase space constraint only.
+#       22: critical value (D=4) of the product of radii in position and momentum
+#           phase spaces.
+#       23: switch for chiral magnetic effect (CME) induced charge seperation:
+#           =0: CME off,
+#           =1: CME on.
+#       24: the virtuality cut ('tl0' in program) in the time-like radiation in parton
+#           rescattering.
+#       25: Lambda_QCD in parton rescattering.
+#       26: selection of random number seed:
+#           =0, default PACIAE seed (20240116), can be used for debug;
+#           =1, seed from the real-time clock.
+#           >1, sets seed as "adj1(26)".
+#       27: largest momentum allowed for particles into rescatterings (dpmax).
+#       28: concerned to the largest position allowed for particle in 
+#            hadcas, it will be recalculated in program running 
+#           ( drmax=para(10)*dmax1(rnt,rnp)*adj1(28) ).
+#       29: For coal, sample the deexcited daughter qqbar-pair energy/light-cone
+#            momentum fraction z taking from mother
+#            =0 : random z in coal
+#            =1 : Lund symmetric function, see adj1(8) and adj1(9)
+#            =2 : Field-Feynman + Peterson/SLAC, aFF_coal, aPS_c and aPS_b
+#            =3 : Lund + Peterson/SLAC (light flavor + heavier)
+#            =4 : Lund + Bowler
+#            =5 : as = 4, but interpolate for c and b
+#           For coal, when using 11, 12, or 13, it is the simple Lund/FF/PS.
+#       30: =1, distribute the participant nucleons in overlapping region forcely,
+#           =0, without more requirements.
+#       31: not used.
+#       32: not used.
+#       33: not used.
+#       34: PARJ(21) (Lund) width of px/py/pT sampling in PYPTDI of the string fragmentation nmodel.
+#       35: width of px/py/pT sampling in the coalescence model. See i_pT_coal.
+#       36: with or without phenomenological parton energy loss in parton rescattering:
+#           =0, without,
+#           =1, with. (Do not use this option with the paronic rescattering openning altogether. If so, double-counting!)
+#       37: the coefficient in phenomenological parton energy loss.
+#       38: pT cut in phenomenological parton energy loss.
+#       39: the threshold energy in the gluon splitting in the Monte Carlo coalescence model.
+#       40: optional event stopping point
+#           =1, after parton initiation,
+#           =2, after parton rescattering,
+#           =3, after hadronization with coalescence from parton initiation directly,
+#           =4, after the entire simulation.
+#
+# kjp22,kjp23,kjp24,i_color_reconnection,i_tune (D=5, 2, 2, 8, 0)
+#  kjp22: optional hadronization subclass
+#         For sfm:
+#             =1, fragmentation string by string, with the single string 
+#                 structure induced variable string tension and PARJ(1) etc.
+#             =2, fragmentation string by string, with the multiple string 
+#                 interaction induced variable string tension and PARJ(1) etc.
+#             =3, fragmentation string by string, with the (single string 
+#                 structure + multiple string interaction) induced variable 
+#                 string tension and PARJ(1) etc.
+#             =4, fragmentation of all strings at once with the 
+#                 default string tension and parj(1) etc.
+#             =5, fragmentation NN pair by pair with the 
+#                 default string tension and parj(1) etc.
+#            For PYTHIA 8 only:
+#             =6, fragmentation by the Rope Hadronization with Flavour Ropes.
+#             =7, fragmentation by the Rope Hadronization with String Shoving.
+#             =8, fragmentation by Rope Hadronization with Flavour Ropes 
+#                 + String Shoving.
+#             =9, Thermodynamical String Fragmentation.
+#         For coal:
+#             =1, mode 1, with both the gluon splitting and the energetic
+#                 quark deexcitation AFTER the partonic rescattering,
+#                 via the traversal coalescence.
+#             =2, mode 2, with both gluon splitting and the energetic quark
+#                 deexcitation BEFORE the partonic rescattering,
+#                 via the traversal coalescence.
+#             =3, mode 3, as = 1, but with only the quark deexcitation.
+#             =4, mode 4, as = 2, but with only the quark deexcitation.
+#             =5, as = 2, to keep the consistency of "kjp22" switch.
+#             =6, mode 6, as = 1, but via the random coalescence.
+#             =7, mode 7, as = 2, but via the random coalescence.
+#             =8, mode 8, as = 3, but via the random coalescence.
+#             =9, mode 9, as = 4, but via the random coalescence.
+#  kjp23: optional model for the calculation of participant nucleon (Npart)
+#         in the independent Optical Glauber model
+#         =1, geometric model
+#         =2, Glauber model
+#  kjp24: optional distribution in the independent Optical Glauber model
+#         =1, sharp sphere
+#         =2, Woods-Saxon
+#  i_color_reconnection: MSTP(95) in PYTHIA, selection of color-reconnection model. 
+#           =0, no color-reconnection (CR).
+#          For PYTHIA 6:
+#           'S': Seattle model, 'P': Paquis model.
+#           = 1, old cut-and-paste style CR, handled in PYMIHK.
+#           = 2, Annealing Type I(no gg loops); hadron-hadron.
+#           = 3, Annealing Type I(no gg loops); all beams.
+#           = 4, Annealing Type II(gg loops)  ; hadron-hadron.
+#           = 5, Annealing Type II(gg loops)  ; all beams.
+#           = 6, Annealing Type S             ; hadron-hadron.
+#           = 7, Annealing Type S             ; all beams.
+#           = 8, Annealing Type P             ; hadron-hadron.
+#           = 9, Annealing Type P             ; all beams.
+#           =11, Soft Color Interaction (SCI model).
+#           =12, SCI without diffraction (no inter-remnant CR).
+#           =13, Generalized Area Law (GAL model).
+#           =14, GAL without diffraction (no inter-remnant CR).
+#          For PYTHIA 8:
+#           <15, the MPI-based original PYTHIA 8 scheme (MPI-CR).
+#           =15, the new more QCD based scheme(QCD-, QCD-BLC-CR)
+#           =16, the new gluon-move model.
+#           =17, the SK I e+e- CR model.
+#           =18, the SK II e+e- CR model.
+#  i_tune: basic PYTHIA parameter set, tune number.
+#          =0, "Perugia 2011 Tune" as the basis for PYTHIA6;
+#              "Monash 2013 Tune" as the basis for PYTHIA8/Angantyr.
+#          >0, correspinding tune "i_tune".
+#
+# parecc,smadel,cp0,cr0,seco (D=0., 0., 1., 0.2, 0.05)
+#  parecc: proportional factor between initial spatial space eccentricity and final
+#          momentum space ellipticity
+#  smadel: small perpurbation of ellipse from circle for pT
+#  cp0,cr0: parameters in the parameterization of the multiple string effect (kjp22= 2 / 3)
+#  seco: parameter in the popcorn mechanism for the correction of PARJ(1)
+#
+# i_deex,n_deex_step,i_pT_coal,i_pT_endpoint (D=1, 1, 1, 0)
+#  i_deex: the deexcitation scheme used in the coalescence model
+#          = 1, light-cone scheme
+#          = 2, energy scheme
+#          = 3, logitudinal momentum pz scheme
+#  n_deex_step: the number of deexcitation steps per q/qbar
+#  i_pT_coal: the pT sampling method of the daughter qqbar pair in coal
+#             = 0, 0 pT (collinear)
+#             = 1, Gaussian pT (px and py) with width adj1(35)
+#             = 2, Exponential pT with width adj1(35)
+#  i_pT_endpoint: generation of transverse momentum for endpoint/mother quarks in coal
+#                 = 0, no transverse momentum for endpoint quarks
+#                 = 1, endpoint quarks obtain transverse momenta like exited qqbars
+#
+# a_FF,aPS_c,aPS_b,bmrat  (D=0.77, 0.05, 0.005, 0.08)
+#  a_FF: parameter for light u, d, s in Field-Feynman function
+#  aPS_c: parameter for c in Petersono/SLAC
+#  aPS_b: parameter for b in P/S function
+#  bmrat: parameter related to the ratio of baryon to meson in the coalescence model
+#
+# prob_ratio_q (D=1, 1, 0.225, 0, 0, 0)
+#  prob_ratio_q: probability ratio u-ubar:d-dbar:s-sbar:c-cbar:b-bbar:t-tbar.
+#                used in the gluon splitting and the quark deexcitation.
+#
+######################        Annotation of usu.dat         ####################
+################################################################################
+
+
+
+################################################################################
+################################################################################
+#
+#                     List of id/KF codes in program
+#
+#             1    d                            -1    dbar            
+#             2    u                            -2    ubar            
+#             3    s                            -3    sbar            
+#             4    c                            -4    cbar            
+#             5    b                            -5    bbar            
+#             6    t                            -6    tbar            
+#             7    b'                           -7    b'bar           
+#             8    t'                           -8    t'bar           
+#            11    e-                          -11    e+              
+#            12    nu_e                        -12    nu_ebar         
+#            13    mu-                         -13    mu+             
+#            14    nu_mu                       -14    nu_mubar        
+#            15    tau-                        -15    tau+            
+#            16    nu_tau                      -16    nu_taubar       
+#            17    tau'-                       -17    tau'+           
+#            18    nu'_tau                     -18    nu'_taubar      
+#            21    g               
+#            22    gamma           
+#            23    Z0              
+#            24    W+                          -24    W-              
+#            25    h0              
+#            32    Z'0             
+#            33    Z"0             
+#            34    W'+                         -34    W'-             
+#            35    H0              
+#            36    A0              
+#            37    H+                          -37    H-              
+#            39    Graviton        
+#            41    R0                          -41    Rbar0           
+#            42    LQ_ue                       -42    LQ_uebar        
+#          2101    ud_0                      -2101    ud_0bar         
+#          3101    sd_0                      -3101    sd_0bar         
+#          3201    su_0                      -3201    su_0bar         
+#          4101    cd_0                      -4101    cd_0bar         
+#          4201    cu_0                      -4201    cu_0bar         
+#          4301    cs_0                      -4301    cs_0bar         
+#          5101    bd_0                      -5101    bd_0bar         
+#          5201    bu_0                      -5201    bu_0bar         
+#          5301    bs_0                      -5301    bs_0bar         
+#          5401    bc_0                      -5401    bc_0bar         
+#          1103    dd_1                      -1103    dd_1bar         
+#          2103    ud_1                      -2103    ud_1bar         
+#          2203    uu_1                      -2203    uu_1bar         
+#          3103    sd_1                      -3103    sd_1bar         
+#          3203    su_1                      -3203    su_1bar         
+#          3303    ss_1                      -3303    ss_1bar         
+#          4103    cd_1                      -4103    cd_1bar         
+#          4203    cu_1                      -4203    cu_1bar         
+#          4303    cs_1                      -4303    cs_1bar         
+#          4403    cc_1                      -4403    cc_1bar         
+#          5103    bd_1                      -5103    bd_1bar         
+#          5203    bu_1                      -5203    bu_1bar         
+#          5303    bs_1                      -5303    bs_1bar         
+#          5403    bc_1                      -5403    bc_1bar         
+#          5503    bb_1                      -5503    bb_1bar         
+#           111    pi0             
+#           211    pi+                        -211    pi-             
+#           221    eta             
+#           311    K0                         -311    Kbar0           
+#           130    K_L0            
+#           310    K_S0            
+#           321    K+                         -321    K-              
+#           331    eta'            
+#           411    D+                         -411    D-              
+#           421    D0                         -421    Dbar0           
+#           431    D_s+                       -431    D_s-            
+#           441    eta_c           
+#           511    B0                         -511    Bbar0           
+#           521    B+                         -521    B-              
+#           531    B_s0                       -531    B_sbar0         
+#           541    B_c+                       -541    B_c-            
+#           551    eta_b           
+#           113    rho0            
+#           213    rho+                       -213    rho-            
+#           223    omega           
+#           313    K*0                        -313    K*bar0          
+#           323    K*+                        -323    K*-             
+#           333    phi             
+#           413    D*+                        -413    D*-             
+#           423    D*0                        -423    D*bar0          
+#           433    D*_s+                      -433    D*_s-           
+#           443    J/psi           
+#           513    B*0                        -513    B*bar0          
+#           523    B*+                        -523    B*-             
+#           533    B*_s0                      -533    B*_sbar0        
+#           543    B*_c+                      -543    B*_c-           
+#           553    Upsilon         
+#         10113    b_10            
+#         10213    b_1+                     -10213    b_1-            
+#         10223    h_1             
+#         10313    K_10                     -10313    K_1bar0         
+#         10323    K_1+                     -10323    K_1-            
+#         10333    h'_1            
+#         10413    D_1+                     -10413    D_1-            
+#         10423    D_10                     -10423    D_1bar0         
+#         10433    D_1s+                    -10433    D_1s-           
+#         10443    h_1c            
+#         10513    B_10                     -10513    B_1bar0         
+#         10523    B_1+                     -10523    B_1-            
+#         10533    B_1s0                    -10533    B_1sbar0        
+#         10543    B_1c+                    -10543    B_1c-           
+#         10553    h_1b            
+#         10111    a_00            
+#         10211    a_0+                     -10211    a_0-            
+#         10221    f_0             
+#         10311    K*_00                    -10311    K*_0bar0        
+#         10321    K*_0+                    -10321    K*_0-           
+#         10331    f'_0            
+#         10411    D*_0+                    -10411    D*_0-           
+#         10421    D*_00                    -10421    D*_0bar0        
+#         10431    D*_0s+                   -10431    D*_0s-          
+#         10441    chi_0c          
+#         10511    B*_00                    -10511    B*_0bar0        
+#         10521    B*_0+                    -10521    B*_0-           
+#         10531    B*_0s0                   -10531    B*_0sbar0       
+#         10541    B*_0c+                   -10541    B*_0c-          
+#         10551    chi_0b          
+#         20113    a_10            
+#         20213    a_1+                     -20213    a_1-            
+#         20223    f_1             
+#         20313    K*_10                    -20313    K*_1bar0        
+#         20323    K*_1+                    -20323    K*_1-           
+#         20333    f'_1            
+#         20413    D*_1+                    -20413    D*_1-           
+#         20423    D*_10                    -20423    D*_1bar0        
+#         20433    D*_1s+                   -20433    D*_1s-          
+#         20443    chi_1c          
+#         20513    B*_10                    -20513    B*_1bar0        
+#         20523    B*_1+                    -20523    B*_1-           
+#         20533    B*_1s0                   -20533    B*_1sbar0       
+#         20543    B*_1c+                   -20543    B*_1c-          
+#         20553    chi_1b          
+#           115    a_20            
+#           215    a_2+                       -215    a_2-            
+#           225    f_2             
+#           315    K*_20                      -315    K*_2bar0        
+#           325    K*_2+                      -325    K*_2-           
+#           335    f'_2            
+#           415    D*_2+                      -415    D*_2-           
+#           425    D*_20                      -425    D*_2bar0        
+#           435    D*_2s+                     -435    D*_2s-          
+#           445    chi_2c          
+#           515    B*_20                      -515    B*_2bar0        
+#           525    B*_2+                      -525    B*_2-           
+#           535    B*_2s0                     -535    B*_2sbar0       
+#           545    B*_2c+                     -545    B*_2c-          
+#           555    chi_2b          
+#        100443    psi'            
+#        100553    Upsilon'        
+#          3122    Lambda0                   -3122    Lambdabar0      
+#          4122    Lambda_c+                 -4122    Lambda_cbar-    
+#          4132    Xi_c0                     -4132    Xi_cbar0        
+#          4232    Xi_c+                     -4232    Xi_cbar-        
+#          5122    Lambda_b0                 -5122    Lambda_bbar0    
+#          5132    Xi_b-                     -5132    Xi_bbar+        
+#          5232    Xi_b0                     -5232    Xi_bbar0        
+#          5142    Xi_bc0                    -5142    Xi_bcbar0       
+#          5242    Xi_bc+                    -5242    Xi_bcbar-       
+#          5342    Omega_bc0                 -5342    Omega_bcbar0    
+#          2112    n0                        -2112    nbar0           
+#          2212    p+                        -2212    pbar-           
+#          3112    Sigma-                    -3112    Sigmabar+       
+#          3212    Sigma0                    -3212    Sigmabar0       
+#          3222    Sigma+                    -3222    Sigmabar-       
+#          3312    Xi-                       -3312    Xibar+          
+#          3322    Xi0                       -3322    Xibar0          
+#          4112    Sigma_c0                  -4112    Sigma_cbar0     
+#          4212    Sigma_c+                  -4212    Sigma_cbar-     
+#          4222    Sigma_c++                 -4222    Sigma_cbar--    
+#          4312    Xi'_c0                    -4312    Xi'_cbar0       
+#          4322    Xi'_c+                    -4322    Xi'_cbar-       
+#          4332    Omega_c0                  -4332    Omega_cbar0     
+#          4412    Xi_cc+                    -4412    Xi_ccbar-       
+#          4422    Xi_cc++                   -4422    Xi_ccbar--      
+#          4432    Omega_cc+                 -4432    Omega_ccbar-    
+#          5112    Sigma_b-                  -5112    Sigma_bbar+     
+#          5212    Sigma_b0                  -5212    Sigma_bbar0     
+#          5222    Sigma_b+                  -5222    Sigma_bbar-     
+#          5312    Xi'_b-                    -5312    Xi'_bbar+       
+#          5322    Xi'_b0                    -5322    Xi'_bbar0       
+#          5332    Omega_b-                  -5332    Omega_bbar+     
+#          5412    Xi'_bc0                   -5412    Xi'_bcbar0      
+#          5422    Xi'_bc+                   -5422    Xi'_bcbar-      
+#          5432    Omega'_bc0                -5432    Omega'_bcba     
+#          5442    Omega_bcc+                -5442    Omega_bccbar-   
+#          5512    Xi_bb-                    -5512    Xi_bbbar+       
+#          5522    Xi_bb0                    -5522    Xi_bbbar0       
+#          5532    Omega_bb-                 -5532    Omega_bbbar+    
+#          5542    Omega_bbc0                -5542    Omega_bbcbar0   
+#          1114    Delta-                    -1114    Deltabar+       
+#          2114    Delta0                    -2114    Deltabar0       
+#          2214    Delta+                    -2214    Deltabar-       
+#          2224    Delta++                   -2224    Deltabar--      
+#          3114    Sigma*-                   -3114    Sigma*bar+      
+#          3214    Sigma*0                   -3214    Sigma*bar0      
+#          3224    Sigma*+                   -3224    Sigma*bar-      
+#          3314    Xi*-                      -3314    Xi*bar+         
+#          3324    Xi*0                      -3324    Xi*bar0         
+#          3334    Omega-                    -3334    Omegabar+       
+#          4114    Sigma*_c0                 -4114    Sigma*_cbar0    
+#          4214    Sigma*_c+                 -4214    Sigma*_cbar-    
+#          4224    Sigma*_c++                -4224    Sigma*_cbar--   
+#          4314    Xi*_c0                    -4314    Xi*_cbar0       
+#          4324    Xi*_c+                    -4324    Xi*_cbar-       
+#          4334    Omega*_c0                 -4334    Omega*_cbar0    
+#          4414    Xi*_cc+                   -4414    Xi*_ccbar-      
+#          4424    Xi*_cc++                  -4424    Xi*_ccbar--     
+#          4434    Omega*_cc+                -4434    Omega*_ccbar-   
+#          4444    Omega*_ccc++              -4444    Omega*_cccbar-  
+#          5114    Sigma*_b-                 -5114    Sigma*_bbar+    
+#          5214    Sigma*_b0                 -5214    Sigma*_bbar0    
+#          5224    Sigma*_b+                 -5224    Sigma*_bbar-    
+#          5314    Xi*_b-                    -5314    Xi*_bbar+       
+#          5324    Xi*_b0                    -5324    Xi*_bbar0       
+#          5334    Omega*_b-                 -5334    Omega*_bbar+    
+#          5414    Xi*_bc0                   -5414    Xi*_bcbar0      
+#          5424    Xi*_bc+                   -5424    Xi*_bcbar-      
+#          5434    Omega*_bc0                -5434    Omega*_bcbar0   
+#          5444    Omega*_bcc+               -5444    Omega*_bccbar-  
+#          5514    Xi*_bb-                   -5514    Xi*_bbbar+      
+#          5524    Xi*_bb0                   -5524    Xi*_bbbar0      
+#          5534    Omega*_bb-                -5534    Omega*_bbbar+   
+#          5544    Omega*_bbc0               -5544    Omega*_bbcbar0  
+#          5554    Omega*_bbb-               -5554    Omega*_bbbbar+  
+#       1000001    ~d_L                   -1000001    ~d_Lbar         
+#       1000002    ~u_L                   -1000002    ~u_Lbar         
+#       1000003    ~s_L                   -1000003    ~s_Lbar         
+#       1000004    ~c_L                   -1000004    ~c_Lbar         
+#       1000005    ~b_1                   -1000005    ~b_1bar         
+#       1000006    ~t_1                   -1000006    ~t_1bar         
+#       1000011    ~e_L-                  -1000011    ~e_L+           
+#       1000012    ~nu_eL                 -1000012    ~nu_eLbar       
+#       1000013    ~mu_L-                 -1000013    ~mu_L+          
+#       1000014    ~nu_muL                -1000014    ~nu_muLbar      
+#       1000015    ~tau_1-                -1000015    ~tau_1+         
+#       1000016    ~nu_tauL               -1000016    ~nu_tauLbar     
+#       1000021    ~g              
+#       1000022    ~chi_10         
+#       1000023    ~chi_20         
+#       1000024    ~chi_1+                -1000024    ~chi_1-         
+#       1000025    ~chi_30         
+#       1000035    ~chi_40         
+#       1000037    ~chi_2+                -1000037    ~chi_2-         
+#       1000039    ~Gravitino      
+#       2000001    ~d_R                   -2000001    ~d_Rbar         
+#       2000002    ~u_R                   -2000002    ~u_Rbar         
+#       2000003    ~s_R                   -2000003    ~s_Rbar         
+#       2000004    ~c_R                   -2000004    ~c_Rbar         
+#       2000005    ~b_2                   -2000005    ~b_2bar         
+#       2000006    ~t_2                   -2000006    ~t_2bar         
+#       2000011    ~e_R-                  -2000011    ~e_R+           
+#       2000012    ~nu_eR                 -2000012    ~nu_eRbar       
+#       2000013    ~mu_R-                 -2000013    ~mu_R+          
+#       2000014    ~nu_muR                -2000014    ~nu_muRbar      
+#       2000015    ~tau_2-                -2000015    ~tau_2+         
+#       2000016    ~nu_tauR               -2000016    ~nu_tauRbar     
+#       3000111    pi_tc0          
+#       3000211    pi_tc+                 -3000211    pi_tc-          
+#       3000221    pi'_tc0         
+#       3000331    eta_tc0         
+#       3000113    rho_tc0         
+#       3000213    rho_tc+                -3000213    rho_tc-         
+#       3000223    omega_tc        
+#       3100021    V8_tc           
+#       3100111    pi_22_1_tc      
+#       3200111    pi_22_8_tc      
+#       3100113    rho_11_tc       
+#       3200113    rho_12_tc       
+#       3300113    rho_21_tc       
+#       3400113    rho_22_tc       
+#       4000001    d*                     -4000001    d*bar           
+#       4000002    u*                     -4000002    u*bar           
+#       4000011    e*-                    -4000011    e*bar+          
+#       4000012    nu*_e0                 -4000012    nu*_ebar0       
+#       5000039    Graviton*       
+#       9900012    nu_Re           
+#       9900014    nu_Rmu          
+#       9900016    nu_Rtau         
+#       9900023    Z_R0            
+#       9900024    W_R+                   -9900024    W_R-            
+#       9900041    H_L++                  -9900041    H_L--           
+#       9900042    H_R++                  -9900042    H_R--           
+#       9900110    rho_diff0       
+#       9900210    pi_diffr+              -9900210    pi_diffr-       
+#       9900220    omega_di        
+#       9900330    phi_diff        
+#       9900440    J/psi_di        
+#       9902110    n_diffr0               -9902110    n_diffrbar0     
+#       9902210    p_diffr+               -9902210    p_diffrbar-     
+#       9900443    cc~[3S18]       
+#       9900441    cc~[1S08]       
+#       9910441    cc~[3P08]       
+#       9900553    bb~[3S18]       
+#       9900551    bb~[1S08]       
+#       9910551    bb~[3P08]       
+#
+# Nuclei:
+#       100ZZZAAA0 = 1,000,000,000 + Z*10,000 + A*10 + 0.
+#    E.g.
+#       1000010020 2H (deuteron)          -1000010020 2Hbar (antideuteron)
+#       1000020040 4He                    -1000020040 4Hebar          
+#       1000030060 6Li                    -1000030060 6Libar          
+#       1000040090 9Be                    -1000040090 9Bebar          
+#       1000050110 11B                    -1000050110 11Bbar          
+#       1000060120 12C                    -1000060120 12Cbar          
+#       1000070140 14N                    -1000070140 14Nbar          
+#       1000080160 16O                    -1000080160 16Obar          
+#       1000130270 27Al                   -1000130270 27Albar         
+#       1000140280 28Si                   -1000140280 28Sibar         
+#       1000160320 32S                    -1000160320 32Sbar          
+#       1000180400 40Ar                   -1000180400 40Arbar         
+#       1000200400 40Ca                   -1000200400 40Cabar         
+#       1000210450 45Sc                   -1000210450 45Scbar         
+#       1000260560 56Fe                   -1000260560 56Febar         
+#       1000280580 58Ni                   -1000280580 58Nibar         
+#       1000290630 63Cu                   -1000290630 63Cubar         
+#       1000360840 84Kr                   -1000360840 84Krbar         
+#       1000400960 96Zr  (40, 96)         -1000400960 96Zrbar         
+#       1000440960 96Ru  (44, 96)         -1000440960 96Rubar         
+#       1000471070 107Ag                  -1000471070 107Agbar        
+#       1000541290 129Xe                  -1000541290 129Xebar        
+#       1000741840 184W                   -1000741840 184Wbar         
+#       1000791970 197Au (79, 197)        -1000791970 197Aubar        
+#       1000822080 208Pb (82, 208)        -1000822080 208Pbbar        
+#       1000922380 238U                   -1000922380 238Ubar         
+#       1000ZZZAAA AAANucleus             -100ZZZAAA0 AAANucleusbar

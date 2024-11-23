@@ -1,13 +1,13 @@
 !! parcas_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
-!! PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+!! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, November 2002 - November 2024.
 
 !> This is the program to deal with the parton cascade (partonic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 19/11/2002
-!!                                  Last updated by An-Ke at UiO  on 11/11/2024
+!!                                  Last updated by An-Ke at UiO  on 23/11/2024
 
 
         subroutine parcas( time_par, iijk )

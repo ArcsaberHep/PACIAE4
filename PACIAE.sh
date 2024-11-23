@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # PACIAE.sh is a part of the PACIAE event generator.
 # Copyright (C) 2024 PACIAE Group.
-# PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+# PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
 # Author: An-Ke Lei, October 2022 - November 2024.
 
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at UiO  on 11/11/2024
+#                                   Last updated by An-Ke at UiO  on 23/11/2024
 
 
 
@@ -430,7 +430,7 @@ bin_4=0.5           # (D=0.5)  mT bin width (inv. mT, 1/mT*dN/dmT VS. mT)
 bin_5=2.5           # (D=25)   multiplicity bin width (dNev/dmult VS. mult)
 bin_6=0.25          # (D=0.5)  pT bin width (dN/dpT VS. pT)
 bin_7=2.5           # (D=25)   multiplicity bin width (<pT> VS. mult)
-i_y_or_eta=0    # (D=1) i_y_or_eta, selects y or eta in partial-space statistics.
+i_y_or_eta=1    # (D=1) i_y_or_eta, selects y or eta in partial-space statistics.
                 #       = 0 , y
                 #       = 1 , eta
 # For 20 particles, use the same cuts.

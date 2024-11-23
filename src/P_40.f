@@ -13,7 +13,7 @@ C*   8. about iikk, kkii, smadel and shanul stemming from PACIAE;   **
 C*   9. /PYBINS/, DATA IHIST 20000 -> 200000;                       **
 C*  10. printing FORMAT in PYDUMP.                                  **
 C*                                                    By Ben-Hao Sa **
-C*                   Last updated by An-Ke Lei at UiO on 11/11/2024 **
+C*                   Last updated by An-Ke Lei at UiO on 23/11/2024 **
 C*********************************************************************
 
 C*********************************************************************

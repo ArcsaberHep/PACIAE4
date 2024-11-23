@@ -1,14 +1,14 @@
 !! parini_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
-!! PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+!! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, December 2003 - November 2024.
 
-!> This is the initilization program to generate the initial partonic state
+!> This is the initialization program to generate the initial partonic state
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.
 
 !!                                             By Ben-Hao at CIAE on 04/12/2003
-!!                                  Last updated by An-Ke at UiO  on 11/11/2024
+!!                                  Last updated by An-Ke at UiO  on 23/11/2024
 
 
         subroutine parini( time_ini, ijk )

@@ -1,6 +1,6 @@
 !! main_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
-!! PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+!! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, ???? 2006 - November 2024.
 
@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at UiO  on 11/11/2024
+!!                                  Last updated by An-Ke at UiO  on 23/11/2024
 
 
 
@@ -3084,12 +3084,32 @@
 
         sbn  = sbn  + bn  * weight_event
         sbnf = sbnf + bnf * weight_event
-        san  = san  + an  * weight_event
-        sanf = sanf + anf * weight_event
+        do kk=1,100,1
+            do jj=1,10,1
+                real_weight = weight_event
+                if( jj == 7 .OR. jj == 8 ) real_weight = 1D0
+                do ii=1,100,1
+                    san(ii,jj,kk)  = san(ii,jj,kk)  &
+                                   + an(ii,jj,kk)  * real_weight
+                    sanf(ii,jj,kk) = sanf(ii,jj,kk) &
+                                   + anf(ii,jj,kk) * real_weight
+                end do
+            end do
+        end do
         sbn_mult    = sbn_mult    + dMult   * weight_event
         sbn_mult_f  = sbn_mult_f  + dMult_f * weight_event
-        san_distr   = san_distr   + distr   * weight_event
-        san_distr_f = san_distr_f + distr_f * weight_event
+        do kk=1,5,1
+            do jj=1,10,1
+                real_weight = weight_event
+                if( jj == 7 .OR. jj == 8 ) real_weight = 1D0
+                do ii=1,100,1
+                    san_distr(ii,jj,kk)   = san_distr(ii,jj,kk)   &
+                                          + distr(ii,jj,kk)   * real_weight
+                    san_distr_f(ii,jj,kk) = san_distr_f(ii,jj,kk) &
+                                          + distr_f(ii,jj,kk) * real_weight
+                end do
+            end do
+        end do
 
         stime_ini = stime_ini + time_ini * weight_event
         stime_par = stime_par + time_par * weight_event
@@ -3458,7 +3478,7 @@
 
 !       Outputs multiplicities, abscissa, 7-distributions of pi+K+p and ispmax
 !        particles specified in usu.dat. In analy.f90.
-        call output_hadron_distribution( sao, sbo, saof, sbof )
+        call output_hadron_distribution
 !       Outputs multiplicities, abscissa, 7-distributions of g, u+d+s +anti-
 !        and q/qbar. In analy.f90.
         call output_parton_distribution( sum_weight_event )

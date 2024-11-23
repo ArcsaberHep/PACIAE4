@@ -1,14 +1,14 @@
 !! sfm_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
-!! PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+!! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, July 2002 - November 2024.
 
-!> This is the program to perfome the string fragmentation hadronization by
+!> This is the program to perform the string fragmentation hadronization by
 !!  interfacing with PYTHIA 6/8.
 
 !!                                             By Ben-Hao at CIAE on 31/07/2002
-!!                                  Last updated by An-Ke at UiO  on 11/11/2024
+!!                                  Last updated by An-Ke at UiO  on 23/11/2024
 
 
         subroutine sfm

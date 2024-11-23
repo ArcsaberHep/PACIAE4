@@ -1,14 +1,14 @@
 !! coales_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
-!! PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
+!! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, June 2004 - November 2024.
 
-!> This is the program to perfome the coalescence hadronization via the
+!> This is the program to perform the coalescence hadronization via the
 !!  phenomenological coalescence model of PACIAE.
 
 !!                                             By Ben-Hao at CIAE on 04/06/2004
-!!                                  Last updated by An-Ke at UiO  on 11/11/2024
+!!                                  Last updated by An-Ke at UiO  on 23/11/2024
 
 
         subroutine coales( i_coal )

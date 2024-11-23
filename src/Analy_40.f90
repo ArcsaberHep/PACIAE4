@@ -286,7 +286,6 @@
             if(idd < 1 .or. idd > n_bin_hist .OR. bn(kkk,1) < 1D-10) goto 404
             an(idd,5,kkk) = an(idd,5,kkk) + w/asd(5)
 404         continue
-!FIXME(Lei20241106): wrong mean pT.
 !       mean pT, <pT>
 !       multiplicity is located at which interval
             idf = INT( bnf(kkk,1) / w / asd(7) + 1 )

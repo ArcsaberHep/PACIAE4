@@ -8,7 +8,7 @@
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at UiO  on 23/11/2024
+#                                   Last updated by An-Ke at UiO  on 14/01/2025
 
 
 
@@ -1557,13 +1557,13 @@ SIM_LOG_CLEAN:=\$(shell rm -f \$(DIR_SIM)/*.log)
 # CXX_COMMON:=-O2 -std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
 #debug
 # CXX_COMMON:=-std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
-CXX_COMMON:=-I\$(PREFIX_INCLUDE) -I\$(DIR_INC) \$(CXX_COMMON) \$(GZIP_LIB)
+CXX_COMMON:=-I\$(PREFIX_INCLUDE) -I\$(DIR_INC) \$(CXX_COMMON) \$(GZIP_LIB) -w
 PYTHIA8=\$(PREFIX_LIB)/libpythia8\$(LIB_SUFFIX)
 # Fortran compilation flags.
 GFO:=gfortran
 #debug
 #GFO_COMMON:=-W -Wall -Wshadow -g -fdefault-integer-8 -fbounds-check
-GFO_COMMON:=-O2 -W -Wall -Wshadow -g -fdefault-integer-8
+GFO_COMMON:=-O2 -W -Wall -Wshadow -g -fdefault-integer-8 -w
 
 # Link flags. Note linker is gfortran.
 GFO_LINK:=\$(GFO_COMMON)

@@ -13,7 +13,7 @@ C*   8. about iikk, kkii, smadel and shanul stemming from PACIAE;   **
 C*   9. /PYBINS/, DATA IHIST 20000 -> 200000;                       **
 C*  10. printing FORMAT in PYDUMP.                                  **
 C*                                                    By Ben-Hao Sa **
-C*                   Last updated by An-Ke Lei at UiO on 23/11/2024 **
+C*                   Last updated by An-Ke Lei at UiO on 14/01/2025 **
 C*********************************************************************
 
 C*********************************************************************
@@ -7386,7 +7386,7 @@ C...Local arrays, character variables and data.
       LOGICAL IOK
       CHARACTER CVAR(4)*4
 C131024 Lei Local aaray /PYMAXI_LOCAL/
-      COMMON/PYINT7/MVARPT(500,4),VINTPT(500,30)
+      COMMON/PYMAXI_LOCAL/MVARPT(500,4),VINTPT(500,30)
     !   DIMENSION NPTS(4),MVARPT(500,4),VINTPT(500,30),SIGSPT(500),
       DIMENSION NPTS(4),SIGSPT(500),
      &NAREL(9),WTREL(9),WTMAT(9,9),WTRELN(9),COEFU(9),COEFO(9),

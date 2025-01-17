@@ -3220,7 +3220,7 @@
 !       internal and final printing and controlled return
         if( MOD(iii,nout) == 0 .OR. iii == neve )then
 
-        open( 10, file = "rms.out", status = "unknown" )
+        open( 12, file = "rms.out", status = "unknown" )
 
 !       flaa: the number of current events in type "float".
 !       flaa = iii*1D0
@@ -3338,173 +3338,173 @@
             end if
         end if
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! Number of events ="
-        write(10,*)  iii
-        write(10,*) "#! NN(pp) total cross section in parini (mb) ="
-        write(10,*)  para1_1
-        write(10,*) "#! NN(pp) total cross section in hadcas (mb) ="
-        write(10,*)  para1_2
-        write(10,*) "#! MC Glauber-like <N_coll>, <N_part> in the " // &
+        write(12,*) "#! Number of events ="
+        write(12,*)  iii
+        write(12,*) "#! NN(pp) total cross section in parini (mb) ="
+        write(12,*)  para1_1
+        write(12,*) "#! NN(pp) total cross section in hadcas (mb) ="
+        write(12,*)  para1_2
+        write(12,*) "#! MC Glauber-like <N_coll>, <N_part> in the " // &
                     "initial collision list of parini ="
-        write(10,*) snpctl0i, snpari
-        write(10,*) "#! largest ave. # of NN collision pairs in " // &
+        write(12,*) snpctl0i, snpari
+        write(12,*) "#! largest ave. # of NN collision pairs in " // &
                     "initial collision list of parini ="
-        write(10,*) snpctlmi
+        write(12,*) snpctlmi
 
-        write(10,*) "#! ave. # of NN collision pairs calling PYTHIA, "// &
+        write(12,*) "#! ave. # of NN collision pairs calling PYTHIA, "// &
                     "not calling PYTHIA in parini ="
-        write(10,*) eineli(592), eineli(593)
-        write(10,*) "#! ave. # of wounded nucleons ="
-        write(10,*) swouni
+        write(12,*) eineli(592), eineli(593)
+        write(12,*) "#! ave. # of wounded nucleons ="
+        write(12,*) swouni
 
-        write(10,*) "#! N_bin/N_part (optical Glauber)"
-        write(10,*) spathni
-        write(10,*) "#! event averaged N_bin (optical Glauber)"
-        write(10,*) sevbini
+        write(12,*) "#! N_bin/N_part (optical Glauber)"
+        write(12,*) spathni
+        write(12,*) "#! event averaged N_bin (optical Glauber)"
+        write(12,*) sevbini
 
-        write(10,*) "#! Npart with pT=0, Nnn, Npp in parini ="
-        write(10,*) skparo, sknno, skppo
-        write(10,*) "#! Nnp, Ntot, Nep in parini ="
-        write(10,*) sknpo, sknno+skppo+sknpo, skepo
+        write(12,*) "#! Npart with pT=0, Nnn, Npp in parini ="
+        write(12,*) skparo, sknno, skppo
+        write(12,*) "#! Nnp, Ntot, Nep in parini ="
+        write(12,*) sknpo, sknno+skppo+sknpo, skepo
 
         if( INT(psno) == 0 )then
-            write(10,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
+            write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
                         "(optical Glauber) ="
-            write(10,*) psno, bp, vneump, vneumt, evbin
+            write(12,*) psno, bp, vneump, vneumt, evbin
         else if( INT(psno) == 1 )then
-            write(10,*) "#! event averaged b, avneu, Npart_p, " // &
+            write(12,*) "#! event averaged b, avneu, Npart_p, " // &
                         "Npart_t, T_pt (optical Glauber) ="
-            write(10,*) avb, avneu, astbp, astbt, aanbin
+            write(12,*) avb, avneu, astbp, astbt, aanbin
         else if( INT(psno) == 2 )then
-            write(10,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
+            write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
                         "(optical Glauber) ="
-            write(10,*) psno, averbo, psnopo, psnoto, psnono*csnn
+            write(12,*) psno, averbo, psnopo, psnoto, psnono*csnn
         else
-            write(10,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "
-            write(10,*) INT(psno), sum_bParam_ANG(1)  / flaa, &
+            write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "
+            write(12,*) INT(psno), sum_bParam_ANG(1)  / flaa, &
                                   sum_Npart_ANG(2,1) / flaa, &
                                   sum_Npart_ANG(2,2) / flaa, &
                         ( sum_Ncoll_ANG(3) + sum_Ncoll_ANG(4) &
                         + sum_Ncoll_ANG(5) + sum_Ncoll_ANG(6) ) / flaa
         end if
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! Angantyr mode weighted output:"
-        write(10,*) "#! b (fm), bPhi, bWeight ="
-        write(10,*) ( sum_bParam_ANG(i) / flaa, i=1,3,1 )
-        write(10,*) "#! glauberTot, glauberTotErr, " // &
+        write(12,*) "#! Angantyr mode weighted output:"
+        write(12,*) "#! b (fm), bPhi, bWeight ="
+        write(12,*) ( sum_bParam_ANG(i) / flaa, i=1,3,1 )
+        write(12,*) "#! glauberTot, glauberTotErr, " // &
                     "glauberND, glauberNDErr (mb) ="
-        write(10,*) sum_sigma_ANG(1,1) / flaa, sum_sigma_ANG(1,2) / flaa, &
+        write(12,*) sum_sigma_ANG(1,1) / flaa, sum_sigma_ANG(1,2) / flaa, &
                     sum_sigma_ANG(2,1) / flaa, sum_sigma_ANG(2,2) / flaa
-        write(10,*) "#! glauberINEL, glauberINELErr, " // &
+        write(12,*) "#! glauberINEL, glauberINELErr, " // &
                     "glauberEL, glauberELErr (mb) ="
-        write(10,*) sum_sigma_ANG(3,1) / flaa, sum_sigma_ANG(3,2) / flaa, &
+        write(12,*) sum_sigma_ANG(3,1) / flaa, sum_sigma_ANG(3,2) / flaa, &
                     sum_sigma_ANG(4,1) / flaa, sum_sigma_ANG(4,2) / flaa
-        write(10,*) "#! glauberDiffP, glauberDiffPErr, " // &
+        write(12,*) "#! glauberDiffP, glauberDiffPErr, " // &
                     "glauberDiffT, glauberDiffTErr (mb) ="
-        write(10,*) sum_sigma_ANG(5,1) / flaa, sum_sigma_ANG(5,2) / flaa, &
+        write(12,*) sum_sigma_ANG(5,1) / flaa, sum_sigma_ANG(5,2) / flaa, &
                     sum_sigma_ANG(6,1) / flaa, sum_sigma_ANG(6,2) / flaa
-        write(10,*) "#! glauberDDiff, glauberDDiffErr (mb), " // &
+        write(12,*) "#! glauberDDiff, glauberDDiffErr (mb), " // &
                     "glauberBSlope, glauberBSlopeErr (GeV^-2) ="
-        write(10,*) sum_sigma_ANG(7,1) / flaa, sum_sigma_ANG(7,2) / flaa, &
+        write(12,*) sum_sigma_ANG(7,1) / flaa, sum_sigma_ANG(7,2) / flaa, &
                     sum_sigma_ANG(8,1) / flaa, sum_sigma_ANG(8,2) / flaa
 
-        write(10,*) "#! nCollTot, nCollND, nCollSDP, nCollSDT ="
-        write(10,*) sum_Ncoll_ANG(1) / flaa, sum_Ncoll_ANG(2) / flaa, &
+        write(12,*) "#! nCollTot, nCollND, nCollSDP, nCollSDT ="
+        write(12,*) sum_Ncoll_ANG(1) / flaa, sum_Ncoll_ANG(2) / flaa, &
                     sum_Ncoll_ANG(4) / flaa, sum_Ncoll_ANG(5) / flaa
-        write(10,*) "#! nCollDD, nCollCD, nCollEL ="
-        write(10,*) sum_Ncoll_ANG(6) / flaa, sum_Ncoll_ANG(7) / flaa, &
+        write(12,*) "#! nCollDD, nCollCD, nCollEL ="
+        write(12,*) sum_Ncoll_ANG(6) / flaa, sum_Ncoll_ANG(7) / flaa, &
                     sum_Ncoll_ANG(8) / flaa
-        write(10,*) "#! nPartProj, nAbsProj, nDiffProj, nElProj ="
-        write(10,*) ( sum_Npart_ANG(i,1) / flaa, i=1,4,1 )
-        write(10,*) "#! nPartTarg, nAbsTarg, nDiffTarg, nElTarg ="
-        write(10,*) ( sum_Npart_ANG(i,2) / flaa, i=1,4,1 )
+        write(12,*) "#! nPartProj, nAbsProj, nDiffProj, nElProj ="
+        write(12,*) ( sum_Npart_ANG(i,1) / flaa, i=1,4,1 )
+        write(12,*) "#! nPartTarg, nAbsTarg, nDiffTarg, nElTarg ="
+        write(12,*) ( sum_Npart_ANG(i,2) / flaa, i=1,4,1 )
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! event averaged energy of gamma after " // &
+        write(12,*) "#! event averaged energy of gamma after " // &
                     "partonic initiation, partonic cascade,"
-        write(10,*) "#!  hadronization and end of event ="
-        write(10,*) segam1o, segam2o, segam3o, segamo
+        write(12,*) "#!  hadronization and end of event ="
+        write(12,*) segam1o, segam2o, segam3o, segamo
         if(ipden >= 11.and.ipden <= 16) &
-         write(10,*)'#! event average number of lepton studied ='
-        if(ipden >= 11.and.ipden <= 16) write(10,*) vnlep/flaa
+         write(12,*)'#! event average number of lepton studied ='
+        if(ipden >= 11.and.ipden <= 16) write(12,*) vnlep/flaa
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! # of successful, blocked and all collision " // &
+        write(12,*) "#! # of successful, blocked and all collision " // &
                     "in parton cascade ="
-        write(10,*) rineli, reli, reli+rineli
+        write(12,*) rineli, reli, reli+rineli
 
-        write(10,*) "#! average collision # in parton cascade ="
-        write(10,*) srea
+        write(12,*) "#! average collision # in parton cascade ="
+        write(12,*) srea
 
-        write(10,*) "#! # of scaterring processes in parton cascade " // &
+        write(12,*) "#! # of scaterring processes in parton cascade " // &
                     "(q: light u-d-s quark; Q: heavy c-b quark; " // &
                     "g: gluon)"
-        write(10,*) "#! q1 + q2 -> q1 + q2" // &
+        write(12,*) "#! q1 + q2 -> q1 + q2" // &
                     "     q1 + q1 -> q1 + q1" // &
                     "      q1 + q2bar -> q1 + q2bar" // &
                     "    q1 + q1bar -> q2 + q2bar" // &
                     "    q1 + q1bar -> q1 + q1bar"
-        write(10,*) (sreaco(i1),i1=1,5)
-        write(10,*) "#! q1 + q1bar -> g + g" // &
+        write(12,*) (sreaco(i1),i1=1,5)
+        write(12,*) "#! q1 + q1bar -> g + g" // &
                     "    g + g -> q1 + q1bar" // &
                     "     q1 + g -> q1 + g" // &
                     "            g + g -> g + g" // &
                     "              Q + q -> Q + q"
-        write(10,*) (sreaco(i1),i1=6,10)
-        write(10,*) "#! Q + g -> Q + g" // &
+        write(12,*) (sreaco(i1),i1=6,10)
+        write(12,*) "#! Q + g -> Q + g" // &
                     "         q + qbar -> Q + Qbar" // &
                     "    g + g -> Q + Qbar" // &
                     "           Q + Qbar -> q + qbar" // &
                     "        Q + Qbar -> g + g"
-        write(10,*) (sreaco(i1),i1=11,15)
+        write(12,*) (sreaco(i1),i1=11,15)
 
-        write(10,*) "#! average frequency of the occurring of each " // &
+        write(12,*) "#! average frequency of the occurring of each " // &
                     "inela. in hadron cascade (at the end of the file)"
-!       write(10,*) dineli
-        write(10,*)"#! el. and inel. coll. # and sum in hadron cascade="
-        write(10,*) seli, sineli, seli+sineli
+!       write(12,*) dineli
+        write(12,*)"#! el. and inel. coll. # and sum in hadron cascade="
+        write(12,*) seli, sineli, seli+sineli
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! default parj1, parj2, parj3, parj4, par21 ="
-        write(10,*) parj1, parj2, parj3, parj4, parj21
-        write(10,*) "#! Eff-parj1, parj2, parj3, parj4, parj21, keff ="
-        write(10,*) skapao
-        write(10,*)'#! averaged # of gluon in a string when kjp22=1,3'
-        write(10,*) sgtimeo
-        write(10,*)"#! event averaged value of the factor related to # "
-        write(10,*)"#!  of gluons and hardest gluon in a string, event "
-        write(10,*)"#!  averaged transverse momentum of hardest gluon,"
-        write(10,*)"#!  event averaged # strings when kjp22=1,3 ="
-        write(10,*) sadivo, sgpmaxo, sitimeo
+        write(12,*) "#! default parj1, parj2, parj3, parj4, par21 ="
+        write(12,*) parj1, parj2, parj3, parj4, parj21
+        write(12,*) "#! Eff-parj1, parj2, parj3, parj4, parj21, keff ="
+        write(12,*) skapao
+        write(12,*)'#! averaged # of gluon in a string when kjp22=1,3'
+        write(12,*) sgtimeo
+        write(12,*)"#! event averaged value of the factor related to # "
+        write(12,*)"#!  of gluons and hardest gluon in a string, event "
+        write(12,*)"#!  averaged transverse momentum of hardest gluon,"
+        write(12,*)"#!  event averaged # strings when kjp22=1,3 ="
+        write(12,*) sadivo, sgpmaxo, sitimeo
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! times & sum ="
-        write(10,*) stime_inio, stime_paro, stime_hado, &
+        write(12,*) "#! times & sum ="
+        write(12,*) stime_inio, stime_paro, stime_hado, &
                     stime_inio+stime_paro+stime_hado
 
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! q, qbar, charge thrown away ="
-        write(10,*) wthroq, wthrob, wthroc/3.
-        write(10,*) "#! 3-momentum and energy thrown away ="
-        write(10,*) wthroe
-        write(10,*) "#! Max 3-momentum and energy thrown away ="
-        write(10,*) dmax_throe_p
+        write(12,*) "#! q, qbar, charge thrown away ="
+        write(12,*) wthroq, wthrob, wthroc/3.
+        write(12,*) "#! 3-momentum and energy thrown away ="
+        write(12,*) wthroe
+        write(12,*) "#! Max 3-momentum and energy thrown away ="
+        write(12,*) dmax_throe_p
 
-        write(10,*)
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*)
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*)"#! multiplicity of negative, positive particles " // &
+        write(12,*)"#! multiplicity of negative, positive particles " // &
                    "and sums, partial & full ="
-        write(10,*) dnmino, dnchao, dnmino+dnchao
-        write(10,*) dnminfo, dnchafo, dnminfo+dnchafo
+        write(12,*) dnmino, dnchao, dnmino+dnchao
+        write(12,*) dnminfo, dnchafo, dnminfo+dnchafo
 
 !       Outputs multiplicities, abscissa, 7-distributions of pi+K+p and ispmax
 !        particles specified in usu.dat. In analy.f90.
@@ -3514,12 +3514,12 @@
         call output_parton_distribution( sum_weight_event )
 
         ! Empty lines.
-        write(10,"(2/)")
-        write(10,*) "#! average frequency of the occurring of each " // &
+        write(12,"(2/)")
+        write(12,*) "#! average frequency of the occurring of each " // &
                     "inela. in hadron cascade ="
         do i=1,60,1
             j=(i-1)*10
-            write(10,*) (dineli(j+kt),kt=1,10,1)
+            write(12,*) (dineli(j+kt),kt=1,10,1)
         end do
 
         if(ipden >= 11.and.ipden <= 16)then
@@ -3541,19 +3541,19 @@
                     enddo
                 enddo
             enddo
-        write(10,*) "#! relative multiplicity, p =",(sbo(ll,1),ll=1,10)
-        write(10,*) "#! relative multiplicity, f =",(sbof(ll,1),ll=1,10)
+        write(12,*) "#! relative multiplicity, p =",(sbo(ll,1),ll=1,10)
+        write(12,*) "#! relative multiplicity, f =",(sbof(ll,1),ll=1,10)
             do m2=1,isdmax,1
-                write(10,*) "#! ID of relative distribution m2 =",m2
+                write(12,*) "#! ID of relative distribution m2 =",m2
                 do m3=1,10
-                    write(10,*) "#! distribution belong to m3 =",m3
-                    write(10,*) (sao(m1,m2,m3),m1=1,n_bin_hist,1)
-                    write(10,*) (saof(m1,m2,m3),m1=1,n_bin_hist,1)
+                    write(12,*) "#! distribution belong to m3 =",m3
+                    write(12,*) (sao(m1,m2,m3),m1=1,n_bin_hist,1)
+                    write(12,*) (saof(m1,m2,m3),m1=1,n_bin_hist,1)
                 enddo
             enddo
         endif
 
-        close(10)
+        close(12)
 !-------------------------------   User Output   -------------------------------
 
         endif

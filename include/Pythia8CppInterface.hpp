@@ -3,13 +3,13 @@
 // Copyright (C) 2024 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - November 2024.
+// Author: An-Ke Lei, January 2024 - January 2024.
 
 // This is the C++ interface header file to link PACIAE (Fortran 77/90) with
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at UiO  on 23/11/2024
+//                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -118,6 +118,13 @@ extern "C" {
                                                                paciaeUserHooks,
                                std::shared_ptr< PaciaeHIUserHooks >**
                                                             paciaeHIUserHooks );
+
+//--------------------------------------------------------------------------
+
+    void decayAll_PY8( int& nPY8, int (&kPY8)[8][300000],
+                       double (&pPY8)[7][300000],
+                       double (&vPY8)[5][300000],
+                       Pythia** pythia );
 
 //--------------------------------------------------------------------------
 

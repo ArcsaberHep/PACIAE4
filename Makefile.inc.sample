@@ -1,2 +1,6 @@
 # You need move the configuration file "Makefile.inc" the PYTHIA 8
-#   generated to this directory to run the PACIAE 4.0 program.
+#  generated to this directory to run the PACIAE 4.0 program.
+#
+# The released PACIAE 4.002 requires PYTHIA 8.312 and below because
+#  PYTHIA 8.313 modifies several code, especially the parts of Angantyr.
+# From this version, PACIAE requires PYTHIA 8.313.

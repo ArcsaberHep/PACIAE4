@@ -8,7 +8,7 @@
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at UiO  on 23/11/2024
+//                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -536,6 +536,7 @@ using namespace Paciae4;
     std::cout << "\n " << equal_sign
               << "\n           Basic Instance Initialization (Default p + p )"
               << "\n " << equal_sign << std::endl;
+    (*pythia) -> readString( "Init:showChangedparticleData = on" );
 
     (*pythia) -> init();
 
@@ -576,14 +577,11 @@ using namespace Paciae4;
     outputFile.open( "pythia8_report.log", ios::out | ios::app );
     std::streambuf* fileBuff = outputFile.rdbuf();
     std::cout.rdbuf( fileBuff );
-    // Recovers cout at the end of function.
-    // std::cout.rdbuf( coutBuff );
 
 // Shorthand for some public members of pythia (also static ones).
 // The pythia object was passed in from the external calling.
     Event& event = (*pythia) -> event;
     const Info& info = (*pythia) -> info;
-    Settings& settings = (*pythia) -> settings;
 
 // Sets the impact parameter generator if Angantyr pA/Ap or AA.
     int& bSampleMode = MINT_c[38];
@@ -607,7 +605,7 @@ using namespace Paciae4;
             switch (iProcess) {
                 // Inelastic (INEL)
                 case 0 :
-                    if( info.hiInfo->nCollTot() > info.hiInfo->nCollEL() )
+                    if( info.hiInfo->nCollTot() > info.hiInfo->nCollEl() )
                         doVetoProcess = false;
                     break;
                 // Non-Single Difractive (NSD)
@@ -668,6 +666,8 @@ using namespace Paciae4;
             statJuncPY8[j][iJun] = event.statusJunction(iJun,j) ;
         }
     }
+    // PYTHIA 8 version number.
+    VINT_c[395] = PYTHIA_VERSION;
     // The information of the collision system.
     VINT_c[396] = event[0].px();
     VINT_c[397] = event[0].py();
@@ -691,20 +691,34 @@ using namespace Paciae4;
     // More information from Angantyr.
     if( iExecMode == 8 || iExecMode == 9 ) {
         // This is the real impact parameter in fm.
+        // NB: float
         VINT_c[138] = info.hiInfo -> b();
-        VINT_c[391] = info.hiInfo -> phi();
-        VINT_c[392] = info.hiInfo -> sigmaTot();
-        VINT_c[393] = info.hiInfo -> sigmaTotErr();
-        VINT_c[394] = info.hiInfo -> sigmaND();
-        VINT_c[395] = info.hiInfo -> sigmaNDErr();
+        VINT_c[369] = info.hiInfo -> phi();
+        VINT_c[370] = info.hiInfo -> glauberTot();
+        VINT_c[371] = info.hiInfo -> glauberND();
+        VINT_c[372] = info.hiInfo -> glauberINEL();
+        VINT_c[373] = info.hiInfo -> glauberEL();
+        VINT_c[374] = info.hiInfo -> glauberDiffP();
+        VINT_c[375] = info.hiInfo -> glauberDiffT();
+        VINT_c[376] = info.hiInfo -> glauberDDiff();
+        VINT_c[377] = info.hiInfo -> glauberBSlope();
+        // Error
+        VINT_c[380] = info.hiInfo -> glauberTotErr();
+        VINT_c[381] = info.hiInfo -> glauberNDErr();
+        VINT_c[382] = info.hiInfo -> glauberINELErr();
+        VINT_c[383] = info.hiInfo -> glauberELErr();
+        VINT_c[384] = info.hiInfo -> glauberDiffPErr();
+        VINT_c[385] = info.hiInfo -> glauberDiffTErr();
+        VINT_c[386] = info.hiInfo -> glauberDDiffErr();
+        VINT_c[387] = info.hiInfo -> glauberBSlopeErr();
+        // NB: integer
         MINT_c[384] = info.hiInfo -> nCollTot();
         MINT_c[385] = info.hiInfo -> nCollND();
-        MINT_c[386] = info.hiInfo -> nCollNDTot();
         MINT_c[387] = info.hiInfo -> nCollSDP();
         MINT_c[388] = info.hiInfo -> nCollSDT();
         MINT_c[389] = info.hiInfo -> nCollDD();
         MINT_c[390] = info.hiInfo -> nCollCD();
-        MINT_c[391] = info.hiInfo -> nCollEL();
+        MINT_c[391] = info.hiInfo -> nCollEl();
         MINT_c[392] = info.hiInfo -> nPartProj();
         MINT_c[393] = info.hiInfo -> nAbsProj();
         MINT_c[394] = info.hiInfo -> nDiffProj();
@@ -751,25 +765,17 @@ using namespace Paciae4;
     outputFile.open( "pythia8_report.log", ios::out | ios::app );
     std::streambuf* fileBuff = outputFile.rdbuf();
     std::cout.rdbuf( fileBuff );
-    // Recovers cout at the end of function.
-    // std::cout.rdbuf( coutBuff );
 
 // Shorthand for some public members of pythia (also static ones).
 // The pythia object was passed in from the external calling.
     Event& event = (*pythia) -> event;
-    // Settings& settings = (*pythia) -> settings;
-    // const Info& info = (*pythia) -> info;
 
 // Resets the event record for filling the new one.
     event.clear();   // With following "iParton = 0"
-    // event.free();   // With following "iParton = 0"
-    // event.reset();   // With following "iParton = 1"
     // Fills parton-level configuration from PACIAE.
     for( int iParton = 0; iParton < nPY8; ++iParton ) {
         int& id        = kPY8[1][iParton] ;
         int& status    = kPY8[0][iParton] ;
-        // if( status < 0 && status != -11 ) status = -21;
-        // if( status > 0 ) status =  23;
         int& mother1   = kPY8[2][iParton] ;
         int& mother2   = kPY8[5][iParton] ;   // Note here!
         int& daughter1 = kPY8[3][iParton] ;
@@ -806,10 +812,6 @@ using namespace Paciae4;
         int& col1    = colJuncPY8[1][iJun] ;
         int& col2    = colJuncPY8[2][iJun] ;
         int iEntry = event.appendJunction( kind, col0, col1, col2  ) ;
-        // int iEntry = event.appendJunction( kindJuncPY8[iJun],
-        //                                    colJuncPY8[0][iJun],
-        //                                    colJuncPY8[1][iJun],
-        //                                    colJuncPY8[2][iJun] ) ;
         for( int j = 0; j < 3; ++j ) {
             event.endColJunction( iEntry, j, endcJuncPY8[j][iJun] ) ;
             event.statusJunction( iEntry, j, statJuncPY8[j][iJun] ) ;
@@ -960,7 +962,6 @@ using namespace Paciae4;
     event.listJunctions();
     // Prints statistics.
     pythia -> stat();
-
 
 // Release objects avoiding memory segment-fault errors.
     delete pythia;

@@ -8,7 +8,7 @@
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.
 
 !!                                             By Ben-Hao at CIAE on 04/12/2003
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
         subroutine parini( time_ini, ijk )
@@ -523,7 +523,7 @@
 !       PARAM(1) : total cross-section of nucleon + nucleon (in mb)
 !       PARAM(5) : cross-section of pi + pi -> K + Kbar (in mb)
 !       csnn  : total cross section of nucleon + nucleon
-!       1 mb = 10 fm^2
+!       1 mb = 0.1 fm^2
 !       cspin : total cross section of pion + nucleon
 !       cskn  : total cross section of Kaon + nucleon
 !       cspipi: total cross section of pion + pion
@@ -3312,7 +3312,7 @@
         if(nbh == 0) goto 200
         do 500 i=1,nbh
             kf = kbh(i,2)
-            do 600 j=1,kfmax
+            do 600 j=1,kfmax,1
                 if(kf /= kfaco(j)) goto 600
                 jj = numb(j) + 1
 !       update particle list etc.
@@ -3544,18 +3544,18 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine rotate(cctas,sctas,cfis,sfis,pp3,pi,pj)
+        subroutine rotate( cctas, sctas, cfis, sfis, pp3, pi, pj )
 !!      Performs rotation.
 !       pi,pj: input, four momentum of colliding pair before scattering
 !              output,four momentum of scattered particles after rotation
 !       pp3: momentum modulus of pi or pj, both are equal in their cms,
 !        after scattering
-!       cctas,sctas,cfis,sfis: direction cosines of momentum of one of
-!        scattered particle relative to the momentum
-!        of corresponding particle before scattering.
+!       cctas, sctas, cfis, sfis: direction cosines/sines of the momentum of
+!        one of scattered particles relative to the momentum of the
+!        corresponding particle before scattering.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        dimension pi(4),pj(4)
+        dimension pi(4), pj(4)
 
 
         fi1   = PYANGL( pi(1), pi(2) )
@@ -3571,7 +3571,7 @@
         pi(2) = pp3 * pi(2)
         pi(3) = pp3 * pi(3)
         do i=1,3,1
-            pj(i) = 0.D0 - pi(i)
+            pj(i) = 0D0 - pi(i)
         end do
 
 
@@ -4770,12 +4770,12 @@
             dr(ik) = ri(ik) - rj(ik) - ( vi(ik)*ri(4) - vj(ik)*rj(4) ) + db(ik)
             rtai   = rtai + dr(ik)*dr(ik)
         enddo
-        dot = 0.
+        dott = 0.
         do ik=1,3
-            dot = dr(ik)*pi(ik) + dot
+            dott = dr(ik)*pi(ik) + dott
         enddo
-!       dot = -1
-        if(dot >= 0.)then
+!       dott = -1
+        if(dott >= 0.)then
             kflag = 1
             if(tcol <= ri(4)) goto 10
             if(tcol <= rj(4)) goto 10
@@ -6521,7 +6521,7 @@
 !       For the parini related statistics.
         common/anly_parini1/ woun, swoun, snpctl0, snpctlm, snpar
 !       For the Angantyr related statistics.
-        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(4), &
+        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(8,2), &
                                sum_Ncoll_ANG(8), sum_Npart_ANG(4,2)
 !       For the gamma related statistics.
         common/anly_gamma1/ egam,  egam1,  egam2,  egam3, &
@@ -6789,7 +6789,7 @@
 !----------------------   C-framework Gamma 44 Removing  -----------------------
 
 !-----------------------------   debug   ------------------------------
-            if( i_had_model ==1 .AND. i_deex > 99 )then
+            if( i_had_model == 1 .AND. i_deex > 99 )then
                 ! In coales.f90
                 call do_debug( i_deex )
 !-----------------------------   debug   ------------------------------
@@ -6891,7 +6891,7 @@
             ! The impact parameter.
             bp   = VINT(139)
             ! The impact parameter angle phi.
-            bPhi = VINT(392)
+            bPhi = VINT(370)
             ! Avoids potential divergence from PYTHIA8/Angantyr pA/AA + HardQCD.
             ! We cannot obtain accurate results from psno=3 but psno /= 3 does.
             if( INT(psno) /= 3 )then
@@ -6905,11 +6905,24 @@
             weightSum = VINT(98)
             ! one_over_weight = VINT(99)   ! 1/weight
             bWeight   = VINT(100)
-
-            sigmaTot    = VINT(393)
-            sigmaTotErr = VINT(394)
-            sigmaND     = VINT(395)
-            sigmaNDErr  = VINT(396)
+            ! Cross sections.
+            glauberTot    = VINT(371)
+            glauberND     = VINT(372)
+            glauberINEL   = VINT(373)
+            glauberEL     = VINT(374)
+            glauberDiffP  = VINT(375)
+            glauberDiffT  = VINT(376)
+            glauberDDiff  = VINT(377)
+            glauberBSlope = VINT(378)
+            ! Error.
+            glauberTotErr    = VINT(381)
+            glauberNDErr     = VINT(382)
+            glauberINELErr   = VINT(383)
+            glauberELErr     = VINT(384)
+            glauberDiffPErr  = VINT(385)
+            glauberDiffTErr  = VINT(386)
+            glauberDDiffErr  = VINT(387)
+            glauberBSlopeErr = VINT(388)
 
             nCollTot    = MINT(385)
             nCollND     = MINT(386)
@@ -6932,10 +6945,22 @@
             sum_bParam_ANG(1) = sum_bParam_ANG(1) + bp   * bWeight
             sum_bParam_ANG(2) = sum_bParam_ANG(2) + bPhi * bWeight
             sum_bParam_ANG(3) = sum_bParam_ANG(3) + bWeight**2
-            sum_sigma_ANG(1)  = sum_sigma_ANG(1)  + sigmaTot    *bWeight
-            sum_sigma_ANG(2)  = sum_sigma_ANG(2)  + sigmaTotErr *bWeight
-            sum_sigma_ANG(3)  = sum_sigma_ANG(3)  + sigmaND     *bWeight
-            sum_sigma_ANG(4)  = sum_sigma_ANG(4)  + sigmaNDErr  *bWeight
+            sum_sigma_ANG(1,1)  = sum_sigma_ANG(1,1)  + glauberTot      *bWeight
+            sum_sigma_ANG(1,2)  = sum_sigma_ANG(1,2)  + glauberTotErr   *bWeight
+            sum_sigma_ANG(2,1)  = sum_sigma_ANG(2,1)  + glauberND       *bWeight
+            sum_sigma_ANG(2,2)  = sum_sigma_ANG(2,2)  + glauberNDErr    *bWeight
+            sum_sigma_ANG(3,1)  = sum_sigma_ANG(3,1)  + glauberINEL     *bWeight
+            sum_sigma_ANG(3,2)  = sum_sigma_ANG(3,2)  + glauberINELErr  *bWeight
+            sum_sigma_ANG(4,1)  = sum_sigma_ANG(4,1)  + glauberEL       *bWeight
+            sum_sigma_ANG(4,2)  = sum_sigma_ANG(4,2)  + glauberELErr    *bWeight
+            sum_sigma_ANG(5,1)  = sum_sigma_ANG(5,1)  + glauberDiffP    *bWeight
+            sum_sigma_ANG(5,2)  = sum_sigma_ANG(5,2)  + glauberDiffPErr *bWeight
+            sum_sigma_ANG(6,1)  = sum_sigma_ANG(6,1)  + glauberDiffT    *bWeight
+            sum_sigma_ANG(6,2)  = sum_sigma_ANG(6,2)  + glauberDiffTErr *bWeight
+            sum_sigma_ANG(7,1)  = sum_sigma_ANG(7,1)  + glauberDDiff    *bWeight
+            sum_sigma_ANG(7,2)  = sum_sigma_ANG(7,2)  + glauberDDiffErr *bWeight
+            sum_sigma_ANG(8,1)  = sum_sigma_ANG(8,1)  + glauberBSlope   *bWeight
+            sum_sigma_ANG(8,2)  = sum_sigma_ANG(8,2)  + glauberBSlopeErr*bWeight
             do i=1,8,1
                 j = i + 384
                 sum_Ncoll_ANG(i) = sum_Ncoll_ANG(i) + MINT(j) * bWeight

@@ -8,7 +8,7 @@
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at UiO  on 14/01/2025
+#                                   Last updated by An-Ke at UiO  on 17/01/2025
 
 
 
@@ -1247,7 +1247,7 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #          5332    Omega_b-                  -5332    Omega_bbar+     
 #          5412    Xi'_bc0                   -5412    Xi'_bcbar0      
 #          5422    Xi'_bc+                   -5422    Xi'_bcbar-      
-#          5432    Omega'_bc0                -5432    Omega'_bcba     
+#          5432    Omega'_bc0                -5432    Omega'_bcbar0   
 #          5442    Omega_bcc+                -5442    Omega_bccbar-   
 #          5512    Xi_bb-                    -5512    Xi_bbbar+       
 #          5522    Xi_bb0                    -5522    Xi_bbbar0       
@@ -1553,10 +1553,6 @@ SIM_LOG_CLEAN:=\$(shell rm -f \$(DIR_SIM)/*.log)
 # Compilation flags. Two different compilers would be used: gfortran and g++.
 # Part of them were set in "${MAKE_CFG}".
 # C++ compilation flags.
-# CXX:=g++
-# CXX_COMMON:=-O2 -std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
-#debug
-# CXX_COMMON:=-std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
 CXX_COMMON:=-I\$(PREFIX_INCLUDE) -I\$(DIR_INC) \$(CXX_COMMON) \$(GZIP_LIB) -w
 PYTHIA8=\$(PREFIX_LIB)/libpythia8\$(LIB_SUFFIX)
 # Fortran compilation flags.
@@ -2127,7 +2123,7 @@ NP=${n_run}
 #                                                                              #
 #                                           By An-Ke Lei at CCNU on 14/02/2024 #
 #                                                                              #
-#                                      Last updated by An-Ke Lei on 11/11/2024 #
+#                                      Last updated by An-Ke Lei on 17/01/2025 #
 ################################################################################
 ################################################################################
 ################################################################################

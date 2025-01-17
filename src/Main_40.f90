@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
 
@@ -1246,7 +1246,7 @@
         common/anly_hadcas1/ sel, sinel, dinel(600), einel(600)
 !       For the Angantyr related statistics.
         common/anly_angantyr1/ weight_event, sum_weight_event
-        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(4), &
+        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(8,2), &
                                sum_Ncoll_ANG(8), sum_Npart_ANG(4,2)
 !       gamma flavor code 22: hardonic decay photon
 !                         44: prompt direct photon ( <- PYTHIA )
@@ -2941,6 +2941,21 @@
 !-------------------------------------------------------------------------------
 
 
+!-------------------------------------------------------------------------------
+!-------------------------------   Kaon Mixing  --------------------------------
+!       Changes K0, K0bar to K0L and K0S.
+        do j=1,N,1
+            kf = K(j,2)
+            if(kf == 311 .or. kf == -311)then
+                rrlu   = PYR(1)
+                K(j,2) = 130
+                if( rrlu > 0.5D0 ) K(j,2) = 310
+            end if
+        end do
+!-------------------------------   Kaon Mixing  --------------------------------
+!-------------------------------------------------------------------------------
+
+
         return
         end
 
@@ -3038,7 +3053,7 @@
         common/anly_hadcas1/ sel, sinel, dinel(600), einel(600)
 !       For the Angantyr related statistics.
         common/anly_angantyr1/ weight_event, sum_weight_event
-        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(4), &
+        common/anly_angantyr2/ sum_bParam_ANG(3), sum_sigma_ANG(8,2), &
                                sum_Ncoll_ANG(8), sum_Npart_ANG(4,2)
 !       For the evolution time.
         common/anly_time/ time_ini,  time_par,  time_had, &
@@ -3325,6 +3340,8 @@
 
         write(10,*) "#!-------------------------------------" // &
                     "----------------------------------------"
+        write(10,*) "#! Number of events ="
+        write(10,*)  iii
         write(10,*) "#! NN(pp) total cross section in parini (mb) ="
         write(10,*)  para1_1
         write(10,*) "#! NN(pp) total cross section in hadcas (mb) ="
@@ -3377,16 +3394,29 @@
         write(10,*) "#! Angantyr mode weighted output:"
         write(10,*) "#! b (fm), bPhi, bWeight ="
         write(10,*) ( sum_bParam_ANG(i) / flaa, i=1,3,1 )
-        write(10,*) "#! sigmaTot, sigmaTotErr, " // &
-                    "sigmaND, sigmaNDErr (mb) ="
-        write(10,*) ( sum_sigma_ang(i) / flaa, i=1,4,1 )
+        write(10,*) "#! glauberTot, glauberTotErr, " // &
+                    "glauberND, glauberNDErr (mb) ="
+        write(10,*) sum_sigma_ANG(1,1) / flaa, sum_sigma_ANG(1,2) / flaa, &
+                    sum_sigma_ANG(2,1) / flaa, sum_sigma_ANG(2,2) / flaa
+        write(10,*) "#! glauberINEL, glauberINELErr, " // &
+                    "glauberEL, glauberELErr (mb) ="
+        write(10,*) sum_sigma_ANG(3,1) / flaa, sum_sigma_ANG(3,2) / flaa, &
+                    sum_sigma_ANG(4,1) / flaa, sum_sigma_ANG(4,2) / flaa
+        write(10,*) "#! glauberDiffP, glauberDiffPErr, " // &
+                    "glauberDiffT, glauberDiffTErr (mb) ="
+        write(10,*) sum_sigma_ANG(5,1) / flaa, sum_sigma_ANG(5,2) / flaa, &
+                    sum_sigma_ANG(6,1) / flaa, sum_sigma_ANG(6,2) / flaa
+        write(10,*) "#! glauberDDiff, glauberDDiffErr (mb), " // &
+                    "glauberBSlope, glauberBSlopeErr (GeV^-2) ="
+        write(10,*) sum_sigma_ANG(7,1) / flaa, sum_sigma_ANG(7,2) / flaa, &
+                    sum_sigma_ANG(8,1) / flaa, sum_sigma_ANG(8,2) / flaa
 
-        write(10,*) "#! nCollNDTot, nCollND, nCollSDP, nCollSDT ="
-        write(10,*) sum_Ncoll_ANG(3) / flaa, sum_Ncoll_ANG(2) /flaa, &
-                    sum_Ncoll_ANG(4) / flaa, sum_Ncoll_ANG(5) /flaa
-        write(10,*) "#! nCollDD, nCollCD, nCollEL, nCollTot ="
-        write(10,*) sum_Ncoll_ANG(6) / flaa, sum_Ncoll_ANG(7) /flaa, &
-                    sum_Ncoll_ANG(8) / flaa, sum_Ncoll_ANG(1) /flaa
+        write(10,*) "#! nCollTot, nCollND, nCollSDP, nCollSDT ="
+        write(10,*) sum_Ncoll_ANG(1) / flaa, sum_Ncoll_ANG(2) / flaa, &
+                    sum_Ncoll_ANG(4) / flaa, sum_Ncoll_ANG(5) / flaa
+        write(10,*) "#! nCollDD, nCollCD, nCollEL ="
+        write(10,*) sum_Ncoll_ANG(6) / flaa, sum_Ncoll_ANG(7) / flaa, &
+                    sum_Ncoll_ANG(8) / flaa
         write(10,*) "#! nPartProj, nAbsProj, nDiffProj, nElProj ="
         write(10,*) ( sum_Npart_ANG(i,1) / flaa, i=1,4,1 )
         write(10,*) "#! nPartTarg, nAbsTarg, nDiffTarg, nElTarg ="
@@ -4890,9 +4920,9 @@
 !       For the simulation control.
         COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
-        character(8) PACIAE, version, frame
+        character(8) PACIAE, VERSION, frame
         data PACIAE  / "PACIAE  "/
-        data version / "4.002   "/
+        data VERSION / "4.003   "/
 !       win : energy
 !       i_stage =-1 : prints file header.
 !               = 0 : initial nucleons configuration.
@@ -4930,7 +4960,7 @@
             else if(nosc == 1)then
                 write(34,"(A8)")  "OSC1997A"
                 write(34,"(A12)") "final_id_p_x"
-                write(34,100) PACIAE, version, nap, nzp, nat, nzt, &
+                write(34,100) PACIAE, VERSION, nap, nzp, nat, nzt, &
                               frame, ebeam, ntest
 100             format(2(A8,2X),"(", I3, ",", I6, ")+(", I3, ",", &
                        I6, ")", 2X, A4, 2X, E10.4, 2X, I8)
@@ -4939,7 +4969,7 @@
             else if(nosc == 2)then
                 write(34,"(A10)") "# OSC1999A"
                 write(34,"(A20)") "# full_event_history"
-                write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(version)))
+                write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(VERSION)))
                 write(34,200) nap, nzp, nat, nzt, frame, ebeam, ntest
 200             format("# (", I3, ",", I6, ")+(", I3, ",", &
                        I6, ")", 2X, A4, 2X, E10.4, 2X, I8)
@@ -4951,7 +4981,7 @@
                            "px py pz E m x y z t"
                 write(34,*)"# Units: none "// &
                            "GeV GeV GeV GeV GeV fm fm fm fm "
-                write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(version)))
+                write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(VERSION)))
             end if
 
             n0 = 0

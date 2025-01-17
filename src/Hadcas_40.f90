@@ -1,13 +1,13 @@
-!! hadcas_40.f90 is a part of the PACIAE event generator.
+!! Hadcas_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, September 2000 - November 2024.
+!! Author: Ben-Hao Sa, September 2000 - January 2025.
 
 !> This is the program to deal with the hadron cascade (hadronic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 20/09/2000
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
         subroutine hadcas( time_had, ijkk )
@@ -136,7 +136,7 @@
 
 !       Filters out particles wanted to study and make in order of proton,
 !        neutron, ...
-!       Initial particle list is compsed of the arraies in common block
+!       Initial particle list is comprised of the arrays in common block
 !        'sa1_h', 'tau' and 'ishp' in 'sa8_h', and 'numb' in 'sa9_h'
         call filt_h
 
@@ -177,7 +177,7 @@
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         subroutine sysini_h
-!!      Gives initial values to the quantities needed in hardon rescattering.
+!!      Gives initial values to the quantities needed in hadron rescattering.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         COMMON/PYCIDAT1/KFACOT(100),DISDET(100),ISINELT(600)
@@ -1248,7 +1248,7 @@
         PARAMETER (KSZJ=80000,NSIZE=750000)
         PARAMETER (pio=3.141592653589793D0)
         common/sa1_h/nsa,non1,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
-!       note the name of the arraies in 'sa1' in this subroutine
+!       note the name of the arrays in 'sa1' in this subroutine
         common/sa10_h/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
          iabsb,iabsm,i_sigma_AQM,csspn,csspm
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
@@ -11712,7 +11712,7 @@
 !       iwide: stord the line number (in the particle list) of decaying
 !        particles
 !       the messages of decayed particles are
-!        stored in the varibles and arraies in 'sa17'
+!        stored in the varibles and arrays in 'sa17'
 !       pp, rr: momentum, position of decaying particle
 
 

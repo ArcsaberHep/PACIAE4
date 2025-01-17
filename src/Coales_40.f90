@@ -1,4 +1,4 @@
-!! coales_40.f90 is a part of the PACIAE event generator.
+!! Coales_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
@@ -14,14 +14,14 @@
         subroutine coales( i_coal )
 !!      A phenomenological coalescence model.
 !
-!       It was writen by Sa Ben-Hao on 04/06/2004.
+!       It was written by Sa Ben-Hao on 04/06/2004.
 !       Its input messages are in 'PYJETS'.
 !       Its storing array is 'PYJETS'.
 !       Its output message is in 'sa1_h' (in 'PYJETS' too).
 !       iii: the run number
 !
 !       i_coal=1 or 0: whether to perform the gluon splitting and quark
-!                      deexcitation or not (diffrent for the new coales).
+!                      deexcitation or not (different for the new coales).
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000)
@@ -105,7 +105,7 @@
 !-------------------------------------------------------------------------------
 !-----------------------------   Gluon Splitting   -----------------------------
         n00 = N   ! Original total entries in PYJETS
-!       Move gluons from 'pyjest' to 'sa36'.
+!       Move gluons from 'PYJEST' to 'sa36'.
         call remo_glu
 !       Break-up gluon (with E_g>2E_u in 'sa36') -> qqbar string
 !        (filling in 'PYJETS').

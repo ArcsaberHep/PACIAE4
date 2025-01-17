@@ -1,4 +1,4 @@
-!! main_40.f90 is a part of the PACIAE event generator.
+!! Main_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
@@ -17,16 +17,16 @@
 !       PACIAE4.0 is developed from PACIAE3.0, which is from PACIAE2.0.
 !        PACIAE2.0, in turn, is from PACIAE1.0, which is the rename of
 !        JPCIAE, after JETSET integrated into PYTHIA. PACIAE1.0 is based on
-!        JETSET7.4 and PYTHIA5.7 having implementaion of partonic and hadronic
+!        JETSET7.4 and PYTHIA5.7 having implementation of partonic and hadronic
 !        rescattering, respectively, before and after hadronization. PACIAE1.0
 !        was next to LUCIAE, which is a extension of FRITIOF with performance
-!        of haronic rescattering after hadronization.
-!       Ben-Hao Sa and An Tai begined constructing the LUCIAE model at around
+!        of hadronic rescattering after hadronization.
+!       Ben-Hao Sa and An Tai began constructing the LUCIAE model at around
 !        1993 with encouragement of Xu Cai. Subsequently, Zhong-Dao Lu,
 !        Zhong-Qi Wang, Guang Song, Zhong-Han Feng, Xiao-Mei Li, Xiao-Long
 !        Wang, Dai-Mei Zhou, Guo-Liang Ma, Zhi-Guang Tan, Bao-Guo Dong,
 !        Yu-Liang Yan, Hai-Liang Ma, Sheng-Qin Feng, Gang Chen, Zhi-Lei She,
-!        Yun Cheng, Du-Juan Wang, An-Ke Lei, and Liang Zheng, taked part in
+!        Yun Cheng, Du-Juan Wang, An-Ke Lei, and Liang Zheng, took part in
 !        the PACIAE group one behind the other. Later on, Gao-Chan Yong,
 !        Wen-Chao Zhang, Hua Zheng, and Li-Ling Zhu are joined with us.
 !       An-Ke Lei is the main author of PACIAE4.0 and Dai-Mei Zhou is the
@@ -41,31 +41,31 @@
 !!      Administrates the MC simulation for relativistic hh, hA(Ah), AB,
 !!       ll, lN(Nl) & lA(Al) collisions.
 !
-!       The program comprises main_40.f90, parini_40.f90, parcas_40.f90,
-!        sfm_40.f90, coales_40.f90, hadcas_40.f90, analy_40.f90, p_40.f,
-!        Pythia8_fort_interface.f90, Pythia8_cpp_interface.cpp,
-!        PaciaeUserHooks.cpp, Pythia8_cpp_interface.hpp, and
+!       The program comprises Main_40.f90, Parini_40.f90, Parcas_40.f90,
+!        Sfm_40.f90, Coales_40.f90, Hadcas_40.f90, Analy_40.f90, P_40.f,
+!        Pythia8_fort_interface.f90, Pythia8CppInterface.cpp,
+!        PaciaeUserHooks.cpp, Pythia8CppInterface.hpp, and
 !        PaciaeUserHooks.hpp.
 !
-!       main_40.f90: administrates the MC simulation.
-!       parini_40.f90: generates partonic initial state of colliding system.
-!       parcas_40.f90: performs parton rescattering, where 2->2 processes
+!       Main_40.f90: administrates the MC simulation.
+!       Parini_40.f90: generates partonic initial state of colliding system.
+!       Parcas_40.f90: performs parton rescattering, where 2->2 processes
 !        are considered only, and the LO pQCD cross section or its regularized
 !        approximation is used.
-!       sfm_40.f90: hadronization with Lund string fragmentation model
-!       coales_40.f90: hadronization with Monte Carlo coalescence model
-!       hadcas_40.f90: performs hadronic rescattering
-!       analy_40.f90: an example of event analysis subroutine, users are free
+!       Sfm_40.f90: hadronization with Lund string fragmentation model
+!       Coales_40.f90: hadronization with Monte Carlo coalescence model
+!       Hadcas_40.f90: performs hadronic rescattering
+!       Analy_40.f90: an example of event analysis subroutine, users are free
 !        to replace it with your own one.
-!       p_40.f (PYTHIA 6.4.28): for the generation of the partonic initial state
+!       P_40.f (PYTHIA 6.4.28): for the generation of the partonic initial state
 !        and/or string hadronization via PYTHIA 6.
 !       Pythia8_fort_interface.f90: the Fortran interface of PACIAE
 !        to C++-based PYTHIA 8.
-!       Pythia8_cpp_interface.cpp: the C++ interface of PACIAE
+!       Pythia8CppInterface.cpp: the C++ interface of PACIAE
 !        to C++-based PYTHIA 8.
-!       Pythia8_cpp_interface.hpp: the C++ interface header file.
+!       Pythia8CppInterface.hpp: the C++ interface header file.
 !       PaciaeUserHooks.cpp: PACIAE-defined Userhooks and HIUserhooks for
-!        the interation with PYTHIA 8.
+!        the interaction with PYTHIA 8.
 !       PaciaeUserHooks.hpp: PACIAE-defined Userhooks and HIUserhooks
 !        header file.
 !
@@ -84,7 +84,7 @@
         COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
-!       Final particle information will be stored in /PYJETS/ exept for gammas,
+!       Final particle information will be stored in /PYJETS/ except for gammas,
 !        which will be stored in /sgam/.
 
 !       i_mode: = 1, low energy simulation A-framework;
@@ -199,7 +199,7 @@
         call PASTAT(1,0)
 
 !-------------------------------------------------------------------------------
-!       Releases memrory from the heap for PYTHIA 8 objests.
+!       Releases memory from the heap for PYTHIA 8 objects.
         ! In Pythia8_fort_interface.f90.
         call PADELE
 
@@ -6004,9 +6004,9 @@
 !!    D1,D2 AND D3 = LOWER LIMITS IN X,Y AND Z DIRECTIONS.
 !!    U1,U2 AND U3 = UPPER LIMITS IN X,Y AND Z DIRECTIONS.
 !!    N1,N2,N3 = THE NUMBER OF NODES IN X,Y AND Z DIRECTIONS.
-!!    X11,X22 AND X33(200) = ARRAIES OF NODES IN X,Y AND Z DIRECTIONS.
-!!    X1,X2 AND X3(200) = ARRAIES OF TRANSFORMED NODES IN X,Y AND Z DIRECTIONS.
-!!    W1,W2 AND W3(200) = ARRAIES OF WEIGHTS IN X,Y AND Z DIRECTIONS.
+!!    X11,X22 AND X33(200) = ARRAYS OF NODES IN X,Y AND Z DIRECTIONS.
+!!    X1,X2 AND X3(200) = ARRAYS OF TRANSFORMED NODES IN X,Y AND Z DIRECTIONS.
+!!    W1,W2 AND W3(200) = ARRAYS OF WEIGHTS IN X,Y AND Z DIRECTIONS.
       IMPLICIT DOUBLE PRECISION(A-H, O-Z)
       IMPLICIT INTEGER(I-N)
       COMMON/COM1/SINS,COSS

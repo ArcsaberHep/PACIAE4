@@ -1,4 +1,4 @@
-!! analy_40.f90 is a part of the PACIAE event generator.
+!! Analy_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4

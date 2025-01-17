@@ -1,19 +1,19 @@
-!! parcas_40.f90 is a part of the PACIAE event generator.
+!! Parcas_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, November 2002 - November 2024.
+!! Author: Ben-Hao Sa, November 2002 - January 2025.
 
 !> This is the program to deal with the parton cascade (partonic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 19/11/2002
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
         subroutine parcas( time_par, iijk )
 !!      Deals with parton cascade (partonic rescattering).
 !
-!       It was writen by Ben-Hao Sa on 19/11/2002.
+!       It was written by Ben-Hao Sa on 19/11/2002.
 !       Its input messages are in 'PYJETS'.
 !       Its working block is 'PYJETS'.
 !       Its output messages are in 'PYJETS'.
@@ -55,7 +55,7 @@
 !       taup(i) : formation time of particle i.
 !       ishp(i)=1 if i-th particle inside the simulated volume
 !              =0 if i-th particle outside the simulated volume
-!       rpo,ppo: parton four coordinate before Neuton motion, four momentum
+!       rpo,ppo: parton four coordinate before Newton motion, four momentum
 !        before energy loss
 
 
@@ -290,7 +290,7 @@
         common/collist/lc(2,mclis),tc(2,mclis),icol
         common/scatt/pi(4),pj(4),ic,jc,n0
         common/work7/reac(20),crose(20)
-!       reac and crose: the arraies to account for the number and
+!       reac and crose: the arrays to account for the number and
 !        the value of cross section for 2->2 partonic processes
 
 

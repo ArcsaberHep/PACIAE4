@@ -1,4 +1,4 @@
-!! parini_40.f90 is a part of the PACIAE event generator.
+!! Parini_40.f90 is a part of the PACIAE event generator.
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
@@ -20,7 +20,7 @@
 !
 !       It was composed by Ben-Hao Sa on 04/12/2003.
 !       Its input messages are in 'PYJETS'.
-!       Its intermediate working arraies are in 'sa2'.
+!       Its intermediate working arrays are in 'sa2'.
 !       'saf' is consistent with 'sa2'.
 !       'saf' to 'PYJETS' after calling 'scat'.
 !       Its output messages are in 'PYJETS' (partons) and 'sbh' (hadrons)
@@ -210,7 +210,7 @@
             p(i,4) = p17(i,4)
             v(i,4) = tp(i)
         end do
-!       v, vbh and vsa arraies are the position four vector
+!       v, vbh and vsa arrays are the position four vector
 !       note: for v etc., we do not take care of their fifth component now.
 !        for array k, we take care of only first three components now.
 !-----------------------   Particle Properties Giving   ------------------------
@@ -291,7 +291,7 @@
 
 
 !-------------------------------------------------------------------------------
-!       note: particle list is composed of the arraies in common block
+!       note: particle list is composed of the arrays in common block
 !        'sa2', the array 'ishp' in common block 'wz', the array 'tau' in
 !        common block 'sa4', and the array 'numb' in common block 'sa5'
         time = time_ini
@@ -1703,9 +1703,9 @@
         dimension pi(4),pj(4),pint(4)
         dimension b(3),pl(100,5)
         logical flag_hh, flag_lh, INEL_coll
-!       arraies in 'PYJETS' are given after calling 'PYTHIA'
-!       arraies in 'sa2' are used in the collision processes
-!       arraies in 'sbh' are used to store hadron after calling 'PYTHIA'
+!       arrays in 'PYJETS' are given after calling 'PYTHIA'
+!       arrays in 'sa2' are used in the collision processes
+!       arrays in 'sbh' are used to store hadron after calling 'PYTHIA'
 !       numbs(i) is given in 'filt', updated with transport processes, and
 !        numbs(i)->numb(i) in the initiation of nucleus-nucleus collisin only
 !        numb(i) is updated with transport processes

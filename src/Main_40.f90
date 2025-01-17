@@ -183,9 +183,9 @@
         if( MOD(iii,nout) == 0 )then
             write(*,*) "i-event =", iii
         end if
-        open( 8, file = "nout.out", status = "unknown" )
-        write(8,*) "iii=", iii
-        close(8)
+        open( 18, file = "nout.out", status = "unknown" )
+        write(18,*) "iii=", iii
+        close(18)
 
 !       Simulates the next event.
         if( iii < neve ) goto 100
@@ -931,7 +931,7 @@
 !       Sets the output file of PYTHIA 6 (original unit = 6).
         MSTU(11) = 22
 !       Opens a PACIAE analysis output file.
-        open( 9, file = "rms0.out", status = "unknown" )
+        open( 19, file = "rms0.out", status = "unknown" )
 !       Opens and prints the OSCAR file header if nosc > 0.
         if( nosc > 0 )then
             open( 34, file = "oscar.out", status = "unknown" )
@@ -958,7 +958,7 @@
 !-------------------------------------------------------------------------------
 !------------------------------   Files Closing   ------------------------------
         close(22)
-        close(9)
+        close(19)
         if(nosc > 0) close(34)
 !------------------------------   Files Closing   ------------------------------
 !-------------------------------------------------------------------------------
@@ -1776,9 +1776,9 @@
             endif
             vneump=pir
             vneumt=tir
-            write(9,*) "#! Fixed b = bmin"
-            write(9,*) "#! psno, b, N_part_p, N_part_t, N_bin " // &
-             "(optical Glauber)=", psno,bp,vneump,vneumt,evbin
+            write(19,*) "#! Fixed b = bmin"
+            write(19,*) "#! psno, b, N_part_p, N_part_t, N_bin " // &
+                        "(optical Glauber)=", psno,bp,vneump,vneumt,evbin
             return
         endif
 !---------------------------------   Fixed b   ---------------------------------
@@ -1794,9 +1794,9 @@
                 i2=i2+1
                 bpp(i2)=dsqrt(i1*bmaxn+bmin2)
             enddo
-            write(9,*) "#! Systematic sampling of b from (bmin,bmax)"
-            write(9,*) "nmax=", nmax
-            write(9,*) "b=", (bpp(i1),i1=1,i2)
+            write(19,*) "#! Systematic sampling of b from (bmin,bmax)"
+            write(19,*) "nmax=", nmax
+            write(19,*) "b=", (bpp(i1),i1=1,i2)
 
             stab=0.
             stb=0.
@@ -1837,12 +1837,12 @@
             aneump=stbp/dfloat(i2)
             aneumt=stbt/dfloat(i2)
             vneum=stb/dfloat(i2)
-            write(9,*) "psno, ave. b=", psno,stab
-            write(9,*) "N_bin=", (acoll(i1)*csnn,i1=1,i2)
-            write(9,*) "(N_part)_p=", (acollp(i1),i1=1,i2)
-            write(9,*) "(N_part)_t=", (acollt(i1),i1=1,i2)
-            write(9,*) "ave. N_part_p, N_part_t, N_bin " // &
-                       "(optical Glauber)=", &
+            write(19,*) "psno, ave. b=", psno,stab
+            write(19,*) "N_bin=", (acoll(i1)*csnn,i1=1,i2)
+            write(19,*) "(N_part)_p=", (acollp(i1),i1=1,i2)
+            write(19,*) "(N_part)_t=", (acollt(i1),i1=1,i2)
+            write(19,*) "ave. N_part_p, N_part_t, N_bin " // &
+                        "(optical Glauber)=", &
              aneump,aneumt,vneum*csnn
 
 !       average b in [bmin,bmax]
@@ -1876,7 +1876,7 @@
 
 !-----------------------------   Random Sampling   -----------------------------
         if(INT(psno) == 2)then
-            write(9,*) "#! Random sampling of b from (bmin,bmax)"
+            write(19,*) "#! Random sampling of b from (bmin,bmax)"
         end if
 !-----------------------------   Random Sampling   -----------------------------
 
@@ -1937,108 +1937,108 @@
 
 !-------------------------------------------------------------------------------
 !---------------------------   Parameter Recording   ---------------------------
-        write(9,*)
-        write(9,*)
-        write(9,*) "#!-------------------------- Input Recording " // &
-                   "--------------------------"
+        write(19,*)
+        write(19,*)
+        write(19,*) "#!-------------------------- Input Recording " // &
+                    "--------------------------"
 !       Variables for the event generation.
-        write(9,*) "#! neve, nout, nosc:"
-        write(9,*)     neve, nout, nosc
-        write(9,*) "#! KF_proj, KF_targ:"
-        write(9,*)     KF_proj, KF_targ
-        write(9,*) "#! nap, nzp, nat, nzt, ipden, itden:"
-        write(9,*)     nap, nzp, nat, nzt, ipden, itden
-        write(9,*) "#! i_mode, ifram, nchan:"
-        write(9,*)     i_mode, ifram, nchan
-        write(9,*) "#! win, energy_B:"
-        write(9,*)     win, energy_B
-        write(9,*) "#! bmin, bmax, psno, nmax:"
-        write(9,*)     bmin, bmax, psno, nmax
-        write(9,*) "#! kjp21, x_ratio, decpro:"
-        write(9,*)     kjp21, x_ratio, decpro
+        write(19,*) "#! neve, nout, nosc:"
+        write(19,*)     neve, nout, nosc
+        write(19,*) "#! KF_proj, KF_targ:"
+        write(19,*)     KF_proj, KF_targ
+        write(19,*) "#! nap, nzp, nat, nzt, ipden, itden:"
+        write(19,*)     nap, nzp, nat, nzt, ipden, itden
+        write(19,*) "#! i_mode, ifram, nchan:"
+        write(19,*)     i_mode, ifram, nchan
+        write(19,*) "#! win, energy_B:"
+        write(19,*)     win, energy_B
+        write(19,*) "#! bmin, bmax, psno, nmax:"
+        write(19,*)     bmin, bmax, psno, nmax
+        write(19,*) "#! kjp21, x_ratio, decpro:"
+        write(19,*)     kjp21, x_ratio, decpro
 !       Variables for the event analysis.
-        write(9,*) "#! ispmax, isdmax, iflmax, n_bin_hist, i_y_or_eta:"
-        write(9,*)     ispmax, isdmax, iflmax, n_bin_hist, i_y_or_eta
-        write(9,*) "#! KF_woDecay:"
-        write(9,*)   ( KF_woDecay(i), i=1,10,1 )
-        write(9,*)   ( KF_woDecay(i), i=11,ispmax,1 )
-        write(9,*) "#! ispkf:"
-        write(9,*)   ( ispkf(i), i=1,10,1 )
-        write(9,*)   ( ispkf(i), i=11,ispmax,1 )
-        write(9,*) "#! asd:"
-        write(9,*)   ( asd(i), i=1,isdmax,1 )
+        write(19,*) "#! ispmax, isdmax, iflmax, n_bin_hist, i_y_or_eta:"
+        write(19,*)     ispmax, isdmax, iflmax, n_bin_hist, i_y_or_eta
+        write(19,*) "#! KF_woDecay:"
+        write(19,*)   ( KF_woDecay(i), i=1,10,1 )
+        write(19,*)   ( KF_woDecay(i), i=11,ispmax,1 )
+        write(19,*) "#! ispkf:"
+        write(19,*)   ( ispkf(i), i=1,10,1 )
+        write(19,*)   ( ispkf(i), i=11,ispmax,1 )
+        write(19,*) "#! asd:"
+        write(19,*)   ( asd(i), i=1,isdmax,1 )
         if( iflmax > 0 )then
-            write(9,*) "#! afl:"
+            write(19,*) "#! afl:"
             do kk=1,ispmax
                 do i=1,iflmax
-                    write(9,*) ( afl(kk,i,j), j=1,2,1 )
+                    write(19,*) ( afl(kk,i,j), j=1,2,1 )
                 end do
             end do
         end if
 !       Variables for the event generation.
-        write(9,*) "#! ddt, i_mm:"
-        write(9,*)     ddt, i_mm
-        write(9,*) "#! iparres, i_inel_proc, i_time_shower:"
-        write(9,*)     iparres, i_inel_proc, i_time_shower
-        write(9,*) "#! para(7), ttaup, taujp, para(10):"
-        write(9,*)     para(7), ttaup, taujp, para(10)
-        write(9,*) "#! i_sigma_AQM, kjp20:"
-        write(9,*)     i_sigma_AQM, kjp20
-        write(9,*) "#! para1_1, para1_2, para(2), para(4), para(5):"
-        write(9,*)     para1_1, para1_2, ( para(i), i=2,5,1 )
-        write(9,*) "#! para(13), para(14), para(15), para(16):"
-        write(9,*)     ( para(i), i=13,16,1 )
-        write(9,*) "#! adj1(i):"
-        write(9,*)   ( adj1(i), i=1,10,1  )
-        write(9,*)   ( adj1(i), i=11,20,1 )
-        write(9,*)   ( adj1(i), i=21,30,1 )
-        write(9,*)   ( adj1(i), i=31,40,1 )
-        write(9,*) "#! kjp22-24, i_color_reconnection, i_tune:"
-        write(9,*)     kjp22,kjp23,kjp24,i_color_reconnection, i_tune
-        write(9,*) "#! parecc, smadel, cp0, cr0, seco:"
-        write(9,*)     parecc, smadel, cp0, cr0, seco
-        write(9,*) "#! i_deex, n_deex_step, i_pT_coal, i_pT_endpoint:"
-        write(9,*)     i_deex, n_deex_step, i_pT_coal, i_pT_endpoint
-        write(9,*) "#! a_FF, aPS_c, aPS_b, bmrat:"
-        write(9,*)     a_FF, aPS_c, aPS_b, bmrat
-        write(9,*) "#! prob_ratio_q(i):"
-        write(9,*)   ( prob_ratio_q(i), i=1,6,1 )
-        write(9,*) "#!-------------------------- Input Recording " // &
+        write(19,*) "#! ddt, i_mm:"
+        write(19,*)     ddt, i_mm
+        write(19,*) "#! iparres, i_inel_proc, i_time_shower:"
+        write(19,*)     iparres, i_inel_proc, i_time_shower
+        write(19,*) "#! para(7), ttaup, taujp, para(10):"
+        write(19,*)     para(7), ttaup, taujp, para(10)
+        write(19,*) "#! i_sigma_AQM, kjp20:"
+        write(19,*)     i_sigma_AQM, kjp20
+        write(19,*) "#! para1_1, para1_2, para(2), para(4), para(5):"
+        write(19,*)     para1_1, para1_2, ( para(i), i=2,5,1 )
+        write(19,*) "#! para(13), para(14), para(15), para(16):"
+        write(19,*)     ( para(i), i=13,16,1 )
+        write(19,*) "#! adj1(i):"
+        write(19,*)   ( adj1(i), i=1,10,1  )
+        write(19,*)   ( adj1(i), i=11,20,1 )
+        write(19,*)   ( adj1(i), i=21,30,1 )
+        write(19,*)   ( adj1(i), i=31,40,1 )
+        write(19,*) "#! kjp22-24, i_color_reconnection, i_tune:"
+        write(19,*)     kjp22,kjp23,kjp24,i_color_reconnection, i_tune
+        write(19,*) "#! parecc, smadel, cp0, cr0, seco:"
+        write(19,*)     parecc, smadel, cp0, cr0, seco
+        write(19,*) "#! i_deex, n_deex_step, i_pT_coal, i_pT_endpoint:"
+        write(19,*)     i_deex, n_deex_step, i_pT_coal, i_pT_endpoint
+        write(19,*) "#! a_FF, aPS_c, aPS_b, bmrat:"
+        write(19,*)     a_FF, aPS_c, aPS_b, bmrat
+        write(19,*) "#! prob_ratio_q(i):"
+        write(19,*)   ( prob_ratio_q(i), i=1,6,1 )
+        write(19,*) "#!-------------------------- Input Recording " // &
                    "--------------------------"
-        write(9,*)
-        write(9,*)
+        write(19,*)
+        write(19,*)
 !       Records the seed of random number generator.
-        write(9,*) "#! Seed (PACIAE default=20240116) =", MRPY(1)
-        write(9,*)
-        write(9,*)
-        write(9,*) "cspipiKK, t0, ddt, dep =", cspipiKK, t0, ddt, dep
-        write(9,*) "rou0, rao, rnp, rnt =", rou0, rao, rnp, rnt
-        write(9,*) "csnn, cspin, cskn =", csnn, cspin, cskn
-        write(9,*) "cspipi, cspsn, cspsm =", cspipi, cspsn, cspsm
-        write(9,*) "ifram, rcsit, kfmax, ipden, itden =", &
+        write(19,*) "#! Seed (PACIAE default=20240116) =", MRPY(1)
+        write(19,*)
+        write(19,*)
+        write(19,*) "cspipiKK, t0, ddt, dep =", cspipiKK, t0, ddt, dep
+        write(19,*) "rou0, rao, rnp, rnt =", rou0, rao, rnp, rnt
+        write(19,*) "csnn, cspin, cskn =", csnn, cspin, cskn
+        write(19,*) "cspipi, cspsn, cspsm =", cspipi, cspsn, cspsm
+        write(19,*) "ifram, rcsit, kfmax, ipden, itden =", &
                     ifram, rcsit, kfmax, ipden, itden
         n_kfmax = kfmax / 10
-        write(9,*) "#! Particle KF considered in the hadronic" // &
-                   " rescattering, kfaco ="
+        write(19,*) "#! Particle KF considered in the hadronic" // &
+                    " rescattering, kfaco ="
         do i_kfmax = 1, n_kfmax+1, 1
             i_low = i_kfmax*10 - 9
             i_upp = i_kfmax*10
             if( i_kfmax == (n_kfmax+1) ) i_upp = kfmax
-            write(9,*) ( kfaco(i), i = i_low, i_upp, 1 )
+            write(19,*) ( kfaco(i), i = i_low, i_upp, 1 )
         end do
-        write(9,*) "#! Allowable minimum distance (not used now)," // &
-                   " disbe ="
+        write(19,*) "#! Allowable minimum distance (not used now)," // &
+                    " disbe ="
         do i_kfmax = 1, n_kfmax+1, 1
             i_low = i_kfmax*10 - 9
             i_upp = i_kfmax*10
             if( i_kfmax == (n_kfmax+1) ) i_upp = kfmax
-            write(9,*) ( disbe(i,i), i=i_low,i_upp,1 )
+            write(19,*) ( disbe(i,i), i=i_low,i_upp,1 )
         end do
-        write(9,*) "#! isinel (open # inel. channel or not," // &
-                   " list ref. subroutine coinel in hadcas.f90) ="
-        write(9,600) isinel
+        write(19,*) "#! isinel (open # inel. channel or not," // &
+                    " list ref. subroutine coinel in hadcas.f90) ="
+        write(19,600) isinel
 600     format( 25(1x,i2)/ )
-        write(9,*)
+        write(19,*)
 !---------------------------   Parameter Recording   ---------------------------
 !-------------------------------------------------------------------------------
 
@@ -2257,9 +2257,9 @@
             vneump = pir
             vneumt = tir
             if(iii == 1)then
-                write(9,*) "#! Random sampling of b from (bmin,bmax)"
-                write(9,*) "iii, psno, b, N_part_p,N_part_t, N_bin=" // &
-                    "(optical Glauber)", iii,psno,bp,vneump,vneumt,evbin
+                write(19,*) "#! Random sampling of b from (bmin,bmax)"
+                write(19,*) "iii, psno, b, N_part_p,N_part_t, N_bin=" // &
+                            "(optical Glauber)", iii,psno,bp,vneump,vneumt,evbin
             end if
             averb = averb + bp
             psnon = psnon + anbin
@@ -3016,6 +3016,7 @@
         common/sa25/i_inel_proc,i_time_shower,para1_1,para1_2
         common/sa27/itime,kjp22,gtime,astr,akapa(6),parj1,parj2,parj3, &
          parj21,parj4,adiv,gpmax,nnc
+        common/sa30/vneump,vneumt,mstptj
         common/sa35/ncpart,ncpar(kszj)
         common/sbe/nbe,non_be,kbe(kszj,5),pbe(kszj,5),vbe(kszj,5)
         common/ctllist/npctl,npinel(600),npctl0,npctlm
@@ -5708,15 +5709,15 @@
         enddo
 !       Print data
 !-----------
-        write(9,*) "#! Results from the independent " // &
-                   "Optical Glauber model"
-        if(kjp23 == 2)write(9,901)'i','b','TA','TB','TAB','Apart', &
-         'Bpart','Nbin'
-        if(kjp23 == 1)write(9,902)'i','b','Apart','Bpart'
+        write(19,*) "#! Results from the independent " // &
+                    "Optical Glauber model"
+        if(kjp23 == 2) write(19,901) 'i','b','TA','TB','TAB','Apart', &
+                                     'Bpart','Nbin'
+        if(kjp23 == 1) write(19,902) 'i','b','Apart','Bpart'
         do i=1,200
-        if(kjp23 == 2)write(9,905)i,bb(i),TA1(i),TA2(i),TA1A2(i), &
-         part1(i),part2(i),binn(i)
-        if(kjp23 == 1)write(9,906)i,bb(i),part1(i),part2(i)
+        if(kjp23 == 2) write(19,905) i,bb(i),TA1(i),TA2(i),TA1A2(i), &
+                                     part1(i),part2(i),binn(i)
+        if(kjp23 == 1) write(19,906) i,bb(i),part1(i),part2(i)
         enddo
  901    format(2a6,6a10)
  902    format(2a6,2a10)
@@ -6040,14 +6041,14 @@
       CALL GAUSSQ(1,N1,0D0,0D0,0,ENDPTS,BSCR,X11,W1)
       CALL GAUSSQ(1,N2,0D0,0D0,0,ENDPTS,BSCR,X22,W2)
       CALL GAUSSQ(1,N3,0D0,0D0,0,ENDPTS,BSCR,X33,W3)
-!      WRITE(9,*)'B=',BB
-!      WRITE(9,*)'AP,BP,AT,BT=',AP,BP,AT,BT
-!      WRITE(9,*)'BMIN,BMAX,IB,ISETA,CSETA=',BMIN,BMAX,IB,ISETA,CSETA
-!      WRITE(9,*)'N1,N2,N3=',N1,N2,N3
-!      WRITE(9,*)'D1,D2,D3=',D1,D2,D3
-!      WRITE(9,*)'U1,U2,U3=',U1,U2,U3
-!      WRITE(9,110)(X11(I),I=1,N1)
-!      WRITE(9,111)(W1(I),I=1,N1)
+!      WRITE(19,*)'B=',BB
+!      WRITE(19,*)'AP,BP,AT,BT=',AP,BP,AT,BT
+!      WRITE(19,*)'BMIN,BMAX,IB,ISETA,CSETA=',BMIN,BMAX,IB,ISETA,CSETA
+!      WRITE(19,*)'N1,N2,N3=',N1,N2,N3
+!      WRITE(19,*)'D1,D2,D3=',D1,D2,D3
+!      WRITE(19,*)'U1,U2,U3=',U1,U2,U3
+!      WRITE(19,110)(X11(I),I=1,N1)
+!      WRITE(19,111)(W1(I),I=1,N1)
 ! 110  FORMAT(1X,'X1=',10E12.4/)
 ! 111  FORMAT(1X,'W1=',10E12.4/)
 !     CALCULATE THE TRANSFORMED NODES.
@@ -6110,9 +6111,9 @@
 209   APIR=PIR/ISETA
       ATIR=TIR/ISETA
       APTIR=APIR*ATIR
-!      WRITE(9,205)
+!      WRITE(19,205)
 !205   FORMAT(/12X,'B',13X,'AIRP',13X,'AIRT',15X,'AIRPT')
-!      WRITE(9,206)BB,APIR,ATIR,APTIR
+!      WRITE(19,206)BB,APIR,ATIR,APTIR
 !206   FORMAT(/3X,E12.4,4X,E12.4,4X,E12.4,10X,E12.4)
 204   IF(IB == 1)GOTO 207
       IF(IIB >= IB)GOTO 207

@@ -5052,7 +5052,6 @@
 
         do i=1,nn
             write(mstu(11),*)i,kglu(i,2),(pglu(i,j),j=1,4)
-            write(9,*)i,kglu(i,2),(pglu(i,j),j=1,4)
         enddo
         call psum(pglu,1,nglu,peo)
         ich1=0
@@ -5063,7 +5062,6 @@
         cc=ich1/3D0
         write(22,*)'sa36 nn=',nn
         write(mstu(11),*)'c & p sum=',cc,peo   !
-!       write(9,*)peo,ich1/3   !
 
 
         return

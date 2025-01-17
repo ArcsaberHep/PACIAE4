@@ -964,7 +964,7 @@
         iiii = 0
 54      iiii = iiii + 1
         if( iiii == 10000 )then
-            write(9,*) "Warning, difficult to arrange produced nucleons in" &
+            write(*,*) "Warning, difficult to arrange produced nucleons in" &
                     // "subroutine arrove, infinite loop may occur"
             return
         end if
@@ -1025,7 +1025,7 @@
         iiii = 0
 100     iiii = iiii + 1
         if( iiii == 100000 )then
-            write(9,*) "Warning, difficult to arrange produced nucleons in" &
+            write(*,*) "Warning, difficult to arrange produced nucleons in" &
                     // "subroutine woodsax, infinite loop may happen"
             return
         end if
@@ -3734,7 +3734,7 @@
         enddo
         jj=jj+1
         if(jj == 4000)then
-            write(9,*) 'infinitive loop may occur in subroutine ' // &
+            write(*,*) 'infinitive loop may occur in subroutine ' // &
                        'conse(), which means four-momentum ' // &
                        'conservation needed is hard to be achieved,' // &
                        'check value of PARAM(9)'
@@ -4185,7 +4185,7 @@
         jj = jj + 1
 
         if( jj == 4000 )then
-            write(9,*) 'infinitive loop may occur in subroutine ' // &
+            write(*,*) 'infinitive loop may occur in subroutine ' // &
                        'conser(), which means four-momentum ' // &
                        'conservation needed is hard to be achieved, ' // &
                        'check value of PARAM(9)'

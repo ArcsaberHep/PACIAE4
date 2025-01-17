@@ -573,7 +573,7 @@
         iiii = iiii + 1
 
         if( iiii > 100*(nctl0) )then
-            write(9,*) "infinite loop may have happened in" &
+            write(*,*) "infinite loop may have happened in" &
                     // "subroutine scat iii=", iii
             iii = iii - 1
 !           If ijkk=1 (infinite loop), give up the event.
@@ -1320,7 +1320,7 @@
         end do
         pjj(4) = ss - pii(4)
         if( pii(4) < 0D0 .or. pjj(4) < 0D0 )then
-            write(9,*) "error may happen here in subroutine" &
+            write(*,*) "error may happen here in subroutine" &
                     // "coinel(), energy is negative"
             if( pii(4) < 0D0 ) pii(4) = 1D-18
             if( pjj(4) < 0D0 ) pjj(4) = 1D-18
@@ -1328,7 +1328,7 @@
         ilo = 1
         call lorntz(ilo,b,pii,pjj)
         if( pii(4) < 0D0 .or. pjj(4) < 0D0 )then
-            write(9,*) "error may happen here in subroutine" &
+            write(*,*) "error may happen here in subroutine" &
                     // "coinel(), energy is negative"
             if( pii(4) < 0D0 ) pii(4) = 1D-18
             if( pjj(4) < 0D0 ) pjj(4) = 1D-18
@@ -7938,7 +7938,7 @@
         !debug
         i = l
         j = l1
-        ! write(9,*) "No inel. channel is found in hadcas prod(), " &
+        ! write(*,*) "No inel. channel is found in hadcas prod(), " &
         !         // "treated as elastic collision, " &
         !         // "l, l1, kl, kl1=", l, l1, kl, kl1
         !debug
@@ -7951,7 +7951,7 @@
 10      if( lc(icp,5) < 1593 )then
             nchargef = PYCHGE( lc(icp,3) ) + PYCHGE( lc(icp,4) )
             if( nchargei/3 /= nchargef/3 )then
-              write(9,*) "Warning, Charges were not conserved, " &
+              write(*,*) "Warning, Charges were not conserved, " &
                       // "initial, final, lc(icp,5)=", &
                           nchargei/3D0, nchargef/3D0, lc(icp,5)
             end if
@@ -11091,7 +11091,7 @@
             KF_out_B = 211
 !       Something is wrong.
         else
-            write(9,*) "No inel. channel is found in hadcas "       // &
+            write(*,*) "No inel. channel is found in hadcas "       // &
                        "Dmeson1(), treated as elastic collision, "  // &
                        "KF_D, KF_M =", KF_D, KF_M
             return
@@ -11426,7 +11426,7 @@
             KF_out_B_2 = 111
 !       Something is wrong.
         else
-            write(9,*) "No inel. channel is found in hadcas "       // &
+            write(*,*) "No inel. channel is found in hadcas "       // &
                        "Dmeson2(), treated as elastic collision, "  // &
                        "KF_D, KF_M =", KF_D, KF_M
             return
@@ -11661,7 +11661,7 @@
             KF_out_B = -2112
 !       Something is wrong.
         else
-            write(9,*) "No inel. channel is found in hadcas "        // &
+            write(*,*) "No inel. channel is found in hadcas "        // &
                        "Dpn_coll(), treated as elastic collision, "  // &
                        "KF_D, KF_M =", KF_D, KF_N
             return
@@ -11817,8 +11817,8 @@
 
         agum=(amas2-(am1+am2)**2)*(amas2-(am1-am2)**2)
         if(agum <= 0.)then
-        write(9,*) 'kf,kf1,kf2=',kf,kde(1,2),kde(2,2)
-        write(9,*) 'amas,am1,am2=',amas,am1,am2
+        write(*,*) 'kf,kf1,kf2=',kf,kde(1,2),kde(2,2)
+        write(*,*) 'amas,am1,am2=',amas,am1,am2
         agum=1.e-15
         endif
 

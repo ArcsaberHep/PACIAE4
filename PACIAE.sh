@@ -177,7 +177,7 @@ i_stage=4   # (D=4) adj1(40), simulation stop point:
 #******************************************************************************#
 # Setups of the simulation framework (mode).
 i_sim_mode=6    # (D=6) i_mode, simulation mode:
-                #              =1, PACIAE ;ow-energy hadronic simulation,
+                #              =1, PACIAE low-energy hadronic simulation,
                 #                  E_CMS < 3 GeV (A).
                 #              =2, PYTHIA-like pure hadronic simulation based
                 #                  on PYTHIA 6 (B_PY6).

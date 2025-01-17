@@ -2999,7 +2999,7 @@
                 if( PYR(1) <= sfra )then
                     numk(i) = 0
                     schudn = schudn + 1D0
-                    do ii=1,nsa,1
+                    do ii=1,N,1
 !                   Only for the particles that still exist.
                         KSii = K(ii,1)
                         if( .NOT.IS_EXIST(KSii,i_mode) ) cycle
@@ -5576,7 +5576,7 @@
             else if(inorex == 2)then
 !       give four momentum to inelastically scattered particles
                 call coinel_nn(1,2,KF_1,KF_2,pi,pj)
-!               call padecy(1,2)
+!               call padecy_A(1,2)
             end if
         end if
 !**************************   Inelastic Scattering   ***************************
@@ -5592,7 +5592,7 @@
                 end do
             end do
         else if( inorex == 2 )then
-            call padecy(1,2)
+            call padecy_A(1,2)
         end if
 
 !       Removes photons from "PYJETS" to "sgam" if any.
@@ -5823,7 +5823,7 @@
                 ksa(l,2)=2114   ! delta0
                 ksa(l1,2)=111
             endif
-            rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+            rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             jorn=0
 
         elseif( (kfa == -211.and.kfb == 2112).or. &   ! (pi-)n   !!
@@ -5838,7 +5838,7 @@
                 ksa(l,2)=2114   ! delta0
                 ksa(l1,2)=-211
             endif
-            rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+            rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             jorn=0
 
         elseif( (kfa == 211.and.kfb == 2212).or. &   ! (pi+)p   !!
@@ -5855,15 +5855,15 @@
             if(rpy  <=  percen_1)then
                 ksa(l,2)=2224   ! delta++
                 ksa(l1,2)=111
-                rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+                rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             elseif(rpy  >  percen_1 .and. rpy  <=  percen_2)then
                 ksa(l,2)=2214   ! delta+
                 ksa(l1,2)=211
-                rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+                rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             elseif(rpy  >  percen_2 .and. rpy  <=  percen_3)then
                 ksa(l,2)=213   ! rho+
                 ksa(l1,2)=2212
-                rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+                rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             elseif(rpy  >  percen_3)then
                 ksa(l,2)=2224   ! delta++
                 ksa(l1,1)=0
@@ -5922,7 +5922,7 @@
                 ksa(l,2)=213   ! rho+
                 ksa(l1,2)=2112
             endif
-            rpy1 = 1D0 + decpro   ! call padecy(l,l1)
+            rpy1 = 1D0 + decpro   ! call padecy_A(l,l1)
             jorn=0
         endif
 !-----------------------------   pi+N Scattering   -----------------------------
@@ -5947,7 +5947,7 @@
 !       a part of update particle list ('sa2' to 'PYJETS') after inela.
 !        scattering in case of outgoing channel with \Delta particle
                 else
-                    call padecy(l,l1)
+                    call padecy_A(l,l1)
 !       a part of update particle list ('sa2' to 'PYJETS') after inela.
 !        scattering in case of outgoing channel without \Delta particle
                 end if
@@ -6089,7 +6089,7 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine padecy(l,l1)
+        subroutine padecy_A(l,l1)
 !!      Deacy of a hardron.
 !!      part of 'sa2' to 'PYJETS', i.e. a part of updating particle list after
 !!       inela. scattering in case of outgoing channel without \Delta particle

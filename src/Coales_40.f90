@@ -318,10 +318,8 @@
         end do
         nn = 0
 
-!       Decay of unstable hadrons.
-        rrp = 1.16D0
-        call decayh(rrp)
-        nn = 0
+!       Decay of unstable hadrons. (In Pythia8_fort_interface.f90)
+        call PADECY
 
 !       "sa2" to "PYJETS".
         do i = 1, nsa, 1

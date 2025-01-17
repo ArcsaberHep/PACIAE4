@@ -771,13 +771,13 @@ using namespace Paciae4;
     Event& event = (*pythia) -> event;
 
 // Resets the event record for filling the new one.
-    event.clear();   // With following "iParton = 0"
+    event.clear();
     // Fills parton-level configuration from PACIAE.
     for( int iParton = 0; iParton < nPY8; ++iParton ) {
         int& id        = kPY8[1][iParton] ;
         int& status    = kPY8[0][iParton] ;
         int& mother1   = kPY8[2][iParton] ;
-        int& mother2   = kPY8[5][iParton] ;   // Note here!
+        int& mother2   = kPY8[5][iParton] ;
         int& daughter1 = kPY8[3][iParton] ;
         int& daughter2 = kPY8[4][iParton] ;
         int& col       = kPY8[6][iParton] ;
@@ -798,7 +798,7 @@ using namespace Paciae4;
         double y   = vPY8[1][iParton] * FM2MM ;
         double z   = vPY8[2][iParton] * FM2MM ;
         double t   = vPY8[3][iParton] * FM2MM ;
-        double tau = vPY8[4][iParton] * FM2MM;   // It will be set by id?
+        double tau = vPY8[4][iParton] * FM2MM ;
         event[iEntry].vProd(x, y, z, t) ;
         event[iEntry].tau(tau) ;
     }
@@ -840,9 +840,109 @@ using namespace Paciae4;
         kPY8[2][iParticle] = event[iParticle].mother1() ;
         kPY8[3][iParticle] = event[iParticle].daughter1() ;
         kPY8[4][iParticle] = event[iParticle].daughter2() ;
-        kPY8[5][iParticle] = event[iParticle].mother2() ;   // Note here!
-        kPY8[6][iParticle] = event[iParticle].col() ;   // Color.
-        kPY8[7][iParticle] = event[iParticle].acol() ;   // Anti-color.
+        kPY8[5][iParticle] = event[iParticle].mother2() ;
+        kPY8[6][iParticle] = event[iParticle].col() ;
+        kPY8[7][iParticle] = event[iParticle].acol() ;
+        // 4-momentum, mass, scale and polarization.
+        pPY8[0][iParticle] = event[iParticle].px() ;
+        pPY8[1][iParticle] = event[iParticle].py() ;
+        pPY8[2][iParticle] = event[iParticle].pz() ;
+        pPY8[3][iParticle] = event[iParticle].e() ;
+        pPY8[4][iParticle] = event[iParticle].m() ;
+        pPY8[5][iParticle] = event[iParticle].scale() ;
+        pPY8[6][iParticle] = event[iParticle].pol() ;
+        // Vertex 4-coordinate and proper life time.
+        // Converts units from mm, mm/c to fm, fm/c.
+        vPY8[0][iParticle] = event[iParticle].xProd() * MM2FM ;
+        vPY8[1][iParticle] = event[iParticle].yProd() * MM2FM ;
+        vPY8[2][iParticle] = event[iParticle].zProd() * MM2FM ;
+        vPY8[3][iParticle] = event[iParticle].tProd() * MM2FM ;
+        vPY8[4][iParticle] = event[iParticle].tau()   * MM2FM ;
+    }
+
+    // Recovers the std::cout .
+    std::cout.rdbuf( coutBuff );
+    outputFile.close();
+
+    return;
+    }
+
+//--------------------------------------------------------------------------
+
+//  This function will perform sequential decays via PYTHIA 8.
+    void decayAll_PY8( int& nPY8, int (&kPY8)[8][300000],
+                       double (&pPY8)[7][300000],
+                       double (&vPY8)[5][300000],
+                       Pythia** pythia ) {
+
+// Specifies output target file, i.e. "cout" redirection.
+    std::streambuf* coutBuff = std::cout.rdbuf();
+    std::ofstream outputFile;
+    outputFile.open( "pythia8_report.log", ios::out | ios::app );
+    std::streambuf* fileBuff = outputFile.rdbuf();
+    std::cout.rdbuf( fileBuff );
+
+// Shorthand for some public members of pythia (also static ones).
+// The pythia object was passed in from the external calling.
+    Event& event = (*pythia) -> event;
+    Rndm&   rndm = (*pythia) -> rndm;
+
+// Resets the event record for filling the new one.
+    if( abs( kPY8[0][0] ) == 11 ) {
+        event.reset();
+    }
+    else {
+        event.clear();
+    }
+    for( int iParticle = 0; iParticle < nPY8; ++iParticle ) {
+        int& id        = kPY8[1][iParticle] ;
+        int& status    = kPY8[0][iParticle] ;
+        int& mother1   = kPY8[2][iParticle] ;
+        int& mother2   = kPY8[5][iParticle] ;
+        int& daughter1 = kPY8[3][iParticle] ;
+        int& daughter2 = kPY8[4][iParticle] ;
+        int& col       = kPY8[6][iParticle] ;
+        int& acol      = kPY8[7][iParticle] ;
+        double& px     = pPY8[0][iParticle] ;
+        double& py     = pPY8[1][iParticle] ;
+        double& pz     = pPY8[2][iParticle] ;
+        double& e      = pPY8[3][iParticle] ;
+        double& m      = pPY8[4][iParticle] ;
+        double& scale  = pPY8[5][iParticle] ;
+        double& pol    = pPY8[6][iParticle] ;
+        int iEntry    = event.append( id, status, mother1, mother2,
+                                      daughter1, daughter2, col, acol,
+                                      px, py, pz, e, m, scale, pol );
+        // Converts units from fm, fm/c to mm, mm/c.
+        double x   = vPY8[0][iParticle] * FM2MM ;
+        double y   = vPY8[1][iParticle] * FM2MM ;
+        double z   = vPY8[2][iParticle] * FM2MM ;
+        double t   = vPY8[3][iParticle] * FM2MM ;
+        event[iEntry].vProd(x, y, z, t) ;
+        // Generates lifetime, to give decay away from primary vertex.
+        double tau = event[iEntry].tau0() * rndm.exp() ;
+        event[iEntry].tau(tau) ;
+    }
+
+// Resets the junction record.
+    event.clearJunctions();
+
+// Decays of unstable particles.
+    (*pythia) -> forceHadronLevel(false) ;
+
+// Store the particle information for returning back to PACIAE.
+    nPY8 = 0;
+    for ( int iParticle = 0; iParticle < event.size(); ++iParticle ) {
+        nPY8 += 1;
+        // Status, id, mothers, daughters, color and anti-color.
+        kPY8[0][iParticle] = event[iParticle].status() ;
+        kPY8[1][iParticle] = event[iParticle].id() ;
+        kPY8[2][iParticle] = event[iParticle].mother1() ;
+        kPY8[3][iParticle] = event[iParticle].daughter1() ;
+        kPY8[4][iParticle] = event[iParticle].daughter2() ;
+        kPY8[5][iParticle] = event[iParticle].mother2() ;
+        kPY8[6][iParticle] = event[iParticle].col() ;
+        kPY8[7][iParticle] = event[iParticle].acol() ;
         // 4-momentum, mass, scale and polarization.
         pPY8[0][iParticle] = event[iParticle].px() ;
         pPY8[1][iParticle] = event[iParticle].py() ;

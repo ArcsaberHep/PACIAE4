@@ -2,7 +2,7 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, ???? 2006 - November 2024.
+!! Author: Ben-Hao Sa, ???? 2006 - January 2025.
 
 !> This is the main program to administrate the Monte Carlo simulation for
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
@@ -26,7 +26,7 @@
 !        Zhong-Qi Wang, Guang Song, Zhong-Han Feng, Xiao-Mei Li, Xiao-Long
 !        Wang, Dai-Mei Zhou, Guo-Liang Ma, Zhi-Guang Tan, Bao-Guo Dong,
 !        Yu-Liang Yan, Hai-Liang Ma, Sheng-Qin Feng, Gang Chen, Zhi-Lei She,
-!        Yun Cheng, Du-June Wang, An-Ke Lei, and Liang Zheng, taked part in
+!        Yun Cheng, Du-Juan Wang, An-Ke Lei, and Liang Zheng, taked part in
 !        the PACIAE group one behind the other. Later on, Gao-Chan Yong,
 !        Wen-Chao Zhang, Hua Zheng, and Li-Ling Zhu are joined with us.
 !       An-Ke Lei is the main author of PACIAE4.0 and Dai-Mei Zhou is the
@@ -41,7 +41,7 @@
 !!      Administrates the MC simulation for relativistic hh, hA(Ah), AB,
 !!       ll, lN(Nl) & lA(Al) collisions.
 !
-!       The program comprises of main_40.f90, parini_40.f90, parcas_40.f90,
+!       The program comprises main_40.f90, parini_40.f90, parcas_40.f90,
 !        sfm_40.f90, coales_40.f90, hadcas_40.f90, analy_40.f90, p_40.f,
 !        Pythia8_fort_interface.f90, Pythia8_cpp_interface.cpp,
 !        PaciaeUserHooks.cpp, Pythia8_cpp_interface.hpp, and

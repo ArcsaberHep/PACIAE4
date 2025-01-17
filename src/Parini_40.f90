@@ -2,7 +2,7 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, December 2003 - November 2024.
+!! Author: Ben-Hao Sa, December 2003 - January 2025.
 
 !> This is the initialization program to generate the initial partonic state
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.

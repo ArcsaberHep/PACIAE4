@@ -18,7 +18,7 @@
 #  i.e. "man make" or "make --help".
 #
 #                                               By An-Ke at CCNU on 16/01/2024
-#                                  Last updated by An-Ke at UiO  on 11/11/2024
+#                                  Last updated by An-Ke at UiO  on 17/01/2025
 ################################################################################
 
 ################################################################################
@@ -117,17 +117,13 @@ SIM_LOG_CLEAN:=$(shell rm -f $(DIR_SIM)/*.log)
 # Compilation flags. Two different compilers would be used: gfortran and g++.
 # Part of them were set in "Makefile.inc".
 # C++ compilation flags.
-# CXX:=g++
-# CXX_COMMON:=-O2 -std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
-#debug
-# CXX_COMMON:=-std=c++11 -pedantic -W -Wall -Wshadow -g -fPIC -pthread
-CXX_COMMON:=-I$(PREFIX_INCLUDE) -I$(DIR_INC) $(CXX_COMMON) $(GZIP_LIB)
+CXX_COMMON:=-I$(PREFIX_INCLUDE) -I$(DIR_INC) $(CXX_COMMON) $(GZIP_LIB) -w
 PYTHIA8=$(PREFIX_LIB)/libpythia8$(LIB_SUFFIX)
 # Fortran compilation flags.
 GFO:=gfortran
 #debug
 #GFO_COMMON:=-W -Wall -Wshadow -g -fdefault-integer-8 -fbounds-check
-GFO_COMMON:=-O2 -W -Wall -Wshadow -g -fdefault-integer-8
+GFO_COMMON:=-O2 -W -Wall -Wshadow -g -fdefault-integer-8 -w
 
 # Link flags. Note linker is gfortran.
 GFO_LINK:=$(GFO_COMMON)

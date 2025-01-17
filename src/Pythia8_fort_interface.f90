@@ -8,7 +8,7 @@
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1329,7 +1329,7 @@
 !         MINT & VINT
 !           MINT(385): nCollTot     from Angantyr
 !           MINT(386): nCollND      from Angantyr
-!           MINT(387): nCollNDTot   from Angantyr
+!           MINT(387): deprecated from PYTHIA 8.313
 !           MINT(388): nCollSDP     from Angantyr
 !           MINT(389): nCollSDT     from Angantyr
 !           MINT(390): nCollDD      from Angantyr
@@ -1348,11 +1348,24 @@
 !           VINT(99): 1/weight
 !           VINT(100): weight
 !           VINT(139): bp (the impact parameter         from Angantyr)
-!           VINT(392): the impact parameter angle phi   from Angantyr
-!           VINT(393): sigmaTot                         from Angantyr
-!           VINT(394): sigmaTotErr                      from Angantyr
-!           VINT(395): sigmaND                          from Angantyr
-!           VINT(396): sigmaNDErr                       from Angantyr
+!           VINT(370): the impact parameter angle phi   from Angantyr
+!           VINT(371): glauberTot                       from Angantyr
+!           VINT(372): glauberND                        from Angantyr
+!           VINT(373): glauberINEL                      from Angantyr
+!           VINT(374): glauberEL                        from Angantyr
+!           VINT(375): glauberDiffP                     from Angantyr
+!           VINT(376): glauberDiffT                     from Angantyr
+!           VINT(377): glauberDDiff                     from Angantyr
+!           VINT(378): glauberBSlope                    from Angantyr
+!           VINT(381): glauberTotErr                    from Angantyr
+!           VINT(382): glauberNDErr                     from Angantyr
+!           VINT(383): glauberINELErr                   from Angantyr
+!           VINT(384): glauberELErr                     from Angantyr
+!           VINT(385): glauberDiffPErr                  from Angantyr
+!           VINT(386): glauberDiffTErr                  from Angantyr
+!           VINT(387): glauberDDiffErr                  from Angantyr
+!           VINT(388): glauberBSlopeErr                 from Angantyr
+!           VINT(396): version number of PYTHIA 8.
 !           VINT(397): total px of the collision system
 !           VINT(398): total py of the collision system
 !           VINT(399): total pz of the collision system
@@ -1771,14 +1784,14 @@
 
 !-------------------------------------------------------------------------------
 !-------------------------   PYTHIA 6 Initialization   -------------------------
-    IF( .NOT.IS_PYTHIA8(i_mode) )THEN
 !   Reads the extra configuration for PYTHIA 6.
-        OPEN( 11, FILE="pythia6_extra.cfg", STATUS="UNKNOWN" )
-        DO WHILE( .TRUE. )
-            READ( 11, "(A)", END=100 ) PARAM_PYTHIA6
-            CALL PYGIVE( PARAM_PYTHIA6 )
-        END DO
-100     CLOSE(11)
+    OPEN( 11, FILE="pythia6_extra.cfg", STATUS="UNKNOWN" )
+    DO WHILE( .TRUE. )
+        READ( 11, "(A)", END=100 ) PARAM_PYTHIA6
+        CALL PYGIVE( PARAM_PYTHIA6 )
+    END DO
+100 CLOSE(11)
+    IF( .NOT.IS_PYTHIA8(i_mode) )THEN
 !   Prohibits writing of information on variable values changed by a PYGIVE
 !     and a PYTUNE.
         IF( I_CALL >= 1 ) CALL PYGIVE( "MSTU(13)=0" )
@@ -1998,6 +2011,13 @@
 
 !-------------------------------------------------------------------------------
 !-------------------------   PYTHIA 6 Initialization   -------------------------
+!   Reads the extra configuration for PYTHIA 6.
+    OPEN( 11, FILE="pythia6_extra.cfg", STATUS="UNKNOWN" )
+    DO WHILE( .TRUE. )
+        READ( 11, "(A)", END=100 ) PARAM_PYTHIA6
+        CALL PYGIVE( PARAM_PYTHIA6 )
+    END DO
+100 CLOSE(11)
     IF( .NOT.IS_PYTHIA8(i_mode) )THEN
 !   Sets the name of collision frame. Defalut "CMS".
         FRAME = "CMS"
@@ -2026,13 +2046,6 @@
         CALL PYNAME( KF_BEAM, BEAM )
         CALL PYNAME( KF_TARGET, TARGET )
 
-!   Reads the extra configuration for PYTHIA 6.
-        OPEN( 11, FILE="pythia6_extra.cfg", STATUS="UNKNOWN" )
-        DO WHILE( .TRUE. )
-            READ( 11, "(A)", END=100 ) PARAM_PYTHIA6
-            CALL PYGIVE( PARAM_PYTHIA6 )
-        END DO
-100     CLOSE(11)
 !   Prohibits writing of information on variable values changed by a PYGIVE
 !     and a PYTUNE.
         IF( I_CALL >= 1 ) CALL PYGIVE( "MSTU(13)=0" )

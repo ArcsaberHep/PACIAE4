@@ -8,7 +8,7 @@
 !!  phenomenological coalescence model of PACIAE.
 
 !!                                             By Ben-Hao at CIAE on 04/06/2004
-!!                                  Last updated by An-Ke at UiO  on 23/11/2024
+!!                                  Last updated by An-Ke at UiO  on 17/01/2025
 
 
         subroutine coales( i_coal )
@@ -5140,6 +5140,7 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
+        common/sa33/smadel,ecce,secce,parecc,iparres
 
 
         pT = 0D0
@@ -5160,8 +5161,12 @@
         phi = PARU(2) * PYR(1)
 
 !       Generates px and py.
-        px = pT * COS(phi)
-        py = pT * SIN(phi)
+        ! px = pT * COS(phi)
+        ! py = pT * SIN(phi)
+!       Randomly samples [px,py] on the ellipsoid with the half major axis
+!        of pT*(1+smadel) and the half minor axis of pT*(1-smadel).
+        px = pT * COS(phi) * (1 + smadel )
+        py = pT * SIN(phi) * (1 - smadel )
 
 !       pT might deviate little bit from original one.
         pT = SQRT( px**2 + py**2 )

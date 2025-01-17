@@ -2222,13 +2222,14 @@
     ELSE IF( IS_PYTHIA8(i_mode) )THEN
     ! Puts particles on-shell by hand to avoid potential errors.
         DO I=1,N,1
-            KF0 = K(i,2)
+            KS0 = K(I,1)
+            KF0 = K(I,2)
             IF( .NOT.IS_EXIST(KS0,i_mode) .OR. IS_NUCLEUS(KF0) ) cycle
-            PX0 = P(i,1)
-            PY0 = P(i,2)
-            PZ0 = P(i,3)
-            E0  = P(i,4)
-            DM  = P(i,5)
+            PX0 = P(I,1)
+            PY0 = P(I,2)
+            PZ0 = P(I,3)
+            E0  = P(I,4)
+            DM  = P(I,5)
             P(I,4) = SQRT( PX0**2 + PY0**2 + PZ0**2 + DM**2 )
             throe_p(4) = throe_p(4) + E0 - P(I,4)
         end do

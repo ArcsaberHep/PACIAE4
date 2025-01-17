@@ -1036,7 +1036,7 @@
 !       Its output message is in 'PYJETS' ('sa1_h' the same)
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        LOGICAL IS_NUCLEUS
+        LOGICAL IS_EXIST, IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -1064,8 +1064,9 @@
 
 !       Puts particles on-shell by hand to avoid potential errors.
         do i=1,N,1
+            KS0 = K(i,1)
             KF0 = K(i,2)
-            if( IS_NUCLEUS(KF0) ) cycle
+            if( .NOT.IS_EXIST(KS0,i_mode) .OR. IS_NUCLEUS(KF0) ) cycle
             px0 = P(i,1)
             py0 = P(i,2)
             pz0 = P(i,3)
@@ -1073,13 +1074,6 @@
             dm  = P(i,5)
             P(i,4) = SQRT( px0**2 + py0**2 + pz0**2 + dm**2 )
             throe_p(4) = throe_p(4) + E0 - P(i,4)
-        end do
-!       Sets status.
-        do i=1,N,1
-            K(i,1) = 1
-            K(i,3) = 0
-            K(i,4) = 0
-            K(i,5) = 0
         end do
 !       Sums of px, py, pz, and E before decay.
         ps0 = 0D0

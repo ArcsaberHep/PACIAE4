@@ -13,21 +13,18 @@
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !>  Interfaces into PYTHIA 8, *pythia = new Pythia. Instantiates a basic
-!!    Pythia obeject.
+!!    Pythia object.
     SUBROUTINE PYINST_PY8
 
-!---Imports mudules.
+!---Imports modules.
     USE, INTRINSIC :: ISO_C_BINDING
     IMPLICIT NONE
 
 !---Fortran data type.
 
 !***********************************************************************
-!   Local variabls.
+!   Local variables.
     INTEGER, PARAMETER :: KSZJ = 80000, KSZJ_PY8 = 300000
-    ! INTEGER :: I, J
-    ! INTEGER :: frameType, idA, idB
-    ! REAL(KIND=8) :: eCM
 !***********************************************************************
 
 !***********************************************************************
@@ -73,7 +70,6 @@
 !---PYTHIA 8 information storage for feeding-back.
 !-----------------------------------------------------------------------
     INTEGER :: N_PY8, NPAD_PY8
-    ! INTEGER, PARAMETER :: KSZJ_PY8 = 300000
     INTEGER :: K_PY8(KSZJ_PY8,8)
     REAL(KIND=8) :: P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
     COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, K_PY8, P_PY8, V_PY8
@@ -83,11 +79,8 @@
 !---C++ data type.
 
 !***********************************************************************
-!   Local variabls.
-    ! INTEGER(KIND=C_INT) :: frameType_c, idA_c, idB_c
-    ! REAL(KIND=C_DOUBLE) :: eCM_c
+!   Local variables.
     INTEGER(KIND=C_INT) :: idStable(100)
-    ! INTEGER(KIND=C_INT) :: iFail
 !***********************************************************************
 
 !***********************************************************************
@@ -107,7 +100,6 @@
     SAVE /PYPARS_c/
 !-----------------------------------------------------------------------
     INTEGER(KIND=C_INT) :: nPY8, nPadPY8
-    ! INTEGER(C_INT), PARAMETER :: kSZJ_c = 300000
     INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
     REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
     COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
@@ -119,12 +111,12 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
-!---Pointers to PACIAE4 obejects.
+!---Pointers to PACIAE4 objects.
     TYPE(C_PTR) :: pahooks, paHIhooks, &
                    pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
     COMMON/PACIAE4_PTR/ pahooks, paHIhooks, &
@@ -135,38 +127,32 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE instantiation_PY8( MINT_c, VINT_c, &
-                                      MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
-                                      MSTP_c, PARP_c, MSTI_c, PARI_c, &
-                                      nPY8, kPY8, pPY8, vPY8, idStable, &
-                                      pythia8, pahooks, paHIhooks ) &
+        SUBROUTINE instantiation_PY8( MINT_cIn, VINT_cIn, &
+                                      MSTU_cIn, PARU_cIn, MSTJ_cIn, PARJ_cIn,  &
+                                      MSTP_cIn, PARP_cIn, MSTI_cIn, PARI_cIn,  &
+                                      nPY8In,kPY8In,pPY8In,vPY8In, idStableIn, &
+                                      pythia8In, pahooksIn, paHIhooksIn ) &
                                       BIND( C, NAME="instantiation_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(KIND=C_INT) :: idStable(*)
-            INTEGER(KIND=C_INT) :: MINT_c(*)
-            REAL(KIND=C_DOUBLE) :: VINT_c(*)
-            INTEGER(KIND=C_INT) :: MSTU_c(*), MSTJ_c(*)
-            REAL(KIND=C_DOUBLE) :: PARU_c(*), PARJ_c(*)
-            INTEGER(KIND=C_INT) :: MSTP_c(*), MSTI_c(*)
-            REAL(KIND=C_DOUBLE) :: PARP_c(*), PARI_c(*)
-            INTEGER(C_INT) :: nPY8
-            INTEGER(C_INT) :: kPY8(*)
-            REAL(C_DOUBLE) :: pPY8(*), vPY8(*)
-            ! INTEGER(KIND=C_INT) :: iFail
-            TYPE(C_PTR) :: pythia8
-            TYPE(C_PTR) :: pahooks, paHIhooks
+            INTEGER(KIND=C_INT) :: idStableIn(*)
+            INTEGER(KIND=C_INT) :: MINT_cIn(*)
+            REAL(KIND=C_DOUBLE) :: VINT_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTU_cIn(*), MSTJ_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARU_cIn(*), PARJ_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTP_cIn(*), MSTI_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARP_cIn(*), PARI_cIn(*)
+            INTEGER(C_INT) :: nPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            TYPE(C_PTR) :: pythia8In
+            TYPE(C_PTR) :: pahooksIn, paHIhooksIn
         END SUBROUTINE instantiation_PY8
     END INTERFACE
 !***********************************************************************
 
-
 !  Warning: the INTEGER would be converted from integer*8 -> integer*4.
 !           But dont't worry, if we use PYTHIA 8. Because the storage of
 !           the color flow was redesigned in PYTHIA 8.
-    ! frameType_c = frameType
-    ! idA_c = idA
-    ! idB_c = idB
-    ! eCM_c = eCM
     idStable = KF_woDecay
 
     MINT_c = MINT
@@ -180,7 +166,7 @@
     MSTI_c = MSTI
     PARI_c = PARI
 
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp.
+!   Accesses to C++ program in Pythia8CppInterface.cpp.
     CALL instantiation_PY8( MINT_c, VINT_c, &
                             MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
                             MSTP_c, PARP_c, MSTI_c, PARI_c, &
@@ -221,12 +207,12 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
-!---Pointers to PACIAE4 obejects.
+!---Pointers to PACIAE4 objects.
     TYPE(C_PTR) :: pahooks, paHIhooks, &
                    pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
     COMMON/PACIAE4_PTR/ pahooks, paHIhooks, &
@@ -237,25 +223,24 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE delete_object_PY8( MINT_c, MSTP_c, pythia8, &
-                                      pythia8_pp, pythia8_pn, &
-                                      pythia8_np, pythia8_nn, &
-                                      pahooks, paHIhooks, &
-                                      pahooks_pp, pahooks_pn, &
-                                      pahooks_np, pahooks_nn ) &
+        SUBROUTINE delete_object_PY8( MINT_cIn, MSTP_cIn, pythia8In, &
+                                      pythia8In_pp, pythia8In_pn, &
+                                      pythia8In_np, pythia8In_nn, &
+                                      pahooksIn, paHIhooksIn, &
+                                      pahooksIn_pp, pahooksIn_pn, &
+                                      pahooksIn_np, pahooksIn_nn ) &
             BIND( C, NAME="delete_object_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(KIND=C_INT) :: MINT_c(*), MSTP_c(*)
-            TYPE(C_PTR) :: pythia8, &
-                           pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-            TYPE(C_PTR) :: pahooks, paHIhooks, &
-                           pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
+            INTEGER(KIND=C_INT) :: MINT_cIn(*), MSTP_cIn(*)
+            TYPE(C_PTR) :: pythia8In, &
+                           pythia8In_pp, pythia8In_pn, pythia8In_np,pythia8In_nn
+            TYPE(C_PTR) :: pahooksIn, paHIhooksIn, &
+                           pahooksIn_pp, pahooksIn_pn, pahooksIn_np,pahooksIn_nn
         END SUBROUTINE delete_object_PY8
     END INTERFACE
 !***********************************************************************
 
-
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp .
+!   Accesses to C++ program in Pythia8CppInterface.cpp .
     CALL delete_object_PY8( MINT_c, MSTP_c, pythia8, &
                             pythia8_pp, pythia8_pn, &
                             pythia8_np, pythia8_nn, &
@@ -280,9 +265,9 @@
 !---Fortran data type.
 
 !***********************************************************************
-!   Local variabls.
+!   Local variables.
     INTEGER, PARAMETER :: KSZJ = 80000, KSZJ_PY8 = 300000
-    INTEGER :: I !, J
+    INTEGER :: I
     INTEGER :: frameType, idA, idB
     REAL(KIND=8) :: eCM
 !***********************************************************************
@@ -330,7 +315,6 @@
 !---PYTHIA 8 information storage for feeding-back.
 !-----------------------------------------------------------------------
     INTEGER :: N_PY8, NPAD_PY8
-    ! INTEGER, PARAMETER :: KSZJ_PY8 = 80000
     INTEGER :: K_PY8(KSZJ_PY8,8)
     REAL(KIND=8) :: P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
     COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, K_PY8, P_PY8, V_PY8
@@ -340,12 +324,10 @@
 !---C++ data type.
 
 !***********************************************************************
-!   Local variabls.
-    ! INTEGER(KIND=C_INT) :: frameType_c, idA_c, idB_c
+!   Local variables.
     INTEGER(KIND=C_INT) :: frameType_c, idA_c, idB_c
     REAL(KIND=C_DOUBLE) :: eCM_c
     INTEGER(KIND=C_INT) :: idStable(100)
-    ! INTEGER(KIND=C_INT) :: iFail
 !***********************************************************************
 
 !***********************************************************************
@@ -365,7 +347,6 @@
     SAVE /PYPARS_c/
 !-----------------------------------------------------------------------
     INTEGER(KIND=C_INT) :: nPY8, nPadPY8
-    ! INTEGER(C_INT), PARAMETER :: kSZJ_c = 300000
     INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
     REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
     COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
@@ -377,12 +358,12 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
-!---Pointers to PACIAE4 obejects.
+!---Pointers to PACIAE4 objects.
     TYPE(C_PTR) :: pahooks, paHIhooks, &
                    pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
     COMMON/PACIAE4_PTR/ pahooks, paHIhooks, &
@@ -393,33 +374,34 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE init_PY8( frameType_c, idA_c, idB_c, eCM_c, &
-                             MINT_c, VINT_c, &
-                             MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
-                             MSTP_c, PARP_c, MSTI_c, PARI_c, &
-                             nPY8, kPY8, pPY8, vPY8, &
-                             pythia8, &
-                             pythia8_pp, pythia8_pn, &
-                             pythia8_np, pythia8_nn, &
-                             pahooks, paHIhooks ) &
+        SUBROUTINE init_PY8( frameType_cIn, idA_cIn, idB_cIn, eCM_cIn, &
+                             MINT_cIn, VINT_cIn, &
+                             MSTU_cIn, PARU_cIn, MSTJ_cIn, PARJ_cIn, &
+                             MSTP_cIn, PARP_cIn, MSTI_cIn, PARI_cIn, &
+                             nPY8In, kPY8In, pPY8In, vPY8In, &
+                             pythia8In, &
+                             pythia8In_pp, pythia8In_pn, &
+                             pythia8In_np, pythia8In_nn, &
+                             pahooksIn, paHIhooksIn ) &
                              BIND( C, NAME="init_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(C_INT), VALUE :: frameType_c, idA_c, idB_c
-            REAL(C_DOUBLE), VALUE :: eCM_c
-            INTEGER(KIND=C_INT) :: MINT_c(*)
-            REAL(KIND=C_DOUBLE) :: VINT_c(*)
-            INTEGER(KIND=C_INT) :: MSTU_c(*), MSTJ_c(*)
-            REAL(KIND=C_DOUBLE) :: PARU_c(*), PARJ_c(*)
-            INTEGER(KIND=C_INT) :: MSTP_c(*), MSTI_c(*)
-            REAL(KIND=C_DOUBLE) :: PARP_c(*), PARI_c(*)
-            INTEGER(C_INT) :: nPY8
-            INTEGER(C_INT) :: kPY8(*)
-            REAL(C_DOUBLE) :: pPY8(*), vPY8(*)
-            TYPE(C_PTR) :: pythia8, &
-                           pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-            TYPE(C_PTR) :: pahooks, paHIhooks
+            INTEGER(C_INT), VALUE :: frameType_cIn, idA_cIn, idB_cIn
+            REAL(C_DOUBLE), VALUE :: eCM_cIn
+            INTEGER(KIND=C_INT) :: MINT_cIn(*)
+            REAL(KIND=C_DOUBLE) :: VINT_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTU_cIn(*), MSTJ_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARU_cIn(*), PARJ_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTP_cIn(*), MSTI_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARP_cIn(*), PARI_cIn(*)
+            INTEGER(C_INT) :: nPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            TYPE(C_PTR) :: pythia8In, &
+                           pythia8In_pp, pythia8In_pn, pythia8In_np,pythia8In_nn
+            TYPE(C_PTR) :: pahooksIn, paHIhooksIn
         END SUBROUTINE init_PY8
     END INTERFACE
+!***********************************************************************
 
 !  Warning: the INTEGER would be converted from integer*8 -> integer*4.
 !           But dont't worry, if we use PYTHIA 8. Because the storage of
@@ -450,8 +432,7 @@
         vPY8(2,I) = V(2,I)
     END DO
 
-
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp.
+!   Accesses to C++ program in Pythia8CppInterface.cpp.
     CALL init_PY8( frameType_c, idA_c, idB_c, eCM_c, &
                    MINT_c, VINT_c, &
                    MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
@@ -461,18 +442,6 @@
                    pythia8_pp, pythia8_pn, &
                    pythia8_np, pythia8_nn, &
                    pahooks, paHIhooks )
-
-
-    ! MINT = MINT_c
-    ! VINT = VINT_c
-    ! MSTU = MSTU_c
-    ! PARU = PARU_c
-    ! MSTJ = MSTJ_c
-    ! PARJ = PARJ_c
-    ! MSTP = MSTP_c
-    ! PARP = PARP_c
-    ! MSTI = MSTI_c
-    ! PARI = PARI_c
 
 
     RETURN
@@ -496,11 +465,9 @@
 !***********************************************************************
 
 !***********************************************************************
-!   Local variabls.
+!   Local variables.
     INTEGER, PARAMETER :: KSZJ = 80000, KSZJ_PY8 = 300000
     INTEGER :: I, J
-    ! INTEGER :: frameType, idA, idB
-    ! REAL(KIND=8) :: eCM
 !***********************************************************************
 
 !***********************************************************************
@@ -546,7 +513,6 @@
 !---PYTHIA 8 information storage for feeding-back.
 !-----------------------------------------------------------------------
     INTEGER :: N_PY8, NPAD_PY8
-    ! INTEGER, PARAMETER :: KSZJ_PY8 = 80000
     INTEGER :: K_PY8(KSZJ_PY8,8)
     REAL(KIND=8) :: P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
     COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, K_PY8, P_PY8, V_PY8
@@ -561,14 +527,6 @@
 !***********************************************************************
 
 !---C++ data type.
-
-!***********************************************************************
-!   Local variabls.
-    ! INTEGER(KIND=C_INT) :: frameType_c, idA_c, idB_c
-    ! REAL(KIND=C_DOUBLE) :: eCM_c
-    ! INTEGER(KIND=C_INT) :: idStable(100)
-    ! INTEGER(KIND=C_INT) :: iFail
-!***********************************************************************
 
 !***********************************************************************
     INTEGER(KIND=C_INT) :: MINT_c(400)
@@ -587,7 +545,6 @@
     SAVE /PYPARS_c/
 !-----------------------------------------------------------------------
     INTEGER(KIND=C_INT) :: nPY8, nPadPY8
-    ! INTEGER(C_INT), PARAMETER :: kSZJ_c = 300000
     INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
     REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
     COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
@@ -606,13 +563,13 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     TYPE(C_PTR) :: localPythia8
 !-----------------------------------------------------------------------
-!---Pointers to PACIAE4 obejects.
+!---Pointers to PACIAE4 objects.
     TYPE(C_PTR) :: pahooks, paHIhooks, &
                    pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
     COMMON/PACIAE4_PTR/ pahooks, paHIhooks, &
@@ -624,44 +581,37 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE next_PY8( MINT_c, VINT_c, &
-                             MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
-                             MSTP_c, PARP_c, MSTI_c, PARI_c, &
-                             nPY8, kPY8, pPY8, vPY8, &
-                             noJuncPY8, kindJuncPY8, &
-                             colJuncPY8, endcJuncPY8, statJuncPY8, &
-                             localPythia8, &
-                             localPahooks, localPaHIhooks ) &
+        SUBROUTINE next_PY8( MINT_cIn, VINT_cIn, &
+                             MSTU_cIn, PARU_cIn, MSTJ_cIn, PARJ_cIn, &
+                             MSTP_cIn, PARP_cIn, MSTI_cIn, PARI_cIn, &
+                             nPY8In, kPY8In, pPY8In, vPY8In, &
+                             noJuncPY8In, kindJuncPY8In, &
+                             colJuncPY8In, endcJuncPY8In, statJuncPY8In, &
+                             localPythia8In, &
+                             localPahooksIn, localPaHIhooksIn ) &
                              BIND( C, NAME="next_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(KIND=C_INT) :: MINT_c(*)
-            REAL(KIND=C_DOUBLE) :: VINT_c(*)
-            INTEGER(KIND=C_INT) :: MSTU_c(*), MSTJ_c(*)
-            REAL(KIND=C_DOUBLE) :: PARU_c(*), PARJ_c(*)
-            INTEGER(KIND=C_INT) :: MSTP_c(*), MSTI_c(*)
-            REAL(KIND=C_DOUBLE) :: PARP_c(*), PARI_c(*)
-            INTEGER(C_INT) :: nPY8
-            INTEGER(C_INT) :: kPY8(*)
-            REAL(C_DOUBLE) :: pPY8(*), vPY8(*)
-            INTEGER(C_INT) :: noJuncPY8
-            INTEGER(C_INT) :: kindJuncPY8(*)
-            INTEGER(C_INT) :: colJuncPY8(*), endcJuncPY8(*), statJuncPY8(*)
-            TYPE(C_PTR) :: localPythia8
-            TYPE(C_PTR) :: localPahooks, localPaHIhooks
+            INTEGER(KIND=C_INT) :: MINT_cIn(*)
+            REAL(KIND=C_DOUBLE) :: VINT_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTU_cIn(*), MSTJ_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARU_cIn(*), PARJ_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTP_cIn(*), MSTI_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARP_cIn(*), PARI_cIn(*)
+            INTEGER(C_INT) :: nPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            INTEGER(C_INT) :: noJuncPY8In
+            INTEGER(C_INT) :: kindJuncPY8In(*)
+            INTEGER(C_INT) :: colJuncPY8In(*), endcJuncPY8In(*),statJuncPY8In(*)
+            TYPE(C_PTR) :: localPythia8In
+            TYPE(C_PTR) :: localPahooksIn, localPaHIhooksIn
         END SUBROUTINE next_PY8
     END INTERFACE
 !***********************************************************************
 
-
 !  Warning: the INTEGER would be converted from integer*8 -> integer*4.
 !           But dont't worry, if we use PYTHIA 8. Because the storage of
 !           the color flow was redesigned in PYTHIA 8.
-    ! frameType_c = frameType
-    ! idA_c = idA
-    ! idB_c = idB
-    ! eCM_c = eCM
-    ! idStable = KF_woDecay
-
     MINT_c = MINT
     VINT_c = VINT
     MSTU_c = MSTU
@@ -714,8 +664,7 @@
         END IF
     END IF
 
-
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp.
+!   Accesses to C++ program in Pythia8CppInterface.cpp.
     CALL next_PY8( MINT_c, VINT_c, &
                    MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
                    MSTP_c, PARP_c, MSTI_c, PARI_c, &
@@ -724,7 +673,6 @@
                    colJuncPY8, endcJuncPY8, statJuncPY8, &
                    localPythia8, &
                    localPahooks, localPaHIhooks )
-
 
     MINT = MINT_c
     VINT = VINT_c
@@ -793,7 +741,7 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-!>  Interface into PYTHIA8, Pythia::forceHadronLevel().
+!>  Interfaces into PYTHIA8, Pythia::forceHadronLevel().
     SUBROUTINE PYEXEC_PY8
 
 !---Imports mudules.
@@ -808,11 +756,9 @@
 !***********************************************************************
 
 !***********************************************************************
-!   Local variabls.
+!   Local variables.
     INTEGER, PARAMETER :: KSZJ = 80000, KSZJ_PY8 = 300000
     INTEGER :: I, J
-    ! INTEGER :: frameType, idA, idB
-    ! REAL(KIND=8) :: eCM
 !***********************************************************************
 
 !***********************************************************************
@@ -875,10 +821,7 @@
 !---C++ data type.
 
 !***********************************************************************
-!   Local variabls.
-    ! INTEGER(KIND=C_INT) :: frameType_c, idA_c, idB_c
-    ! REAL(KIND=C_DOUBLE) :: eCM_c
-    ! INTEGER(KIND=C_INT) :: idStable(100)
+!   Local variables.
     INTEGER(KIND=C_INT) :: iFail
 !***********************************************************************
 
@@ -899,7 +842,6 @@
     SAVE /PYPARS_c/
 !-----------------------------------------------------------------------
     INTEGER(KIND=C_INT) :: nPY8, nPadPY8
-    ! INTEGER(C_INT), PARAMETER :: kSZJ_c = 300000
     INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
     REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
     COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
@@ -918,13 +860,13 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     TYPE(C_PTR) :: localPythia8
 !-----------------------------------------------------------------------
-!---Pointers to PACIAE4 obejects.
+!---Pointers to PACIAE4 objects.
     TYPE(C_PTR) :: pahooks, paHIhooks, &
                    pahooks_pp, pahooks_pn, pahooks_np, pahooks_nn
     COMMON/PACIAE4_PTR/ pahooks, paHIhooks, &
@@ -936,50 +878,40 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE forceHadronLevel_PY8( MINT_c, VINT_c, &
-                                         MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
-                                         MSTP_c, PARP_c, MSTI_c, PARI_c, &
-                                         nPY8, kPY8, pPY8, vPY8, &
-                                         noJuncPY8, kindJuncPY8, &
-                                         colJuncPY8, endcJuncPY8, statJuncPY8, &
-                                         iFail, localPythia8, &
-                                         localPahooks, localPaHIhooks ) &
+        SUBROUTINE forceHadronLevel_PY8( MINT_cIn, VINT_cIn, &
+                                         MSTU_cIn, PARU_cIn, MSTJ_cIn,PARJ_cIn,&
+                                         MSTP_cIn, PARP_cIn, MSTI_cIn,PARI_cIn,&
+                                         nPY8In, kPY8In, pPY8In, vPY8In, &
+                                         noJuncPY8In, kindJuncPY8In, &
+                                         colJuncPY8In, endcJuncPY8In, &
+                                         statJuncPY8In, &
+                                         iFailIn, localPythia8In, &
+                                         localPahooksIn, localPaHIhooksIn ) &
                                          BIND( C, NAME="forceHadronLevel_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(KIND=C_INT) :: MINT_c(400)
-            REAL(KIND=C_DOUBLE) :: VINT_c(400)
-            INTEGER(KIND=C_INT) :: MSTU_c(200), MSTJ_c(200)
-            REAL(KIND=C_DOUBLE) :: PARU_c(200), PARJ_c(200)
-            INTEGER(KIND=C_INT) :: MSTP_c(200), MSTI_c(200)
-            REAL(KIND=C_DOUBLE) :: PARP_c(200), PARI_c(200)
-            INTEGER(C_INT) :: nPY8
-            INTEGER(C_INT) :: kPY8(*)
-            REAL(C_DOUBLE) :: pPY8(*), vPY8(*)
-            INTEGER(C_INT) :: noJuncPY8
-            INTEGER(C_INT) :: kindJuncPY8(*)
-            INTEGER(C_INT) :: colJuncPY8(*), endcJuncPY8(*), statJuncPY8(*)
-            INTEGER(KIND=C_INT) :: iFail
-            TYPE(C_PTR) :: localPythia8
-            TYPE(C_PTR) :: localPahooks, localPaHIhooks
+            INTEGER(KIND=C_INT) :: MINT_cIn(*)
+            REAL(KIND=C_DOUBLE) :: VINT_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTU_cIn(*), MSTJ_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARU_cIn(*), PARJ_cIn(*)
+            INTEGER(KIND=C_INT) :: MSTP_cIn(*), MSTI_cIn(*)
+            REAL(KIND=C_DOUBLE) :: PARP_cIn(*), PARI_cIn(*)
+            INTEGER(C_INT) :: nPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            INTEGER(C_INT) :: noJuncPY8In
+            INTEGER(C_INT) :: kindJuncPY8In(*)
+            INTEGER(C_INT) :: colJuncPY8In(*), endcJuncPY8In(*),statJuncPY8In(*)
+            INTEGER(KIND=C_INT) :: iFailIn
+            TYPE(C_PTR) :: localPythia8In
+            TYPE(C_PTR) :: localPahooksIn, localPaHIhooksIn
         END SUBROUTINE forceHadronLevel_PY8
     END INTERFACE
 !***********************************************************************
 
-
 !  Warning: the INTEGER would be converted from integer*8 -> integer*4.
 !           But dont't worry, if we use PYTHIA 8. Because the storage of
 !           the color flow was redesigned in PYTHIA 8.
-    ! frameType_c = frameType
-    ! idA_c = idA
-    ! idB_c = idB
-    ! eCM_c = eCM
-    ! frameType_c = MINT(111)
-    ! idA_c = MINT(11)
-    ! idB_c = MINT(12)
-    ! eCM_c = VINT(290)
-    ! idStable = KF_woDecay
-    iFail = kkii
-
+    iFail  = kkii
     MINT_c = MINT
     VINT_c = VINT
     MSTU_c = MSTU
@@ -1071,8 +1003,7 @@
         END IF
     END IF
 
-
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp .
+!   Accesses to C++ program in Pythia8CppInterface.cpp .
     CALL forceHadronLevel_PY8( MINT_c, VINT_c, &
                                MSTU_c, PARU_c, MSTJ_c, PARJ_c, &
                                MSTP_c, PARP_c, MSTI_c, PARI_c, &
@@ -1081,7 +1012,6 @@
                                colJuncPY8, endcJuncPY8, statJuncPY8, &
                                iFail, localPythia8, &
                                localPahooks, localPaHIhooks )
-
 
 !   Hadronization failed.
     kkii = iFail
@@ -1101,6 +1031,122 @@
     PARI = PARI_c
 
 !   Stores hadronic iformation from PYTHIA 8.
+    ! Warning: from integer*4 -> integer*8.
+    N_PY8 = nPY8
+    DO J=1,5,1
+        DO I=1,nPY8,1
+            K_PY8(I,J) = kPY8(I,J)
+            P_PY8(I,J) = pPY8(I,J)
+            V_PY8(I,J) = vPY8(I,J)
+        END DO
+    END DO
+    DO J=6,7,1
+        DO I=1,nPY8,1
+            K_PY8(I,J) = kPY8(I,J)
+            P_PY8(I,J) = pPY8(I,J)
+        END DO
+    END DO
+    DO I=1,nPY8,1
+        K_PY8(I,8) = kPY8(I,8)
+    END DO
+
+
+    RETURN
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+!>  Interfaces into PYTHIA8, ParticleDecays::decayAll().
+    SUBROUTINE PYDECY_PY8
+
+!---Imports mudules.
+    USE, INTRINSIC :: ISO_C_BINDING
+    IMPLICIT NONE
+
+!---Fortran data type.
+
+!***********************************************************************
+!   Local variables.
+    INTEGER, PARAMETER :: KSZJ_PY8 = 300000
+    INTEGER :: I, J
+!***********************************************************************
+
+!***********************************************************************
+!---PYTHIA 8 information storage for feeding-back.
+!-----------------------------------------------------------------------
+    INTEGER :: N_PY8, NPAD_PY8
+    INTEGER :: K_PY8(KSZJ_PY8,8)
+    REAL(KIND=8) :: P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
+    COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, K_PY8, P_PY8, V_PY8
+    SAVE /PYJETS_PY8/
+!***********************************************************************
+
+!---C++ data type.
+
+!***********************************************************************
+    INTEGER(KIND=C_INT) :: nPY8, nPadPY8
+    INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
+    REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
+    COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
+    SAVE /PYJETS_c/
+!***********************************************************************
+
+!---Pointer.
+
+!***********************************************************************
+!---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
+!-----------------------------------------------------------------------
+!---Pointers to PYTHIA8 objects.
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
+    COMMON/PYTHIA8_PTR/ pythia8, &
+                        pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
+    TYPE(C_PTR) :: localPythia8
+!***********************************************************************
+
+!---Interfaces to C++.
+
+!***********************************************************************
+    INTERFACE
+        SUBROUTINE decayAll_PY8( nPY8In, kPY8In, pPY8In, vPY8In, &
+                                 localPythia8In ) &
+                                BIND( C, NAME="decayAll_PY8" )
+            USE, INTRINSIC :: ISO_C_BINDING
+            INTEGER(C_INT) :: nPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            TYPE(C_PTR) :: localPythia8In
+        END SUBROUTINE decayAll_PY8
+    END INTERFACE
+!***********************************************************************
+
+!   Feeds in the decaying particles.
+    ! Warning: from integer*8 -> integer*4
+    nPY8 = N_PY8
+    DO J=1,5,1
+        DO I=1,N_PY8,1
+            kPY8(I,J) = K_PY8(I,J)
+            pPY8(I,J) = P_PY8(I,J)
+            vPY8(I,J) = V_PY8(I,J)
+        END DO
+    END DO
+    DO J=6,7,1
+        DO I=1,N_PY8,1
+            kPY8(I,J) = K_PY8(I,J)
+            pPY8(I,J) = P_PY8(I,J)
+        END DO
+    END DO
+    DO I=1,N_PY8,1
+        kPY8(I,8) = K_PY8(I,8)
+    END DO
+
+!   Selects the instance.
+    localPythia8 = pythia8
+
+!   Accesses to C++ program in Pythia8CppInterface.cpp .
+    CALL decayAll_PY8( nPY8, kPY8, pPY8, vPY8, localPythia8 )
+
+!   Stores decayed iformation from PYTHIA 8.
     ! Warning: from integer*4 -> integer*8.
     N_PY8 = nPY8
     DO J=1,5,1
@@ -1148,7 +1194,7 @@
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !>  Interfaces into C++ (PYTHIA 8), pythia.stat. Prints out cross sections
 !!    information.
-    SUBROUTINE PYSTAT_PY8(I_STAT)
+    SUBROUTINE PYSTAT_PY8( I_STAT )
 
 !---Imports mudules.
     USE, INTRINSIC :: ISO_C_BINDING
@@ -1157,8 +1203,8 @@
 !---Fortran data type.
 
 !***********************************************************************
-!   Local variabls.
-    INTEGER :: I_STAT
+!   Local variables.
+    INTEGER :: I_STAT, I_STAT_TMP
 !***********************************************************************
 
 !***********************************************************************
@@ -1205,7 +1251,7 @@
 !***********************************************************************
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
-!---Pointers to PYTHIA8 obejects.
+!---Pointers to PYTHIA8 objects.
     TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     COMMON/PYTHIA8_PTR/ pythia8, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
@@ -1215,19 +1261,20 @@
 
 !***********************************************************************
     INTERFACE
-        SUBROUTINE stat_PY8( MINT_c, MSTP_c, MSTI_c, &
-                             pythia8, &
-                             pythia8_pp, pythia8_pn, &
-                             pythia8_np, pythia8_nn ) &
+        SUBROUTINE stat_PY8( MINT_cIn, MSTP_cIn, MSTI_cIn, &
+                             pythia8In, &
+                             pythia8In_pp, pythia8In_pn, &
+                             pythia8In_np, pythia8In_nn ) &
             BIND( C, NAME="stat_PY8" )
             USE, INTRINSIC :: ISO_C_BINDING
-            INTEGER(KIND=C_INT) :: MINT_c(*), MSTP_c(*), MSTI_c(*)
-            TYPE(C_PTR) :: pythia8, &
-                           pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
+            INTEGER(KIND=C_INT) :: MINT_cIn(*), MSTP_cIn(*), MSTI_cIn(*)
+            TYPE(C_PTR) :: pythia8In, &
+                           pythia8In_pp, pythia8In_pn, pythia8In_np,pythia8In_nn
         END SUBROUTINE stat_PY8
     END INTERFACE
 !***********************************************************************
 
+    I_STAT_TMP = I_STAT
     MINT_c = MINT
     VINT_c = VINT
     MSTU_c = MSTU
@@ -1239,7 +1286,7 @@
     MSTI_c = MSTI
     PARI_c = PARI
 
-!   Accesses to C++ program in Pythia8_cpp_interface.cpp .
+!   Accesses to C++ program in Pythia8CppInterface.cpp .
     CALL stat_PY8( MINT_c, MSTP_c, MSTI_c, &
                    pythia8, &
                    pythia8_pp, pythia8_pn, &
@@ -1425,8 +1472,7 @@
 !
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/PYINT1/MINT(400),VINT(400)
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
@@ -1570,8 +1616,7 @@
 !!  Generate random number seed for PYTHIA 6 and 8.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
     COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
     COMMON/PYDATR/MRPY(6),RRPY(100)
@@ -1649,8 +1694,7 @@
 !!  Instantiates Pythia objects for PYTHIA 8, i.e. allocates memory on heap.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
            KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
@@ -1669,8 +1713,7 @@
 !!  Deletes the Pythia object from PYTHIA 8, i.e. releases memory from heap.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
            KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
@@ -1721,8 +1764,7 @@
 !    named "PAINIT_KF". It is more flexible for PYTHIA 8.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     PARAMETER (KSZJ=80000)
     COMMON/PYINT1/MINT(400),VINT(400)
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -1736,7 +1778,7 @@
 !   Local arrays and character variables.
     CHARACTER*(*) FRAME,BEAM,TARGET
     CHARACTER CHFRAM*12,CHBEAM*12,CHTARG*12,CHCOM(3)*12,CHALP(2)*26, &
-    CHIDNT(3)*12,CHTEMP*12,CHCDE(73)*12,CHNAME*16
+    CHIDNT(3)*12,CHTEMP*12,CHCDE(73)*12
     DIMENSION LEN(3), KCDE(73)
     DATA CHALP/'abcdefghijklmnopqrstuvwxyz', &
                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
@@ -1986,8 +2028,7 @@
 !       id = 100ZZZAAA0 = 1,000,000,000 + Z*10,000 + A*10 + 0.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     PARAMETER (KSZJ=80000)
     COMMON/PYINT1/MINT(400),VINT(400)
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -2001,7 +2042,7 @@
            KF_proj, KF_targ, win_o, energy_B, psno, b_min, b_max
 !   Local arrays and character variables.
     INTEGER frameType
-    CHARACTER FRAME*16, BEAM*16, TARGET*16, NAME_X*16
+    CHARACTER FRAME*16, BEAM*16, TARGET*16
     CHARACTER*100 PARAM_PYTHIA6
     DATA I_CALL /0/
 
@@ -2108,7 +2149,7 @@
 !!  Generates core processes via PYTHIA 6 or 8.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
            KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
@@ -2135,7 +2176,7 @@
 !!  Hadronizaion via PYTHIA 6 or 8.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
            KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
@@ -2157,6 +2198,92 @@
 
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    SUBROUTINE PADECY
+!!  Decays unstable particles inside /PYJETS_PY8/ using PYTHIA 8 decayer.
+    IMPLICIT DOUBLE PRECISION(A-H, O-Z)
+    IMPLICIT INTEGER(I-N)
+    LOGICAL IS_PYTHIA8, IS_EXIST, IS_NUCLEUS
+    PARAMETER (KSZJ=80000,KSZJ_PY8=300000)
+    COMMON/PYJETS/N,NONJ,K(KSZJ,5),P(KSZJ,5),V(KSZJ,5)
+    common/sa6_p/ithroq_p,ithrob_p,ich_p,non6_p,throe_p(4)
+    COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, &
+           K_PY8(KSZJ_PY8,8), P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
+    COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+           KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
+    DIMENSION PS0(4), PS1(4)
+
+
+!   Via PYTHIA 6.
+    IF( .NOT.IS_PYTHIA8(i_mode) )THEN
+        ! In sfm.f90.
+        rrp=1.16
+        CALL decayh(rrp)
+!   Via PYTHIA 8.
+    ELSE IF( IS_PYTHIA8(i_mode) )THEN
+    ! Puts particles on-shell by hand to avoid potential errors.
+        DO I=1,N,1
+            KF0 = K(i,2)
+            IF( .NOT.IS_EXIST(KS0,i_mode) .OR. IS_NUCLEUS(KF0) ) cycle
+            PX0 = P(i,1)
+            PY0 = P(i,2)
+            PZ0 = P(i,3)
+            E0  = P(i,4)
+            DM  = P(i,5)
+            P(I,4) = SQRT( PX0**2 + PY0**2 + PZ0**2 + DM**2 )
+            throe_p(4) = throe_p(4) + E0 - P(I,4)
+        end do
+        ! Sums of px, py, pz, and E before decay.
+        PS0 = 0D0
+        DO I=1,4,1
+            PS0(I) = PAPYP(0,I)
+        END DO
+        N_PY8 = N
+        DO J=1,5,1
+            DO I=1,N,1
+                K_PY8(I,J) = K(I,J)
+                P_PY8(I,J) = P(I,J)
+                V_PY8(I,J) = V(I,J)
+            END DO
+        END DO
+        DO J=6,7,1
+            DO I=1,N,1
+                K_PY8(I,J) = 0D0
+                P_PY8(I,J) = 0D0
+            END DO
+        END DO
+        DO I=1,N,1
+            K_PY8(I,8) = 0
+        END DO
+        ! In Pythia8_fort_interface.f90.
+        CALL PYDECY_PY8
+        DO J=1,5,1
+            DO I=1,N,1
+                K(I,J) = K_PY8(I,J)
+                P(I,J) = P_PY8(I,J)
+                V(I,J) = V_PY8(I,J)
+            END DO
+        END DO
+        CALL PAEDIT(1)
+        ! Sums of px, py, pz, and E after decay.
+        PS1 = 0D0
+        DO I=1,4,1
+            PS1(I) = PAPYP(0,I)
+        END DO
+        ! Collects lost 4-momentum.
+        DO I=1,4,1
+            throe_p(I) = throe_p(I) + PS0(I) - PS1(I)
+        END DO
+        ! Moves gammas from "PYJETS" to "sgam".
+        CALL remo_gam(22)
+    END IF
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     SUBROUTINE PAEDIT( MEDIT )
 !!  Performs global manipulations on the event record, in particular
 !!   to exclude unexisted unstable or undetectable partons/particles.
@@ -2165,12 +2292,13 @@
 !!  "MEDIT" is dummy now, reserved for future expansion.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
            KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 
 !   Use PYEDIT(1) for PYTHIA 6 and PYEDIT(11) for PYTHIA 8 safely.
+    MEDIT_TMP = MEDIT
     IF( .NOT.IS_PYTHIA8(i_mode) )THEN
         CALL PYEDIT(1)
     ELSE IF( IS_PYTHIA8(i_mode) )THEN
@@ -2192,8 +2320,7 @@
 !!   /PYJETS_AA/, /PYJUNC_AA/ , etc.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    LOGICAL IS_PYTHIA8
     PARAMETER (KSZJ=80000,KSZJ_PY8=300000)
     COMMON/PYINT1/MINT(400),VINT(400)
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -2312,8 +2439,8 @@
 !!   /PYJETS/, /PYJETS_PY8/, /PYJUNC_PY8/, etc.
     IMPLICIT DOUBLE PRECISION(A-H, O-Z)
     IMPLICIT INTEGER(I-N)
-    INTEGER PYK,PYCHGE,PYCOMP
-    LOGICAL IS_PYTHIA8,IS_EXIST,IS_NUCLEUS,IS_PARTON,IS_QUARK,IS_DIQUARK
+    INTEGER PYCHGE
+    LOGICAL IS_PYTHIA8
     PARAMETER (KSZJ=80000,KSZJ_PY8=300000)
     COMMON/PYINT1/MINT(400),VINT(400)
     COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)

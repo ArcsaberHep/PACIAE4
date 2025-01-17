@@ -2888,9 +2888,9 @@
             naf = n
             do i2=1,5,1
                 do i1=1,n,1
-                    kaf(i1,i2) = k(i1,i2)
-                    paf(i1,i2) = p(i1,i2)
-                    vaf(i1,i2) = v(i1,i2)
+                    kaf(i1,i2) = K(i1,i2)
+                    paf(i1,i2) = P(i1,i2)
+                    vaf(i1,i2) = V(i1,i2)
                 enddo
             enddo
 !       delta decay one by one
@@ -2901,9 +2901,9 @@
                 do i3=1,n
                     naf = naf + 1
                     do i4=1,5
-                        kaf(naf,i4) = k(i3,i4)
-                        paf(naf,i4) = p(i3,i4)
-                        vaf(naf,i4) = v(i3,i4)
+                        kaf(naf,i4) = K(i3,i4)
+                        paf(naf,i4) = P(i3,i4)
+                        vaf(naf,i4) = V(i3,i4)
                     enddo
                 enddo
             enddo
@@ -2915,7 +2915,7 @@
             n0=n
 907         continue
             do i1 = i11+1, n0
-                kf = k(i1,2)
+                kf = K(i1,2)
                 if(kf == 111)then
                     call pydecy(i1)
 !                   Use PYEDIT(1) not (2).
@@ -2934,9 +2934,8 @@
 
 !-------------------------------------------------------------------------------
 !------------------------------   Hadron Decay   -------------------------------
-        rrp=1.16
-        ! In sfm.f90.
-        if( i_mode /= 1 ) call decayh(rrp)
+        ! In Pythia8_fort_interface.f90.
+        if( i_mode /= 1 ) call PADECY
 !------------------------------   Hadron Decay   -------------------------------
 !-------------------------------------------------------------------------------
 

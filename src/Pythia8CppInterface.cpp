@@ -2,7 +2,7 @@
 // Copyright (C) 2024 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - November 2024.
+// Author: An-Ke Lei, January 2024 - January 2025.
 
 // This is the C++ interface program to link PACIAE (Fortran 77/90) with
 //   PYTHIA 8 (C++).

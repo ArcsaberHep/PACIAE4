@@ -203,7 +203,7 @@
         ! In Pythia8_fort_interface.f90.
         call PADELE
 
-        call print_time_consumption( time_simulation_begin )
+        call print_time_consumption( time_simulation_start )
 
         call close_output_file
 

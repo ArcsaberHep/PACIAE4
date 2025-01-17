@@ -2455,7 +2455,7 @@
         end do
 
 !       Records the freeze-out information of particles.
-        i_Fo_record = 0
+        i_FZ_record = 0
         call update_freeze_out_information( i_FZ_record, 1, N )
 
         call parcas( time_par, iijk )
@@ -2720,7 +2720,7 @@
         end do
 
 !       Records the freeze-out information of particles.
-        i_Fo_record = 0
+        i_FZ_record = 0
         call update_freeze_out_information( i_FZ_record, 1, N )
 
 !       Moves (excludes) spectators with a large enough time 1D28.

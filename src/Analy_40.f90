@@ -1728,12 +1728,12 @@
 
 !       User output
 !       Header.
-        write(10,*) "#!**************************************" // &
+        write(12,*) "#!**************************************" // &
                     "*************************************!#"
-        write(10,*) "#!*********************|" // &
+        write(12,*) "#!*********************|" // &
                     "    PACIAE  Analysis  Output    " // &
                     "|********************!#"
-        write(10,*) "#!**************************************" // &
+        write(12,*) "#!**************************************" // &
                     "*************************************!#"
 
 !       Displays the current real date and time.
@@ -1741,8 +1741,8 @@
         do i1=1,8
         write(c_date_and_time(i1),"(I4)") n_current_date_and_time(i1)
         enddo
-        write(10,*)
-        write(10,*) "#! Now is   " //TRIM(ADJUSTL( c_date_and_time(5) )) &
+        write(12,*)
+        write(12,*) "#! Now is   " //TRIM(ADJUSTL( c_date_and_time(5) )) &
                           //   ':' //TRIM(ADJUSTL( c_date_and_time(6) )) &
                           //   ':' //TRIM(ADJUSTL( c_date_and_time(7) )) &
                           // "   " //TRIM(ADJUSTL( c_date_and_time(3) )) &
@@ -1758,7 +1758,7 @@
         version_pythia8 = VINT(396)
         write( cPYTHIA6_VERSION, "(F5.3)" ) version_pythia6
         write( cPYTHIA8_VERSION, "(F5.3)" ) version_pythia8
-        write(10,*) "#! Current version: " &
+        write(12,*) "#! Current version: " &
                  // "PACIAE "    // cPACIAE_VERSION &
                  // "  +  PYTHIA " // cPYTHIA6_VERSION &
                  // "  +  PYTHIA " // cPYTHIA8_VERSION
@@ -1766,7 +1766,7 @@
 !       Displays the seed of random number generator.
         i_seed_out = 20240116
         if( INT( adj1(26) ) /= 0 ) i_seed_out = MRPY(1)
-        write(10,*) "#! Seed (PACIAE default=20240116) =", i_seed_out
+        write(12,*) "#! Seed (PACIAE default=20240116) =", i_seed_out
 
 !       Displays the collision system.
         write( C_NAP, "(I5)" ) nap
@@ -1820,14 +1820,14 @@
                                 // TRIM(ADJUSTL( C_BMAX )) // " fm"
 
         if( ifram == 0 .OR. ifram == 1 )then
-            write(10,*) "#! Collision system         : " &
+            write(12,*) "#! Collision system         : " &
                         // TRIM(ADJUSTL( NAME_PROJ ))  // " + "    &
                         // TRIM(ADJUSTL( NAME_TARG ))  // " at a " &
                         // TRIM(ADJUSTL( NAME_FRAME )) // " of "   &
                         // TRIM(ADJUSTL( C_WIN ))      // " GeV "  &
                         // TRIM(ADJUSTL( SUFFIX ))
         else
-            write(10,*) "#! Collision system         : " &
+            write(12,*) "#! Collision system         : " &
                         // TRIM(ADJUSTL( NAME_PROJ ))   // " + "    &
                         // TRIM(ADJUSTL( NAME_TARG ))   // " at a " &
                         // TRIM(ADJUSTL( NAME_FRAME ))  // " of "   &
@@ -1848,9 +1848,9 @@
                 NAME_TUNE = "Monash 2013 Tune as the basis"
             end if
         end if
-        write(10,*) "#! Simulation mode          : " &
+        write(12,*) "#! Simulation mode          : " &
                     // TRIM( ADJUSTL(NAME_MODE(i_mode)) )
-        write(10,*) "#! Tune                     : " &
+        write(12,*) "#! Tune                     : " &
                     // TRIM( ADJUSTL(NAME_TUNE) )
 
 !       Displays the subprocess status.
@@ -1906,7 +1906,7 @@
             KF_proj*KF_targ < 0 ) &
             NAME_SUB = "e+e- -> gamma*/Z0 -> qqbar"
         if( i_mode == 1 ) NAME_SUB = "null in this mode"
-        write(10,*) "#! Subprocess               : " &
+        write(12,*) "#! Subprocess               : " &
                     // TRIM( ADJUSTL( NAME_SUB ) )
 
 !       Displays the nuclear shadowing status.
@@ -1937,7 +1937,7 @@
             end if
         end if
         if( i_mode == 1 ) NAME_SHAD = "null in this mode"
-        write(10,*) "#! Nuclear shadowing / nPDF : " // &
+        write(12,*) "#! Nuclear shadowing / nPDF : " // &
                     TRIM( ADJUSTL(NAME_SHAD) )
 
 !       Displays the color reconnection status.
@@ -2008,7 +2008,7 @@
                 NAME_CR = "unknown CR mode"
             end select
         end if
-        write(10,*) "#! Color reconnection       : " // &
+        write(12,*) "#! Color reconnection       : " // &
                     TRIM(ADJUSTL( NAME_CR ))
 
 !       Displays the hadronization status.
@@ -2096,25 +2096,25 @@
             SUFFIX = "(mode 5, NN pair by pair with default " // &
                          "tension)"
         end if
-        write(10,*) "#! Hadronization            : " // &
+        write(12,*) "#! Hadronization            : " // &
                     TRIM( ADJUSTL( NAME_HAD ) ) // " " // &
                     TRIM( ADJUSTL( SUFFIX ) )
 
 !       Displays the partonic and hadronic rescattering status.
         if( mstptj == 1 )then
-            write(10,*) "#! Partonic rescattering    : null in this mode"
+            write(12,*) "#! Partonic rescattering    : null in this mode"
         else if( adj1(1) > 0D0 )then
-            write(10,*) "#! Partonic rescattering    : on"
+            write(12,*) "#! Partonic rescattering    : on"
         else
-            write(10,*) "#! Partonic rescattering    : off"
+            write(12,*) "#! Partonic rescattering    : off"
         end if
         if( kjp21 == 1 )then
-            write(10,*) "#! Hadronic rescattering    : on"
+            write(12,*) "#! Hadronic rescattering    : on"
         else
-            write(10,*) "#! Hadronic rescattering    : off"
+            write(12,*) "#! Hadronic rescattering    : off"
         end if
         ! Empty line.
-        write(10,*)
+        write(12,*)
 
 
         return
@@ -2213,92 +2213,92 @@
 !-------------------------------------------------------------------------------
 !       Outputs particle multiplicities and mean pT of total, charged , pi+K+p
 !        and ispmax particles specified in usu.dat.
-        write(10,*) "#!-------------------------------------"// &
+        write(12,*) "#!-------------------------------------"// &
                     "----------------------------------------"
-        write(10,*) "#! particle multiplicity, partial (" // &
+        write(12,*) "#! particle multiplicity, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2) &
                     // "; nominal cuts of 1-st setting in usu.dat) ="
-        write(10,*) "#! total                    charged" // &
+        write(12,*) "#! total                    charged" // &
                     "                   pi+K+p          ", &
                     ( "          "//name_KF(m3),m3=1,ispmax,1 )
-        write(10,*) (sbo_mult(ll,1),ll=1,3,1), (sbo(ll,1),ll=1,ispmax,1)
-        write(10,*) "#! particle multiplicity, full ="
-        write(10,*) (sbo_mult_f(ll,1),ll=1,3,1),(sbof(ll,1),ll=1,ispmax)
-        write(10,*) "#!-------------------------------------"// &
+        write(12,*) (sbo_mult(ll,1),ll=1,3,1), (sbo(ll,1),ll=1,ispmax,1)
+        write(12,*) "#! particle multiplicity, full ="
+        write(12,*) (sbo_mult_f(ll,1),ll=1,3,1),(sbof(ll,1),ll=1,ispmax)
+        write(12,*) "#!-------------------------------------"// &
                     "----------------------------------------"
-        write(10,*) "#! Number of particles for mean pT <pT>, partial (" &
+        write(12,*) "#! Number of particles for mean pT <pT>, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) &
                  // "; nominal cuts of 1-st setting in usu.dat) ="
-        write(10,*) (sbn_mult(ll,1),ll=1,3,1), (sbn(ll,1),ll=1,ispmax,1)
-        write(10,*) "#! Number of particles for mean pT <pT>, full ="
-        write(10,*) (sbn_mult_f(ll,1),ll=1,3,1), (sbnf(ll,1),ll=1,ispmax,1)
-        write(10,*) "#! Total pT of particles, partial (" // &
+        write(12,*) (sbn_mult(ll,1),ll=1,3,1), (sbn(ll,1),ll=1,ispmax,1)
+        write(12,*) "#! Number of particles for mean pT <pT>, full ="
+        write(12,*) (sbn_mult_f(ll,1),ll=1,3,1), (sbnf(ll,1),ll=1,ispmax,1)
+        write(12,*) "#! Total pT of particles, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2) &
                     // "; nominal cuts of 1-st setting in usu.dat) ="
-        write(10,*) (sbn_mult(ll,2),ll=1,3,1), (sbn(ll,2),ll=1,ispmax,1)
-        write(10,*) "#! Total pT of particles, full ="
-        write(10,*) (sbn_mult_f(ll,2),ll=1,3,1), (sbnf(ll,2),ll=1,ispmax,1)
-        write(10,*) "#! particle mean pT <pT>, partial (" // &
+        write(12,*) (sbn_mult(ll,2),ll=1,3,1), (sbn(ll,2),ll=1,ispmax,1)
+        write(12,*) "#! Total pT of particles, full ="
+        write(12,*) (sbn_mult_f(ll,2),ll=1,3,1), (sbnf(ll,2),ll=1,ispmax,1)
+        write(12,*) "#! particle mean pT <pT>, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2) &
                     // "; nominal cuts of 1-st setting in usu.dat) ="
-        write(10,*) ( ( sbn_mult(ll,2) / MAX( sbn_mult(ll,1), 1D-10 ) ), &
+        write(12,*) ( ( sbn_mult(ll,2) / MAX( sbn_mult(ll,1), 1D-10 ) ), &
                         ll=1,3,1 ), &
                     ( ( sbn(ll,2) / MAX( sbn(ll,1), 1D-10 ) ), &
                         ll=1,ispmax,1 )
-        write(10,*) "#! particle mean pT <pT>, full ="
-        write(10,*) ( ( sbn_mult_f(ll,2) / MAX( sbn_mult_f(ll,1), 1D-10 ) ), &
+        write(12,*) "#! particle mean pT <pT>, full ="
+        write(12,*) ( ( sbn_mult_f(ll,2) / MAX( sbn_mult_f(ll,1), 1D-10 ) ), &
                         ll=1,3,1 ), &
                     ( ( sbnf(ll,2) / MAX( sbnf(ll,1), 1D-10 ) ), &
                         ll=1,ispmax,1 )
 
 !-------------------------------------------------------------------------------
 !       Outputs integral flows.
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! Number of particles for integtral flows, partial (" &
+        write(12,*) "#! Number of particles for integtral flows, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) &
                  // "; nominal cuts of 1-st setting in usu.dat) ="
-        write(10,*) ( snum_particle_integral(ll,2), ll = 1,3,1 ), &
+        write(12,*) ( snum_particle_integral(ll,2), ll = 1,3,1 ), &
                     ( snum_h_integral(ll,2), ll = 1,ispmax,1 )
-        write(10,*) "#! Number of particles for integtral flows, full ="
-        write(10,*) ( snum_particle_integral(ll,1), ll = 1,3,1 ), &
+        write(12,*) "#! Number of particles for integtral flows, full ="
+        write(12,*) ( snum_particle_integral(ll,1), ll = 1,3,1 ), &
                     ( snum_h_integral(ll,1), ll = 1,ispmax,1 )
-        write(10,*) "#! Total integral flows, v1, v2, v3, v4, " &
+        write(12,*) "#! Total integral flows, v1, v2, v3, v4, " &
                  // "partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) &
                  // "; nominal cuts of 1-st setting in usu.dat) ="
         do i=1,4,1
-            write(10,*) ( flow_particle_integral(ll,i,2), ll = 1,3,1 ), &
+            write(12,*) ( flow_particle_integral(ll,i,2), ll = 1,3,1 ), &
                         ( flow_h_integral(ll,i,2), ll = 1,ispmax,1 )
         end do
-        write(10,*) "#! Total integral flows, v1, v2, v3, v4, full ="
+        write(12,*) "#! Total integral flows, v1, v2, v3, v4, full ="
         do i=1,4,1
-            write(10,*) ( flow_particle_integral(ll,i,1), ll = 1,3,1 ), &
+            write(12,*) ( flow_particle_integral(ll,i,1), ll = 1,3,1 ), &
                         ( flow_h_integral(ll,i,1), ll = 1,ispmax,1 )
         end do
-        write(10,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
+        write(12,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
                  // "v4, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) &
                  // "; nominal cuts of 1-st setting in usu.dat) ="
         do i=1,4,1
-            write(10,*) ( ( flow_particle_integral(ll,i,2) &
+            write(12,*) ( ( flow_particle_integral(ll,i,2) &
                             / MAX( snum_particle_integral(ll,2), 1D-10 ) ), &
                             ll = 1,3,1 ), &
                         ( ( flow_h_integral(ll,i,2) &
                             / MAX( snum_h_integral(ll,2), 1D-10 ) ), &
                             ll = 1,ispmax,1 )
         end do
-        write(10,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
+        write(12,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
                  // "v4, full ="
         do i=1,4,1
-            write(10,*) ( ( flow_particle_integral(ll,i,1) &
+            write(12,*) ( ( flow_particle_integral(ll,i,1) &
                             / MAX( snum_particle_integral(ll,1), 1D-10 ) ), &
                             ll = 1,3,1 ), &
                         ( ( flow_h_integral(ll,i,1) &
@@ -2309,53 +2309,53 @@
 !===============================================================================
 !       Outputs abscissa, 7-distributions of total, charged, pi+K+p and
 !        ispmax particles specified in usu.dat.
-        write(10,*)
-        write(10,*)
-        write(10,*)
+        write(12,*)
+        write(12,*)
+        write(12,*)
 !       Write header.
-        write(10,*) "#!*******************|"// &
+        write(12,*) "#!*******************|"// &
                     "    Hadron  Distribution  Output    "// &
                     "|******************!#"
         DO m2=1,isdmax,1
             ! '8' distributions are used for '7', i.e. mean <pT>.
             if( m2 == 8 ) cycle
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !-------------------------------------------------------------------------------
 !           For partial phase-space.
 !           Write name of distributions and cuts.
-            write(10,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
+            write(12,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
             if(m2 == 1 .OR. m2 == 3)then
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
             if(m2 == 2 .OR. m2 == 4 .OR. m2 == 6)then
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
             if(m2 == 5 .OR. m2 == 7)then   ! 300124 Lei
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
 !           Write name of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(m2)// &
+            write(12,*) "#!       "//id_abscissa(m2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Write data.
             if( m2 /= 7 )then
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( sao_distr(m1,m2,m3),m3=1,3,1 ),&
+                    write(12,*) xcoor(m1,m2), ( sao_distr(m1,m2,m3),m3=1,3,1 ),&
                                             ( sao(m1,m2,m3),m3=1,ispmax,1 )
                 end do
             else
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( ( san_distr(m1,7,m3) &
                                 / MAX( san_distr(m1,8,m3) , 1D-10 ) ), &
                                 m3=1,3,1 ),&
@@ -2367,22 +2367,22 @@
 !-------------------------------------------------------------------------------
 !           For full phase-space.
 !           Write name of distributions and cuts.
-            write(10,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
+            write(12,*) "#! full phase-space"
 !           Write name of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(m2)// &
+            write(12,*) "#!       "//id_abscissa(m2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Write data.
             if( m2 /= 7 )then
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( sao_distr_f(m1,m2,m3),m3=1,3 ),&
+                    write(12,*) xcoor(m1,m2), ( sao_distr_f(m1,m2,m3),m3=1,3 ),&
                                             ( saof(m1,m2,m3),m3=1,ispmax,1 )
                 end do
             else
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( ( san_distr_f(m1,7,m3) &
                                 / MAX( san_distr_f(m1,8,m3) , 1D-10 ) ), &
                                 m3=1,3,1 ),&
@@ -2396,33 +2396,33 @@
             if( m2 == 7 )then
                 do m22 = 8,7,-1
                     ! Patial space.
-                    if( m22 == 8 ) write(10,*) "#! Num of particles for mean pT"
-                    if( m22 == 7 ) write(10,*) "#! Total pT"
-                    write(10,*) "#! partial phase-space, " // &
+                    if( m22 == 8 ) write(12,*) "#! Num of particles for mean pT"
+                    if( m22 == 7 ) write(12,*) "#! Total pT"
+                    write(12,*) "#! partial phase-space, " // &
                                 cut_off(1,1) // " < pT < " // cut_off(2,1) &
                                 // ";" // &
                                 cut_off(1,2) // " <" // cyeta // "< " &
                                 // cut_off(2,2) // &
                                 " (nominal cuts of 1-st setting in usu.dat)"
-                    write(10,*) "#!       "//id_abscissa(m2)// &
+                    write(12,*) "#!       "//id_abscissa(m2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
                     do m1=1,n_bin_hist,1
-                        write(10,*) xcoor(m1,m2), &
+                        write(12,*) xcoor(m1,m2), &
                                     ( san_distr(m1,m22,m3), m3=1,3,1 ), &
                                     ( san(m1,m22,m3), m3=1,ispmax,1 )
                     end do
                     ! Full space.
-                    if( m22 == 8 ) write(10,*) "#! Num of particles for mean pT"
-                    if( m22 == 7 ) write(10,*) "#! Total pT"
-                    write(10,*) "#! full phase-space"
-                    write(10,*) "#!       "//id_abscissa(m2)// &
+                    if( m22 == 8 ) write(12,*) "#! Num of particles for mean pT"
+                    if( m22 == 7 ) write(12,*) "#! Total pT"
+                    write(12,*) "#! full phase-space"
+                    write(12,*) "#!       "//id_abscissa(m2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
                     do m1=1,n_bin_hist,1
-                        write(10,*) xcoor(m1,m2), &
+                        write(12,*) xcoor(m1,m2), &
                                     ( san_distr_f(m1,m22,m3), m3=1,3,1 ), &
                                     ( sanf(m1,m22,m3), m3=1,ispmax,1 )
                     end do
@@ -2432,41 +2432,41 @@
 
 !===============================================================================
 !       Outputs differential flows.
-        write(10,*)
-        write(10,*)
-        write(10,*)
+        write(12,*)
+        write(12,*)
+        write(12,*)
 !       Prints header.
-        write(10,*) "#!***********************|"// &
+        write(12,*) "#!***********************|"// &
                     "    Hadron  Flow  Output    "// &
                     "|**********************!#"
 !       Particle number averaged v VS. y.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !-------------------------------------------------------------------------------
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. y"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. y"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. y"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(1)// &
+            write(12,*) "#!       "//id_abscissa(1)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( ( dvdy_particle(m1,m2,m3) &
                                 / MAX( dNy_particle(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2478,23 +2478,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. y"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. y"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. y"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(1)// &
+            write(12,*) "#!       "//id_abscissa(1)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( ( dvdy_particle_f(m1,m2,m3) &
                                 / MAX( dNy_particle_f(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2507,30 +2507,30 @@
 !       Particle number averagedv VS. pT.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. pT"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. pT"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(2)// &
+            write(12,*) "#!       "//id_abscissa(2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( ( dvdpT_particle(m1,m2,m3) &
                                 / MAX( dNpT_particle(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2542,23 +2542,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. pT"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. pT"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(2)// &
+            write(12,*) "#!       "//id_abscissa(2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( ( dvdpT_particle_f(m1,m2,m3) &
                                 / MAX( dNpT_particle_f(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2571,30 +2571,30 @@
 !       Particle number averagedv VS. eta.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. eta"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle num ave. triangular flow, v3 VS. eta"
+                write(12,*) "#! Particle num ave. triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(3)// &
+            write(12,*) "#!       "//id_abscissa(3)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( ( dvdeta_particle(m1,m2,m3) &
                                 / MAX( dNeta_particle(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2606,23 +2606,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. eta"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle num ave. triangular flow, v3 VS. eta"
+                write(12,*) "#! Particle num ave. triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(3)// &
+            write(12,*) "#!       "//id_abscissa(3)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( ( dvdeta_particle_f(m1,m2,m3) &
                                 / MAX( dNeta_particle_f(m1,m3), 1D-10 ) ), &
                                 m3=1,3,1 ), &
@@ -2636,57 +2636,57 @@
 !       Total number of particles for differential flows.
         DO m2=1,3,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
             if( m2 == 1 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. y"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. y"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNy_particle(m1,m3), m3=1,3,1 ), &
                                 ( dNy_h(m1,m3), m3=1,ispmax,1 )
                 end do
             else if( m2 == 2 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. pT"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. pT"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNpT_particle(m1,m3), m3=1,3,1 ), &
                                 ( dNpT_h(m1,m3), m3=1,ispmax,1 )
                 end do
             else if( m2 == 3 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. eta"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. eta"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNeta_particle(m1,m3), m3=1,3,1 ), &
                                 ( dNeta_h(m1,m3), m3=1,ispmax,1 )
                 end do
@@ -2694,46 +2694,46 @@
 !           For the full phase-space.
             if( m2 == 1 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. y"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. y"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNy_particle_f(m1,m3), m3=1,3,1 ), &
                                 ( dNy_h_f(m1,m3), m3=1,ispmax,1 )
                 end do
             else if( m2 == 2 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. pT"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. pT"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNpT_particle_f(m1,m3), m3=1,3,1 ), &
                                 ( dNpT_h_f(m1,m3), m3=1,ispmax,1 )
                 end do
             else if( m2 == 3 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. eta"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. eta"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*) "#!       "//id_abscissa(m2)// &
+                write(12,*) "#!       "//id_abscissa(m2)// &
                             "                   total                     " // &
                             "charged                   pi+K+p        ", &
                             ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( dNeta_particle_f(m1,m3), m3=1,3,1 ), &
                                 ( dNeta_h_f(m1,m3), m3=1,ispmax,1 )
                 end do
@@ -2744,30 +2744,30 @@
 !       Total v VS. y.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. y"
+                write(12,*) "#! Total directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. y"
+                write(12,*) "#! Total elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. y"
+                write(12,*) "#! Total triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. y"
+                write(12,*) "#! Total quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(1)// &
+            write(12,*) "#!       "//id_abscissa(1)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( dvdy_particle(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdy_h(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2775,23 +2775,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. y"
+                write(12,*) "#! Total directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. y"
+                write(12,*) "#! Total elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. y"
+                write(12,*) "#! Total triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. y"
+                write(12,*) "#! Total quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(1)// &
+            write(12,*) "#!       "//id_abscissa(1)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( dvdy_particle_f(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdy_h_f(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2800,30 +2800,30 @@
 !       Total v VS. pT.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. pT"
+                write(12,*) "#! Total directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. pT"
+                write(12,*) "#! Total elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. pT"
+                write(12,*) "#! Total triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Total quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(2)// &
+            write(12,*) "#!       "//id_abscissa(2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( dvdpT_particle(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdpT_h(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2831,23 +2831,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. pT"
+                write(12,*) "#! Total directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. pT"
+                write(12,*) "#! Total elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. pT"
+                write(12,*) "#! Total triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Total quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(2)// &
+            write(12,*) "#!       "//id_abscissa(2)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( dvdpT_particle_f(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdpT_h_f(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2856,30 +2856,30 @@
 !       Total v VS. eta.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. eta"
+                write(12,*) "#! Total directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. eta"
+                write(12,*) "#! Total elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. eta"
+                write(12,*) "#! Total triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Total quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(3)// &
+            write(12,*) "#!       "//id_abscissa(3)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( dvdeta_particle(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdeta_h(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2887,23 +2887,23 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. eta"
+                write(12,*) "#! Total directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. eta"
+                write(12,*) "#! Total elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. eta"
+                write(12,*) "#! Total triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Total quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*) "#!       "//id_abscissa(3)// &
+            write(12,*) "#!       "//id_abscissa(3)// &
                         "                   total                     " // &
                         "charged                   pi+K+p        ", &
                         ( "          "//name_KF(m3),m3=1,ispmax,1 )
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( dvdeta_particle_f(m1,m2,m3), m3=1,3,1 ), &
                             ( dvdeta_h_f(m1,m2,m3), m3=1,ispmax,1 )
             end do
@@ -2959,27 +2959,27 @@
         swt = sum_weight_event
         cyeta = "  y  "
         if( i_y_or_eta == 1 ) cyeta = " eta "
-        write(10,*)
-        write(10,*)
-        write(10,*)
+        write(12,*)
+        write(12,*)
+        write(12,*)
 
 !-------------------------------------------------------------------------------
 !       Outputs particle multiplicities and mean pT of partons.
-        write(10,*) "#!-------------------------------------"// &
+        write(12,*) "#!-------------------------------------"// &
                     "----------------------------------------"
-        write(10,*) "#! multiplicity of negative, positive quark, "// &
+        write(12,*) "#! multiplicity of negative, positive quark, "// &
                     "sums and gluon, partial & full ="
-        write(10,*) sn_min_p/swt, sn_cha_p/swt, (sn_min_p+sn_cha_p)/swt, &
+        write(12,*) sn_min_p/swt, sn_cha_p/swt, (sn_min_p+sn_cha_p)/swt, &
                     sn_g/swt
-        write(10,*) sn_min_p_f/swt, sn_cha_p_f/swt, &
+        write(12,*) sn_min_p_f/swt, sn_cha_p_f/swt, &
                     (sn_min_p_f+sn_cha_p_f)/swt, sn_g_f/swt
 
-        write(10,*) "#!-------------------------------------"// &
+        write(12,*) "#!-------------------------------------"// &
                     "----------------------------------------"
-        write(10,*) "#! particle multiplicity, partial (" // &
+        write(12,*) "#! particle multiplicity, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)//") ="
-        write(10,*)  &  ! Hardcode
+        write(12,*)  &  ! Hardcode
               "#! g                        u+d+s + anti-             " // &
               "u                         ubar                      "   // &
               "d                         dbar                      "   // &
@@ -2988,107 +2988,107 @@
               "b                         bbar                      "   // &
               "t                         tbar                      "   // &
               "diquarks"
-        write(10,*) (sbn_p(ll,1)/swt,ll=1,15,1)
-        write(10,*) "#! particle multiplicity, full ="
-        write(10,*) (sbn_p_f(ll,1)/swt,ll=1,15,1)
-        write(10,*) "#!-------------------------------------"// &
+        write(12,*) (sbn_p(ll,1)/swt,ll=1,15,1)
+        write(12,*) "#! particle multiplicity, full ="
+        write(12,*) (sbn_p_f(ll,1)/swt,ll=1,15,1)
+        write(12,*) "#!-------------------------------------"// &
                     "----------------------------------------"
-        write(10,*) "#! Number of particles for mean pT <pT>, partial (" &
+        write(12,*) "#! Number of particles for mean pT <pT>, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) // ") ="
-        write(10,*) (sbn_p(ll,1),ll=1,15,1)
-        write(10,*) "#! Number of particles for mean pT <pT>, full ="
-        write(10,*) (sbn_p_f(ll,1),ll=1,15,1)
-        write(10,*) "#! Total pT of particles, partial (" // &
+        write(12,*) (sbn_p(ll,1),ll=1,15,1)
+        write(12,*) "#! Number of particles for mean pT <pT>, full ="
+        write(12,*) (sbn_p_f(ll,1),ll=1,15,1)
+        write(12,*) "#! Total pT of particles, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2) // ") ="
-        write(10,*) (sbn_p(ll,2),ll=1,15,1)
-        write(10,*) "#! Total pT of particles, full ="
-        write(10,*) (sbn_p_f(ll,2),ll=1,15,1)
-        write(10,*) "#! particle mean pT <pT>, partial (" // &
+        write(12,*) (sbn_p(ll,2),ll=1,15,1)
+        write(12,*) "#! Total pT of particles, full ="
+        write(12,*) (sbn_p_f(ll,2),ll=1,15,1)
+        write(12,*) "#! particle mean pT <pT>, partial (" // &
                     cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                     cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)//") ="
-        write(10,*) ( ( sbn_p(ll,2) / MAX( sbn_p(ll,1), 1D-10 ) ), &
+        write(12,*) ( ( sbn_p(ll,2) / MAX( sbn_p(ll,1), 1D-10 ) ), &
                         ll=1,15,1 )
-        write(10,*) "#! particle mean pT <pT>, full ="
-        write(10,*) ( ( sbn_p_f(ll,2) / MAX( sbn_p_f(ll,1), 1D-10 ) ), &
+        write(12,*) "#! particle mean pT <pT>, full ="
+        write(12,*) ( ( sbn_p_f(ll,2) / MAX( sbn_p_f(ll,1), 1D-10 ) ), &
                         ll=1,15,1)
 
 !-------------------------------------------------------------------------------
 !       Outputs integral flows.
-        write(10,*) "#!-------------------------------------" // &
+        write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"
-        write(10,*) "#! Number of particles for integtral flows, partial (" &
+        write(12,*) "#! Number of particles for integtral flows, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) // ") ="
-        write(10,*) ( snum_p_integral(ll,2), ll = 1,15,1 )
-        write(10,*) "#! Number of particles for integtral flows, full ="
-        write(10,*) ( snum_p_integral(ll,1), ll = 1,15,1 )
-        write(10,*) "#! Total integral flows, v1, v2, v3, v4, " &
+        write(12,*) ( snum_p_integral(ll,2), ll = 1,15,1 )
+        write(12,*) "#! Number of particles for integtral flows, full ="
+        write(12,*) ( snum_p_integral(ll,1), ll = 1,15,1 )
+        write(12,*) "#! Total integral flows, v1, v2, v3, v4, " &
                  // "partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) // ") ="
         do i=1,4,1
-            write(10,*) ( flow_p_integral(ll,i,2), ll = 1,15,1 )
+            write(12,*) ( flow_p_integral(ll,i,2), ll = 1,15,1 )
         end do
-        write(10,*) "#! Total integral flows, v1, v2, v3, v4, full ="
+        write(12,*) "#! Total integral flows, v1, v2, v3, v4, full ="
         do i=1,4,1
-            write(10,*) ( flow_p_integral(ll,i,1), ll = 1,15,1 )
+            write(12,*) ( flow_p_integral(ll,i,1), ll = 1,15,1 )
         end do
-        write(10,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
+        write(12,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
                  // "v4, partial (" &
                  // cut_off(1,1) // " < pT < " // cut_off(2,1) // ";" &
                  // cut_off(1,2) // " <"// cyeta // "< "// cut_off(2,2) // ") ="
         do i=1,4,1
-            write(10,*) ( ( flow_p_integral(ll,i,2) &
+            write(12,*) ( ( flow_p_integral(ll,i,2) &
                             / MAX( snum_p_integral(ll,2), 1D-10 ) ), &
                             ll = 1,15,1 )
         end do
-        write(10,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
+        write(12,*) "#! Particle number averaged integral flows, v1, v2, v3, " &
                  // "v4, full ="
         do i=1,4,1
-            write(10,*) ( ( flow_p_integral(ll,i,1) &
+            write(12,*) ( ( flow_p_integral(ll,i,1) &
                             / MAX( snum_p_integral(ll,1), 1D-10 ) ), &
                             ll = 1,15,1 )
         end do
 
 !===============================================================================
 !       Outputs abscissa, 7-distributions of g, u+d+s + anti- and q.
-        write(10,*)
-        write(10,*)
-        write(10,*)
+        write(12,*)
+        write(12,*)
+        write(12,*)
 !       Write header.
-        write(10,*) "#!*******************|"// &
+        write(12,*) "#!*******************|"// &
                     "    Parton  Distribution  Output    "// &
                     "|******************!#"
         DO m2=1,isdmax,1
             ! '8' distributions are used for '7', i.e. mean <pT>.
             if( m2 == 8 ) cycle
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !-------------------------------------------------------------------------------
 !           For partial phase-space.
 !           Write name of distributions and cuts.
-            write(10,*)"#! ID of distribution m2=",m2,"   "//id_distr(m2)
+            write(12,*)"#! ID of distribution m2=",m2,"   "//id_distr(m2)
             if(m2 == 1 .OR. m2 == 3)then
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
             if(m2 == 2 .OR. m2 == 4 .OR. m2 == 6)then
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
             if(m2 == 5 .OR. m2 == 7)then
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)//";"// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
             end if
 !           Write name of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(m2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(m2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3100,11 +3100,11 @@
 !           Write data.
             if( m2 /= 7 )then
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), (san_p(m1,m2,m3)/swt,m3=1,15,1)
+                    write(12,*) xcoor(m1,m2), (san_p(m1,m2,m3)/swt,m3=1,15,1)
                 enddo
             else
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( ( san_p(m1,7,m3) &
                                 / MAX( san_p(m1,8,m3) , 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3113,10 +3113,10 @@
 !-------------------------------------------------------------------------------
 !           For full phase-space.
 !           Write name of distributions and cuts.
-            write(10,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! ID of distribution m2=",m2,"   "//id_distr(m2)
+            write(12,*) "#! full phase-space"
 !           Write name of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(m2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(m2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3128,11 +3128,11 @@
 !           Write data.
             if( m2 /= 7 )then
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2),(san_p_f(m1,m2,m3)/swt,m3=1,15,1)
+                    write(12,*) xcoor(m1,m2),(san_p_f(m1,m2,m3)/swt,m3=1,15,1)
                 end do
             else
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), &
+                    write(12,*) xcoor(m1,m2), &
                                 ( ( san_p_f(m1,7,m3) &
                                 / MAX( san_p_f(m1,8,m3) , 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3143,15 +3143,15 @@
             if( m2 == 7 )then
                 do m22 = 8,7,-1
                     ! Patial space.
-                    if( m22 == 8 ) write(10,*) "#! Num of particles for mean pT"
-                    if( m22 == 7 ) write(10,*) "#! Total pT"
-                    write(10,*) "#! partial phase-space, " // &
+                    if( m22 == 8 ) write(12,*) "#! Num of particles for mean pT"
+                    if( m22 == 7 ) write(12,*) "#! Total pT"
+                    write(12,*) "#! partial phase-space, " // &
                                 cut_off(1,1) // " < pT < " // cut_off(2,1) &
                                 // ";" // &
                                 cut_off(1,2) // " <" // cyeta // "< " &
                                 // cut_off(2,2) // &
                                 " (nominal cuts of 1-st setting in usu.dat)"
-                    write(10,*)  &
+                    write(12,*)  &
                             "#!       "//id_abscissa(m2)//"               " // &
                      "g                         u+d+s + anti-             " // &
                      "u                         ubar                      " // &
@@ -3162,14 +3162,14 @@
                      "t                         tbar                      " // &
                      "diquarks"
                     do m1=1,n_bin_hist,1
-                        write(10,*) xcoor(m1,m2), &
+                        write(12,*) xcoor(m1,m2), &
                                     ( san_p(m1,m22,m3), m3=1,15,1 )
                     end do
                     ! Full space.
-                    if( m22 == 8 ) write(10,*) "#! Num of particles for mean pT"
-                    if( m22 == 7 ) write(10,*) "#! Total pT"
-                    write(10,*) "#! full phase-space"
-                    write(10,*)  &
+                    if( m22 == 8 ) write(12,*) "#! Num of particles for mean pT"
+                    if( m22 == 7 ) write(12,*) "#! Total pT"
+                    write(12,*) "#! full phase-space"
+                    write(12,*)  &
                             "#!       "//id_abscissa(m2)//"               " // &
                      "g                         u+d+s + anti-             " // &
                      "u                         ubar                      " // &
@@ -3180,7 +3180,7 @@
                      "t                         tbar                      " // &
                      "diquarks"
                     do m1=1,n_bin_hist,1
-                        write(10,*) xcoor(m1,m2), &
+                        write(12,*) xcoor(m1,m2), &
                                     ( san_p_f(m1,m22,m3), m3=1,15,1 )
                     end do
                 end do
@@ -3189,35 +3189,35 @@
 
 !===============================================================================
 !       Outputs differential flows.
-        write(10,*)
-        write(10,*)
-        write(10,*)
+        write(12,*)
+        write(12,*)
+        write(12,*)
 !       Prints header.
-        write(10,*) "#!***********************|"// &
+        write(12,*) "#!***********************|"// &
                     "    Parton  Flow  Output    "// &
                     "|**********************!#"
 !       Particle number averaged v VS. y.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !-------------------------------------------------------------------------------
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. y"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. y"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. y"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(1)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(1)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3228,7 +3228,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( ( dvdy_p(m1,m2,m3) &
                                 / MAX( dNy_p(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3237,17 +3237,17 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. y"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. y"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. y"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(1)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(1)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3258,7 +3258,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), &
+                write(12,*) xcoor(m1,1), &
                             ( ( dvdy_p_f(m1,m2,m3) &
                                 / MAX( dNy_p_f(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3268,24 +3268,24 @@
 !       Particle number averagedv VS. pT.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. pT"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. pT"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3296,7 +3296,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( ( dvdpT_p(m1,m2,m3) &
                                 / MAX( dNpT_p(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3305,17 +3305,17 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. pT"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle number ave. triangular flow, v3 VS. pT"
+                write(12,*) "#! Particle number ave. triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3326,7 +3326,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), &
+                write(12,*) xcoor(m1,2), &
                             ( ( dvdpT_p_f(m1,m2,m3) &
                                 / MAX( dNpT_p_f(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3336,24 +3336,24 @@
 !       Particle number averagedv VS. eta.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. eta"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle num ave. triangular flow, v3 VS. eta"
+                write(12,*) "#! Particle num ave. triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(3)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(3)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3364,7 +3364,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( ( dvdeta_p(m1,m2,m3) &
                                 / MAX( dNeta_p(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3373,17 +3373,17 @@
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Particle number ave. directed flow, v1 VS. eta"
+                write(12,*) "#! Particle number ave. directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
+                write(12,*) "#! Particle number ave. elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Particle num ave. triangular flow, v3 VS. eta"
+                write(12,*) "#! Particle num ave. triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Particle num ave. quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(3)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(3)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3394,7 +3394,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), &
+                write(12,*) xcoor(m1,3), &
                             ( ( dvdeta_p_f(m1,m2,m3) &
                                 / MAX( dNeta_p_f(m1,m3), 1D-10 ) ), &
                                 m3=1,15,1 )
@@ -3405,17 +3405,17 @@
 !       Total number of particles for differential flows.
         DO m2=1,3,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
             if( m2 == 1 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. y"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. y"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3426,16 +3426,16 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNy_p(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNy_p(m1,m3), m3=1,15,1 )
                 end do
             else if( m2 == 2 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. pT"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. pT"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3446,16 +3446,16 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNpT_p(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNpT_p(m1,m3), m3=1,15,1 )
                 end do
             else if( m2 == 3 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. eta"
-                write(10,*) "#! partial phase-space, "// &
+                write(12,*) "#! Num of particles for diff. flows, N VS. eta"
+                write(12,*) "#! partial phase-space, "// &
                             cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                             "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3466,16 +3466,16 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNeta_p(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNeta_p(m1,m3), m3=1,15,1 )
                 end do
             end if
 !           For the full phase-space.
             if( m2 == 1 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. y"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. y"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3486,14 +3486,14 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNy_p_f(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNy_p_f(m1,m3), m3=1,15,1 )
                 end do
             else if( m2 == 2 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. pT"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. pT"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3504,14 +3504,14 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNpT_p_f(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNpT_p_f(m1,m3), m3=1,15,1 )
                 end do
             else if( m2 == 3 )then
 !           Prints names of distributions and cuts.
-                write(10,*) "#! Num of particles for diff. flows, N VS. eta"
-                write(10,*) "#! full phase-space"
+                write(12,*) "#! Num of particles for diff. flows, N VS. eta"
+                write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-                write(10,*)  "#!       "//id_abscissa(m2)//"               "// &
+                write(12,*)  "#!       "//id_abscissa(m2)//"               "// &
                       "g                         u+d+s + anti-             "// &
                       "u                         ubar                      "// &
                       "d                         dbar                      "// &
@@ -3522,7 +3522,7 @@
                       "diquarks"
 !           Prints data.
                 do m1=1,n_bin_hist,1
-                    write(10,*) xcoor(m1,m2), ( dNeta_p_f(m1,m3), m3=1,15,1 )
+                    write(12,*) xcoor(m1,m2), ( dNeta_p_f(m1,m3), m3=1,15,1 )
                 end do
             end if
         END DO
@@ -3531,24 +3531,24 @@
 !       Total v VS. y.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. y"
+                write(12,*) "#! Total directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. y"
+                write(12,*) "#! Total elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. y"
+                write(12,*) "#! Total triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. y"
+                write(12,*) "#! Total quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(1)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(1)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3559,23 +3559,23 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), ( dvdy_p(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,1), ( dvdy_p(m1,m2,m3), m3=1,15,1 )
             end do
 !-------------------------------------------------------------------------------
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. y"
+                write(12,*) "#! Total directed flow, v1 VS. y"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. y"
+                write(12,*) "#! Total elliptic flow, v2 VS. y"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. y"
+                write(12,*) "#! Total triangular flow, v3 VS. y"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. y"
+                write(12,*) "#! Total quadrangular flow, v4 VS. y"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(1)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(1)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3586,31 +3586,31 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,1), ( dvdy_p_f(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,1), ( dvdy_p_f(m1,m2,m3), m3=1,15,1 )
             end do
         END DO
 !-------------------------------------------------------------------------------
 !       Total v VS. pT.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. pT"
+                write(12,*) "#! Total directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. pT"
+                write(12,*) "#! Total elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. pT"
+                write(12,*) "#! Total triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Total quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,2)//" <"//cyeta//"< "//cut_off(2,2)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3621,23 +3621,23 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), ( dvdpT_p(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,2), ( dvdpT_p(m1,m2,m3), m3=1,15,1 )
             end do
 !-------------------------------------------------------------------------------
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. pT"
+                write(12,*) "#! Total directed flow, v1 VS. pT"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. pT"
+                write(12,*) "#! Total elliptic flow, v2 VS. pT"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. pT"
+                write(12,*) "#! Total triangular flow, v3 VS. pT"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. pT"
+                write(12,*) "#! Total quadrangular flow, v4 VS. pT"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(2)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(2)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3648,31 +3648,31 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,2), ( dvdpT_p_f(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,2), ( dvdpT_p_f(m1,m2,m3), m3=1,15,1 )
             end do
         END DO
 !-------------------------------------------------------------------------------
 !       Total v VS. eta.
         DO m2=1,4,1
 !-------------------------------------------------------------------------------
-            write(10,*) "#!-------------------------------------"// &
+            write(12,*) "#!-------------------------------------"// &
                         "----------------------------------------"
 !           For the partial phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. eta"
+                write(12,*) "#! Total directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. eta"
+                write(12,*) "#! Total elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. eta"
+                write(12,*) "#! Total triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Total quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! partial phase-space, "// &
+            write(12,*) "#! partial phase-space, "// &
                         cut_off(1,1)//" < pT < "//cut_off(2,1)// &
                         "  (nominal cuts of 1-st setting in usu.dat)"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(3)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(3)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3683,23 +3683,23 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), ( dvdeta_p(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,3), ( dvdeta_p(m1,m2,m3), m3=1,15,1 )
             end do
 !-------------------------------------------------------------------------------
 !           For full phase-space.
 !           Prints names of distributions and cuts.
             if( m2 == 1 )then
-                write(10,*) "#! Total directed flow, v1 VS. eta"
+                write(12,*) "#! Total directed flow, v1 VS. eta"
             else if( m2 == 2 )then
-                write(10,*) "#! Total elliptic flow, v2 VS. eta"
+                write(12,*) "#! Total elliptic flow, v2 VS. eta"
             else if( m2 == 3 )then
-                write(10,*) "#! Total triangular flow, v3 VS. eta"
+                write(12,*) "#! Total triangular flow, v3 VS. eta"
             else if( m2 == 4 )then
-                write(10,*) "#! Total quadrangular flow, v4 VS. eta"
+                write(12,*) "#! Total quadrangular flow, v4 VS. eta"
             end if
-            write(10,*) "#! full phase-space"
+            write(12,*) "#! full phase-space"
 !           Prints names of abscissa and particles.
-            write(10,*)  "#!       "//id_abscissa(3)//"               " // &
+            write(12,*)  "#!       "//id_abscissa(3)//"               " // &
                   "g                         u+d+s + anti-             " // &
                   "u                         ubar                      " // &
                   "d                         dbar                      " // &
@@ -3710,7 +3710,7 @@
                   "diquarks"
 !           Prints data.
             do m1=1,n_bin_hist,1
-                write(10,*) xcoor(m1,3), ( dvdeta_p_f(m1,m2,m3), m3=1,15,1 )
+                write(12,*) xcoor(m1,3), ( dvdeta_p_f(m1,m2,m3), m3=1,15,1 )
             end do
         END DO
 

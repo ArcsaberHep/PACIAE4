@@ -130,7 +130,7 @@
 !       Statistic of the number of loops in parton cascade within an event.
 24      jjj = jjj + 1
         if( jjj > 100*icolo )then
-            write(9,*) "Warning, infinite loop may have happened in" &
+            write(19,*) "Warning, infinite loop may have happened in" &
                     // "parcas iii, jjj, icolo=", iii, jjj, icolo
             iii = iii - 1
             iijk = 1
@@ -2576,8 +2576,8 @@
         ichbe = ichge(kf1) + ichge(kf2)
         ichaf = ichge(kf3) + ichge(kf4)
         if( ichbe /= ichaf )then
-            write(9,*) "w/o time-like iii, jjj, kf1, kf2=", iii, jjj, kf1, kf2
-            write(9,*) "nsca, kf3, kf4, ichbe, ichaf=", nsca,kf3,kf4,ichbe,ichaf
+            write(19,*) "w/o time-like iii, jjj, kf1, kf2=", iii, jjj, kf1, kf2
+            write(19,*) "nsca, kf3, kf4, ichbe, ichaf=",nsca,kf3,kf4,ichbe,ichaf
             ppsa(5) = ppsa(5) - ichbe + ichaf
         end if
 
@@ -2847,7 +2847,7 @@
                 icht = icht + ichge(kff)
             end do
             if( ichtb /= icht )then
-                write(9,*) "af. ti_li1 iii,nsca,ichtb,icht", &
+                write(19,*) "af. ti_li1 iii,nsca,ichtb,icht", &
                                        iii,nsca,ichtb,icht
                 ppsa(5) = ppsa(5) - ichtb + icht
             end if

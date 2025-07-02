@@ -32,8 +32,7 @@ Just download the file and decompress it. Then you can get the PACIAE 4 source c
      After the compilation and build completed, copy the **<font color=red> Makefile.inc </font>** file the PYTHIA 8 generated and paste it into the PACIAE 4 directory. If you have the installed PYTHIA 8 already, just copy the **<font color=red> Makefile.inc </font>** from your own installed PYTHIA 8 directory and paste it into the PACIAE 4 directory. **<font color=red> Makefile.inc </font>**  file is very important for the running of PACIAE 4. It specifies the PYTHIA 8 distribution path.
 
 **NB**:
- 1. The current Makefile is designed for linux system. The support for other OS will be updated in the next version.
- 2. Released PACIAE 4.002 requires PYTHIA 8.312 and below because PYTHIA 8.313 modifies several code, especially the parts of Angantyr. From this version, PACIAE requires PYTHIA 8.313.
+The current Makefile is designed for linux system. The support for other OS will be updated in the next version.
 
 ## Usage
 

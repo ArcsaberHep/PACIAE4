@@ -2,13 +2,13 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, December 2003 - January 2025.
+!! Author: Ben-Hao Sa, December 2003 - July 2025.
 
 !> This is the initialization program to generate the initial partonic state
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.
 
 !!                                             By Ben-Hao at CIAE on 04/12/2003
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at CCNU on 03/07/2025
 
 
         subroutine parini( time_ini, ijk )
@@ -653,7 +653,7 @@
         common/sa33/smadel,ecce,secce,parecc,iparres
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
-         common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
 
 
 !       initialization of x, y,xy, x^2, y^2 and sump (statistics of the
@@ -964,8 +964,9 @@
         iiii = 0
 54      iiii = iiii + 1
         if( iiii == 10000 )then
-            write(*,*) "Warning, difficult to arrange produced nucleons in" &
-                    // "subroutine arrove, infinite loop may occur"
+            write(*,*) "PACIAE warning: difficult to arrange produced " &
+                    // "nucleons in subroutine arrove, infinite loop may occur."
+            write(*,*) "b =", b, "fm"
             return
         end if
 !       ii in target (-b/2.)
@@ -1025,8 +1026,9 @@
         iiii = 0
 100     iiii = iiii + 1
         if( iiii == 100000 )then
-            write(*,*) "Warning, difficult to arrange produced nucleons in" &
-                    // "subroutine woodsax, infinite loop may happen"
+            write(*,*) "PACIAE warning: difficult to arrange produced " &
+                    // "nucleons in subroutine woodsax, infinite loop may " &
+                    // "happen."
             return
         end if
 
@@ -3734,10 +3736,10 @@
         enddo
         jj=jj+1
         if(jj == 4000)then
-            write(*,*) 'infinitive loop may occur in subroutine ' // &
-                       'conse(), which means four-momentum ' // &
-                       'conservation needed is hard to be achieved,' // &
-                       'check value of PARAM(9)'
+            write(*,*) "PACIAE warning: infinitive loop may occur in " // &
+                       "subroutine conse(), which means four-momentum " // &
+                       "conservation needed is hard to be achieved," // &
+                       "check value of PARAM(9)."
             return
         endif
         goto 100
@@ -4185,10 +4187,10 @@
         jj = jj + 1
 
         if( jj == 4000 )then
-            write(*,*) 'infinitive loop may occur in subroutine ' // &
-                       'conser(), which means four-momentum ' // &
-                       'conservation needed is hard to be achieved, ' // &
-                       'check value of PARAM(9)'
+            write(*,*) "PACIAE warning: infinitive loop may occur in " // &
+                       "subroutine conser(), which means four-momentum " // &
+                       "conservation needed is hard to be achieved, " // &
+                       "check value of PARAM(9)."
             return
         endif
 

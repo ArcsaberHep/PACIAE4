@@ -2,13 +2,13 @@
 // Copyright (C) 2024 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - January 2025.
+// Author: An-Ke Lei, January 2024 - July 2025.
 
 // This is the C++ interface program to link PACIAE (Fortran 77/90) with
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at UiO  on 17/01/2025
+//                                  Last updated by An-Ke at CCNU on 03/07/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -171,6 +171,7 @@ using namespace Paciae4;
         // Drell-Yan
         case 2 :
             (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
+            (*pythia) -> readString( "WeakZ0:gmZmode = 1" );
             break;
         // J/psi (color-singlet via NRQCD )
         case 3 :
@@ -185,12 +186,12 @@ using namespace Paciae4;
                                      "qqbar2doubleccbar(3S1)[3S1(1)] " \
                                      "= on,on,off" );
             break;
-        // Heavy-flavor production
+        // c-cbar and b-bbar production
         case 4 :
             (*pythia) -> readString( "HardQCD:hardccbar = on" );
             (*pythia) -> readString( "HardQCD:hardbbbar = on" );
             break;
-        // Direct photon
+        // Prompt photon
         case 5 :
             (*pythia) -> readString( "PromptPhoton:all = on" );
             break;
@@ -198,7 +199,7 @@ using namespace Paciae4;
         case 6 :
             (*pythia) -> readString( "SoftQCD:all = on" );
             break;
-        // W+/- production
+        // Single W+/- production
         case 7 :
             (*pythia) -> readString( "WeakSingleBoson:ffbar2W = on" );
             break;
@@ -206,42 +207,31 @@ using namespace Paciae4;
         case 8 :
             (*pythia) -> readString( "HardQCD:all = on" );
             break;
-        // Z0 production
+        // Single Z0 production
         case 9 :
             (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
+            (*pythia) -> readString( "WeakZ0:gmZmode = 2" );
             break;
         // Inelastic nondiffrative. (Minimum Bias)
         case 10 :
             (*pythia) -> readString( "SoftQCD:nonDiffractive = on" );
             break;
-        case -61 :
-            (*pythia) -> readString( "Charmonium:all = on" );
-            break;
-        case -62 :
-            (*pythia) -> readString( "Bottomonium:all = on" );
-            break;
-        case -63 :
-            (*pythia) -> readString( "Onia:all = on" );
-            break;
         default :
-            std::cout << "\nYou have chosen an undefined nchan = " << iProcess
-                      << ".\nPlease specify subprocesses in " \
+            std::cout << "\n PACIAE Warning: You have chosen an undefined " \
+                         "nchan = " << iProcess
+                      << ".\n Please specify subprocesses in " \
                          "\"pythia8_extra.cfg\".\n"
                       << std::endl;
     }
-    // For e+e-. e+e- -> gamma*/Z -> qqbar (e+e- -> W+W- -> qqbar ?).
-    if( std::abs(MSTI_c[10]) == 11 && std::abs(MSTI_c[11]) == 11
-        && MSTI_c[10]*MSTI_c[11] < 0 ) {
+    // For l+l- annihilation, e.g. e+e-. l+l- -> gamma*/Z -> qqbar.
+    if( std::abs(MSTI_c[10]) >= 11 && std::abs(MSTI_c[10]) <= 18
+        && std::abs(MSTI_c[11]) >= 11 && std::abs(MSTI_c[11]) <= 18
+        && MSTI_c[10]*MSTI_c[11] < 0 && iProcess <= 10 ) {
         // Hard process, with hadronic Z decays.
         (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
         // Switches off all Z0 decays and then switches back on those to quarks.
         (*pythia) -> readString( "23:onMode = off");
         (*pythia) -> readString( "23:onIfAny = 1 2 3 4 5");
-        // Hard process, with hadronic W decays.
-        // (*pythia) -> readString( "WeakDoubleBoson:ffbar2WW = on" );
-        // Switches off all W+- decays then switches back on those to quarks.
-        // (*pythia) -> readString( "24:onMode = off" );
-        // (*pythia) -> readString( "24:onIfAny = 1 2 3 4 5" );
     }
 
 // Switches of Angantyr machinery.
@@ -387,24 +377,51 @@ using namespace Paciae4;
     else {
         settings.parm( "Beams:eCM", eCM );
     }
+// Special setting for l+l- -> gamma*/Z0 -> qqbar with CM energy < 10 GeV.
+    int absIdA = std::abs( MSTI_c[10] );
+    int absIdB = std::abs( MSTI_c[11] );
+    if( absIdA >= 11 && absIdA <= 18 && absIdB >= 11 && absIdB <= 18
+        && MSTI_c[10]*MSTI_c[11] < 0 && eCM < 10. ) {
+        (*pythia) -> readString( "23:mMin = 0." );
+    }
 
 // Nuclear parton distribution functions.
-    int& useHardNPDF = MSTP_c[193];
+    int useHardNPDF = MSTP_c[193];
     if( useHardNPDF != -1 ) {
+        // Preset 208Pb EPS09 LO nPDF.
+        int setNPDFIdA = 100822080;
+        int setNPDFIdB = 100822080;
+        if( useHardNPDF < -1 || useHardNPDF > 3 ) {
+            std::cout << "\n PACIAE Warning: You are using the preset 208Pb " \
+                        "EPS09 LO nPDF.\n To set other nPDF, modify " \
+                        "\"adj1(5)\" in \"usu.dat\" of PACIAE,\n  and place " \
+                        "the appropriate nPDF grid file into\n  " \
+                        "your-PYTHIA8-directory/share/Pythia8/pdfdata/ .\n"
+                      << std::endl;
+            useHardNPDF = 1;
+        }
+        else {
+            setNPDFIdA = absIdA;
+            setNPDFIdB = absIdB;
+        }
         // Projectile.
-        (*pythia) -> readString( "PDF:useHardNPDFA = on" );
-        settings.mode( "PDF:nPDFSetA", useHardNPDF );
-        settings.mode( "PDF:nPDFBeamA", std::abs(MSTI_c[10]) );
+        if( absIdA > 99 ) {
+            (*pythia) -> readString( "PDF:useHardNPDFA = on" );
+            settings.mode( "PDF:nPDFSetA", useHardNPDF );
+            settings.mode( "PDF:nPDFBeamA", setNPDFIdA );
+        }
         // Target.
-        (*pythia) -> readString( "PDF:useHardNPDFB = on" );
-        settings.mode( "PDF:nPDFSetB", useHardNPDF );
-        settings.mode( "PDF:nPDFBeamB", std::abs(MSTI_c[11]) );
+        if( absIdB > 99 ) {
+            (*pythia) -> readString( "PDF:useHardNPDFB = on" );
+            settings.mode( "PDF:nPDFSetB", useHardNPDF );
+            settings.mode( "PDF:nPDFBeamB", setNPDFIdB );
+        }
     }
 
 // Sets the seed of the random number generator.
     settings.flag( "Random:setSeed", 1 );
     int& seed = MSTP_c[191];
-    settings.mode( "Random:seed",  seed );
+    settings.mode( "Random:seed", seed );
 
 // Switches on/off PYTHIA 8 reports and event listing.
     // Switches on automatic event reports.
@@ -457,8 +474,7 @@ using namespace Paciae4;
 
 // Instantiates 4 PYTHIA8 objects and does initialization for lA(Al), hA(Ah)
 //   AB collisions. Typically pA(Ap) and AA. On heap, not stack!
-    if( (  std::abs(MSTI_c[10])  > 1000000000 
-        || std::abs(MSTI_c[11])  > 1000000000 )
+    if( ( absIdA > 1000000000 || absIdB > 1000000000 )
         && ( MSTP_c[190] == 5 || MSTP_c[190] == 6 ) ) {
         // Multiple generator instantiations.
         *pythia_pp = new Pythia( settings, particleData, false );
@@ -473,18 +489,16 @@ using namespace Paciae4;
         // Specifies beam and target particles.
         int idLeptonHadron = 2212;
         // lA, hA; pA
-        if(    std::abs(MSTI_c[10]) <= 1000000000
-            && std::abs(MSTI_c[11]) > 1000000000 ) {
+        if( absIdA <= 1000000000 && absIdB > 1000000000 ) {
             idLeptonHadron = MSTI_c[10];
         }
         // Al, Ah; Ap
-        else if( std::abs(MSTI_c[10]) > 1000000000
-              && std::abs(MSTI_c[11]) <= 1000000000 ) {
+        else if( absIdA > 1000000000 && absIdB <= 1000000000 ) {
             idLeptonHadron = MSTI_c[11];
         }
         // lp, hp; typically pp
         (*pythia_pp) -> settings.mode( "Beams:idA", idLeptonHadron );
-        (*pythia_pp) -> settings.mode( "Beams:idA",
+        (*pythia_pp) -> settings.mode( "Beams:idB",
                                        std::copysign( 2212, MSTI_c[11] ) );
         // ln, hn; typically pn
         (*pythia_pn) -> settings.mode( "Beams:idA", idLeptonHadron );
@@ -499,12 +513,20 @@ using namespace Paciae4;
                                        std::copysign( 2212, MSTI_c[10] ) );
         (*pythia_nn) -> settings.mode( "Beams:idB", idLeptonHadron );
         // nn for AA and AB
-        if(    std::abs(MSTI_c[10]) > 1000000000
-            && std::abs(MSTI_c[11]) > 1000000000 ) {
+        if( absIdA > 1000000000 && absIdB > 1000000000 ) {
             (*pythia_nn) -> settings.mode( "Beams:idA",
                                             std::copysign( 2112, MSTI_c[10] ) );
             (*pythia_nn) -> settings.mode( "Beams:idB",
                                             std::copysign( 2112, MSTI_c[11] ) );
+        }
+
+        // Nuclear parton distribution functions.
+        // Lepton projectile/target.
+        if( absIdA < 100 ||  absIdB < 100 ) {
+            (*pythia_pp) -> readString( "PDF:useHardNPDFA = off" );
+            (*pythia_pn) -> readString( "PDF:useHardNPDFA = off" );
+            (*pythia_np) -> readString( "PDF:useHardNPDFB = off" );
+            (*pythia_nn) -> readString( "PDF:useHardNPDFB = off" );
         }
 
         // Initialization.
@@ -605,8 +627,15 @@ using namespace Paciae4;
             switch (iProcess) {
                 // Inelastic (INEL)
                 case 0 :
-                    if( info.hiInfo->nCollTot() > info.hiInfo->nCollEl() )
-                        doVetoProcess = false;
+                    // Old PYTHIA version.
+                    #if PYTHIA_VERSION_INTEGER < 8313
+                        if( info.hiInfo->nCollTot() > info.hiInfo->nCollEL() )
+                            doVetoProcess = false;
+                    // From PYTHIA 8.313 onwards.
+                    #else
+                        if( info.hiInfo->nCollTot() > info.hiInfo->nCollEl() )
+                            doVetoProcess = false;
+                    #endif
                     break;
                 // Non-Single Difractive (NSD)
                 case 1 :
@@ -691,34 +720,17 @@ using namespace Paciae4;
     // More information from Angantyr.
     if( iExecMode == 8 || iExecMode == 9 ) {
         // This is the real impact parameter in fm.
-        // NB: float
         VINT_c[138] = info.hiInfo -> b();
         VINT_c[369] = info.hiInfo -> phi();
-        VINT_c[370] = info.hiInfo -> glauberTot();
-        VINT_c[371] = info.hiInfo -> glauberND();
-        VINT_c[372] = info.hiInfo -> glauberINEL();
-        VINT_c[373] = info.hiInfo -> glauberEL();
-        VINT_c[374] = info.hiInfo -> glauberDiffP();
-        VINT_c[375] = info.hiInfo -> glauberDiffT();
-        VINT_c[376] = info.hiInfo -> glauberDDiff();
-        VINT_c[377] = info.hiInfo -> glauberBSlope();
-        // Error
-        VINT_c[380] = info.hiInfo -> glauberTotErr();
-        VINT_c[381] = info.hiInfo -> glauberNDErr();
-        VINT_c[382] = info.hiInfo -> glauberINELErr();
-        VINT_c[383] = info.hiInfo -> glauberELErr();
-        VINT_c[384] = info.hiInfo -> glauberDiffPErr();
-        VINT_c[385] = info.hiInfo -> glauberDiffTErr();
-        VINT_c[386] = info.hiInfo -> glauberDDiffErr();
-        VINT_c[387] = info.hiInfo -> glauberBSlopeErr();
-        // NB: integer
+        // Number of nucleons.
         MINT_c[384] = info.hiInfo -> nCollTot();
         MINT_c[385] = info.hiInfo -> nCollND();
+        // MINT_c[386], see below. Note that there is no "nCollNDTot" from 8313.
         MINT_c[387] = info.hiInfo -> nCollSDP();
         MINT_c[388] = info.hiInfo -> nCollSDT();
         MINT_c[389] = info.hiInfo -> nCollDD();
         MINT_c[390] = info.hiInfo -> nCollCD();
-        MINT_c[391] = info.hiInfo -> nCollEl();
+        // MINT_c[391], see below. Note the uppercase "EL" and lowercase "El".
         MINT_c[392] = info.hiInfo -> nPartProj();
         MINT_c[393] = info.hiInfo -> nAbsProj();
         MINT_c[394] = info.hiInfo -> nDiffProj();
@@ -727,6 +739,38 @@ using namespace Paciae4;
         MINT_c[397] = info.hiInfo -> nAbsTarg();
         MINT_c[398] = info.hiInfo -> nDiffTarg();
         MINT_c[399] = info.hiInfo -> nElTarg();
+        // Old PYTHIA version.
+        #if PYTHIA_VERSION_INTEGER < 8313
+            MINT_c[386] = info.hiInfo -> nCollNDTot();
+            MINT_c[391] = info.hiInfo -> nCollEL();
+            // Cross sections.
+            VINT_c[370] = info.hiInfo -> sigmaTot();
+            VINT_c[371] = info.hiInfo -> sigmaND();
+            // Errors.
+            VINT_c[380] = info.hiInfo -> sigmaTotErr();
+            VINT_c[381] = info.hiInfo -> sigmaNDErr();
+        // From PYTHIA 8.313 onwards.
+        #else
+            MINT_c[391] = info.hiInfo -> nCollEl();
+            // Cross sections.
+            VINT_c[370] = info.hiInfo -> glauberTot();
+            VINT_c[371] = info.hiInfo -> glauberND();
+            VINT_c[372] = info.hiInfo -> glauberINEL();
+            VINT_c[373] = info.hiInfo -> glauberEL();
+            VINT_c[374] = info.hiInfo -> glauberDiffP();
+            VINT_c[375] = info.hiInfo -> glauberDiffT();
+            VINT_c[376] = info.hiInfo -> glauberDDiff();
+            VINT_c[377] = info.hiInfo -> glauberBSlope();
+            // Errors.
+            VINT_c[380] = info.hiInfo -> glauberTotErr();
+            VINT_c[381] = info.hiInfo -> glauberNDErr();
+            VINT_c[382] = info.hiInfo -> glauberINELErr();
+            VINT_c[383] = info.hiInfo -> glauberELErr();
+            VINT_c[384] = info.hiInfo -> glauberDiffPErr();
+            VINT_c[385] = info.hiInfo -> glauberDiffTErr();
+            VINT_c[386] = info.hiInfo -> glauberDDiffErr();
+            VINT_c[387] = info.hiInfo -> glauberBSlopeErr();
+        #endif
     }
 
     // Recovers the std::cout .

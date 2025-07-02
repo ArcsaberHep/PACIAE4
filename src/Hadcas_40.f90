@@ -2,12 +2,12 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, September 2000 - January 2025.
+!! Author: Ben-Hao Sa, September 2000 - July 2025.
 
 !> This is the program to deal with the hadron cascade (hadronic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 20/09/2000
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at UiO  on 03/07/2025
 
 
         subroutine hadcas( time_had, ijkk )

@@ -2,13 +2,13 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, ???? 2006 - January 2025.
+!! Author: Ben-Hao Sa, ???? 2006 - July 2025.
 
 !> This is the main program to administrate the Monte Carlo simulation for
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at CCNU on 03/07/2025
 
 
 
@@ -345,22 +345,18 @@
 !       energy_B: if ifram=2; energy_A, +Z direction; energy_B, -Z direction
 
 !       nchan: = 0 , inelastic (INEL)
-!              = 1 , Non Single Diffractive (NSD)
+!              = 1 , non-single diffractive (NSD)
 !              = 2 , Drell-Yan process
 !              = 3 , J/psi production (color singlet)
-!              = 4 , heavy-flavor production
-!              = 5 , direct photon
-!              = 6 , soft only
-!              = 7 , W+/- production
-!              = 8 , PYTHIA default (msel=1)
-!              = 9 , Z0 production
-!              = 10, inelastic, non-diffractive
-!              < 0 , -MSEL defined in PYTHIA 6
-!              = -61, NRQCD charmonium production
-!              = -62, NRQCD bottomonium production
-!              = -63, NRQCD onia production (charm- and bottom-)
+!              = 4 , c-cbar and b-bbar production
+!              = 5 , prompt photon
+!              = 6 , soft QCD
+!              = 7 , single W+/- production
+!              = 8 , hard QCD
+!              = 9 , single Z0 production
+!              = 10, inelastic， non-diffractive (minimum-bias, MB)
 !              = other, user-defined subprocessses in "pythia6_extra.cfg"
-!                       for PYTHIA 6or "pythia8_extra.cfg" for PYTHIA 8.
+!                       for PYTHIA 6 or "pythia8_extra.cfg" for PYTHIA 8.
 
 !       ifram: = 0, for fixed target (FXT)
 !              = 1, for collider (CMS)
@@ -495,15 +491,15 @@
 !              =0, without nuclear shadowing or nPDF.
 !          For PYTHIA 6:
 !              =1, Wang's nuclear shadowing (PLB 527 (2002) 85).
-!              =2, EPS09 nPDF. (not available temporarily)
 !              =other, same as 1.
 !          For PYTHIA 8:
 !              =-1, only Isospin effect.
 !              = 1, EPS09, LO nPDF.
 !              = 2, EPS09, NLO nPDF.
 !              = 3, EPPS16, NLO nPDF.
+!              = other, preset 208Pb EPS09 LO nPDF.
 !          EPS/EPPS nPDF requirs for grid files. There is only one default
-!              EPS09 LO grid file of Pb208 in PYTHIA 8. One needs to add other
+!              EPS09 LO grid file of 208Pb in PYTHIA 8. One needs to add other
 !              grid files manually for other nulei or NLO nPDF.
 !       6: parameter 'a', i.e. PARJ(41), in Lund string fragmentation function
 !       7: parameter 'b', i.e. PARJ(42), in Lund string fragmentation function
@@ -837,9 +833,6 @@
             if( i_mode == 8 .OR. i_mode == 9 ) psno = 3D0
             ! Without nuclear shadowing.
             adj1(5) = 0D0
-            ! For e+e- .
-            if( KF_proj_abs == 11 .AND. KF_targ_abs == 11 &
-                .AND. KF_proj*KF_targ < 0 ) nchan = 2
         end if
 
 !       The hadronization model.
@@ -1076,7 +1069,7 @@
         imc = 30
         ibc = 45
 
-        pio = PARU(1)
+        pio = 3.141592653589793D0
 !------------------------   PACIAE Parameters Setting   ------------------------
 !-------------------------------------------------------------------------------
 
@@ -1116,7 +1109,9 @@
                 select case( nchan )
                 case( 0, 1, 6, 8, 10 )
                     parp2 = 2.7D0
-                case( 2, 7, 9 )
+                case( 2 )
+                    parp2 = 0D0
+                case( 7, 9 )
                     parp2 = 6.8D0
                 case( 3 )
                     parp2 = 9.5D0
@@ -1124,32 +1119,28 @@
                     parp2 = 15.6D0
                 case( 5 )
                     parp2 = 6.8D0
-                case( :-1 )
-                    parp2 = 10D0
-                    if( nchan == -62 ) parp2 = 16.6D0
-                    if( nchan == -61 .OR. nchan == -63 ) parp2 = 9.5D0
                 case default
-                    parp2 = 10D0
+                    parp2 = 3D0
                 end select
-!       For PYTHIA 8.3.12, the following CM energies for NN pair are required.
+!       For PYTHIA 8.3, the following CM energies for NN pair are required.
             else if( IS_PYTHIA8(i_mode) )then
                 select case( nchan )
                 case( 0, 1, 6, 10 )
                     parp2 = 3.9D0
                 case( 8 )
                     parp2 = 6.5D0
-                case( 2, 7, 9 )
+                case( 2 )
+                    parp2 = 0D0
+                case( 7, 9 )
                     parp2 = 12.8D0
-                case( 3, -61, -63 )
+                case( 3 )
                     parp2 = 7.2D0
-                case( -62 )
-                    parp2 = 13.5D0
                 case( 4 )
                     parp2 = 7.3D0
                 case( 5 )
                     parp2 = 6.9D0
                 case default
-                    parp2 = 10
+                    parp2 = 3D0
                 end select
             end if
         end if
@@ -1530,9 +1521,11 @@
 !!            to select more subprocesses.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_PYTHIA8, IS_LEPTON
         COMMON/PYDAT3/MDCY(500,3),MDME(8000,2),BRAT(8000),KFDP(8000,5)
         COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
         common/sa12/ppsa(5),nchan,nsjp,sjp,ttaup,taujp
+        common/sa24/adj1(40),nnstop,non24,zstop
 !       For the simulation control.
         COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
@@ -1547,8 +1540,8 @@
 !       For PYTHIA 6.
 !       Default PYTHIA, PACIAE-defined or user-defind subprocesses.
         CALL PYGIVE( "MSEL=0" )
-        if( nchan == 0 )then
 !       Inelastic (INEL)
+        if( nchan == 0 )then
             CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
             CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
             CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
@@ -1560,8 +1553,8 @@
             CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
-        else if( nchan == 1 )then
 !       Non-Single Difractive (NSD)
+        else if( nchan == 1 )then
             CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
             CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
             CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
@@ -1573,44 +1566,45 @@
           ! CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
-        else if( nchan == 2 )then
 !       Used to generate Drell-Yan
+        else if( nchan == 2 )then
             CALL PYGIVE( "MSUB(1)=1" )   ! q + qbar -> gamma* -> l+ + l-
-        else if( nchan == 3 )then
+            CALL PYGIVE( "MSTP(43)=1" )
 !       J/psi production (color singlet)
+        else if( nchan == 3 )then
             CALL PYGIVE( "MSUB(86)=1" )    ! g + g -> J/psi + g
             CALL PYGIVE( "MSUB(106)=1")    ! g + g -> J/psi + gamma
+!       c-cbar and b-bbar production
         else if( nchan == 4 )then
-!       Heavy-flavor production
             CALL PYGIVE( "MSUB(81)=1" )    ! Open HF, f_i+f_i^bar -> Q_k+Q_k^bar
             CALL PYGIVE( "MSUB(82)=1" )    ! Open HF, g + g -> Q_k + Q_k^bar
           ! CALL PYGIVE( "MSUB(83)=1" )    ! Open HF, q_i + f_i -> Q_k + f_l
+!       Prompt photon
         else if( nchan == 5 )then
-!       Direct photon
             CALL PYGIVE( "MSUB(14)=1" )   !  Prompt photon, f_i+f_i^bar->g+gamma
             CALL PYGIVE( "MSUB(18)=1" )   !  Prompt photon, f_i+f_i^bar->2*gamma
             CALL PYGIVE( "MSUB(29)=1" )   !  Prompt photon, f_i +g -> f_i +gamma
             CALL PYGIVE( "MSUB(114)=1")   !  Prompt photon, g+g -> gamma +gamma
             CALL PYGIVE( "MSUB(115)=1")   !  Prompt photon, g + g -> g + gamma
-        else if( nchan == 6 )then
 !       Soft QCD
+        else if( nchan == 6 )then
             CALL PYGIVE( "MSUB(91)=1" )   ! Soft QCD, elastic scattering
             CALL PYGIVE( "MSUB(92)=1" )   ! Soft QCD, single diffraction(AB->XB)
             CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
+!       Single W+/- production
         else if( nchan == 7 )then
-!       W+/- production
             CALL PYGIVE( "MSUB(2)=1" )   ! Single W, f_i + f_j^bar -> W
+!       Hard QCD
         else if( nchan == 8 )then
-!       PYTHIA default (hard QCD)
             CALL PYGIVE( "MSEL=1" )
-            ! CALL PYGIVE( "MSEL=2" )
         else if( nchan == 9 )then
-!       Z0 production
-            CALL PYGIVE( "MSUB(1)=1" )   ! Single Z, f_i + f_i^bar -> gamma*/Z0
+!       Single Z0 production
+            CALL PYGIVE( "MSUB(1)=1" )   ! Single Z, f_i + f_i^bar -> Z0
+            CALL PYGIVE( "MSTP(43)=2" )   ! Only Z0 included.
+!       Inelastic nondiffrative (Minimum Bias)
         else if( nchan == 10 )then
-!280124 Inelastic nondiffrative. (Minimum Bias)   ! 280124 Lei
             CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
             CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
             CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
@@ -1622,29 +1616,25 @@
           ! CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
           ! CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
-        else if( nchan < 0 )then
-!       Sets MSEL = -nchan to PYTHIA.
-            WRITE( PACIAE_INPUT, "(I20)" ) -nchan
-            PARAM_PYTHIA6 = "MSEL=" // TRIM(ADJUSTL( PACIAE_INPUT ))
-            CALL PYGIVE( PARAM_PYTHIA6 )
         else
 !       Other: user-defined subprocessses in "pythia6_extra.cfg" for
 !              PYTHIA 6 or "pythia8_extra.cfg" for PYTHIA 8.
             write(22,*)
-            write(22,*) "You have chosen an undefined nchan =", nchan, "."
+            write(22,*) "PACIAE Warning: You have chosen an undefined nchan =",&
+                        nchan, "."
             write(22,*) "Please specify subprocesses in " &
-                     // " ""pythia6_extra.cfg"" or ""pythia8_extra.cfg""."
+                     // """pythia6_extra.cfg"" or ""pythia8_extra.cfg""."
             write(22,*)
-        endif
-!       For e+e-. e+e- -> gamma*/Z -> qqbar (e+e- -> W+W- -> qqbarqqbar ?).
-        if( ABS(KF_proj) == 11 .AND. ABS(KF_targ) == 11 &
-            .AND. KF_proj*KF_targ < 0  )then
+        end if
+
+!       For l+l- annihilation, e.g. e+e-. l+l- -> gamma*/Z -> qqbar.
+        if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) &
+            .AND. KF_proj*KF_targ < 0 .AND. nchan <= 10 )then
             CALL PYGIVE( "MSEL=0" )
 !           Hard process, with hadronic Z decays.
             CALL PYGIVE( "MSUB(1)=1" )
 !           Only allow Z0 decay to quarks (i.e. no leptonic final states).
             do i = MDCY(23,2), MDCY(23,2) + MDCY(23,3) - 1, 1
-                ! IF( IABS(KFDP(i,1)) >= 6 ) MDME(i,1) = MIN( 0, MDME(i,1) )
                 if( IABS(KFDP(i,1)) >= 6 )then
                     MDME(i,1) = MIN( 0, MDME(i,1) )
                     ME=MIN( 0, MDME(i,1) )
@@ -1655,23 +1645,28 @@
                     CALL PYGIVE( PARAM_PYTHIA6 )
                 end if
             end do
-!           Hard process, with hadronic W decays.
-            ! CALL PYGIVE( "MSUB(25)=1" )
-!           Allows only hadronic W decays.
-            ! do i = MDCY(24,2), MDCY(24,2) + MDCY(24,3) - 1, 1
-            !     if( IABS(KFDP(i,1)) >= 6 )then
-            !         MDME(i,1) = MIN( 0, MDME(i,1) )
-            !         ME=MIN( 0, MDME(i,1) )
-            !         WRITE( CHAR_I, "(I20)" ) i
-            !         WRITE( PACIAE_INPUT, "(I20)" ) ME
-            !         PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
-            !                      // ",1)="  // TRIM(ADJUSTL( PACIAE_INPUT ))
-            !         CALL PYGIVE( PARAM_PYTHIA6 )
-            !     end if
-            ! end do
+!       For lh(hl) and lA(Al) deeply inelastic scatterings (DIS).
+        else if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) &
+                .AND. KF_proj*KF_targ < 0 .AND. nchan <= 10 )then
+            
         end if
+
+!       For PYTHIA 8, they will be done in Pythia8CppInterface.cpp.
 !-------------------------   Subprocesses Selecting   --------------------------
 !-------------------------------------------------------------------------------
+
+
+!       nPDF warning.
+        if( IS_PYTHIA8(i_mode) .AND. ( adj1(5) < -1 .OR. adj1(5) > 3 ) )then
+            write(22,*)
+            write(22,*) "PACIAE Warning: You are using the preset 208Pb " &
+                    //  "EPS09 LO nPDF."
+            write(22,*) "To set other nPDF, modify ""adj1(5)"" in " &
+                    //  """usu.dat"" of PACIAE,"
+            write(22,*) " and place the appropriate nPDF grid file into"
+            write(22,*) " your-PYTHIA8-directory/share/Pythia8/pdfdata/"
+            write(22,*)
+        end if
 
 
         return

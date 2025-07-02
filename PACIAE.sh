@@ -3,12 +3,12 @@
 # Copyright (C) 2024 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, October 2022 - January 2025.
+# Author: An-Ke Lei, October 2022 - July 2025.
 
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at UiO  on 17/01/2025
+#                                   Last updated by An-Ke at CCNU on 03/07/2025
 
 
 
@@ -240,7 +240,7 @@ energy=2760   # (GeV) win/energy_A, the incident momentum +pz if i_frame = 0;
               #                    the energy of +Z beam     if i_frame = 2.
 energy_B=0      # (GeV) energy_B, energy of -Z beam  if i_frame = 2.
                 #                 This variable can be used for the asymmetric
-                #                 colliding system like pA/Ap collsions in the
+                #                 colliding system like pA/Ap collisions in the
                 #                 Lab frame if i_frame = 2, e.g.
                 #                 LHC p+Pb at a CMS energy
                 #                  SQRT(s_NN) = 5.02 TeV:
@@ -249,20 +249,16 @@ energy_B=0      # (GeV) energy_B, energy of -Z beam  if i_frame = 2.
                 #         energy_A = 6.5 TeV, energy_B = 2.561 TeV, i_frame = 2.
 i_channel=10 # (D=10) nchan, collision channel for non-A simulation frameworks:
              #                =0, inelastic (INEL).
-             #                 1, Non Single Difractive (NSD).
+             #                 1, non-single difractive (NSD).
              #                 2, Drell-Yan process.
              #                 3, J/psi production (color singlet).
-             #                 4, heavy-flavor production.
-             #                 5, direct photon.
-             #                 6, soft only.
-             #                 7, W+/- production.
-             #                 8, PYTHIA default hard QCD (MSEL = 1).
-             #                 9, Z0 production.
+             #                 4, c-cbar and b-bbar production.
+             #                 5, prompt photon.
+             #                 6, soft QCD.
+             #                 7, single W+/- production.
+             #                 8, hard QCD.
+             #                 9, single Z0 production.
              #                10, inelastic, non-diffractive (minimum-bias).
-             #                <0, -MSEL defined in PYTHIA 6.
-             #               -61, NRQCD charmonium production.
-             #               -62, NRQCD bottomonium production.
-             #               -63, NRQCD onia production (charm- and bottom-).
              #            others, requires user to specify in the program
              #                    or "pythia6_extra.cfg" /
              #                       "pythia8_extra.cfg" files.
@@ -523,7 +519,7 @@ ${pT_low},${pT_upp}                          ! afl(ispmax,2,1), afl(ispmax,2,2)
 1,1                     ! i_sigma_AQM,kjp20
 0.,40.,25.,21.,10.,2.   ! para1_1,para1_2,para(2),para(3),para(4),para(5)
 7.2,4.,14.,8.           ! para(13),para(14),para(15),para(16)
-${k_parcas},0.47,0.4,1000,1,${a_lund},${b_lund},${a_Lund_coal},${b_Lund_coal},${k_PYTHIA}   ! adj1(1)-adj1(10)
+${k_parcas},0.47,0.4,1000,9,${a_lund},${b_lund},${a_Lund_coal},${b_Lund_coal},${k_PYTHIA}   ! adj1(1)-adj1(10)
 0.1,${i_hadronization},0,0,1.,1,${e_deex},0,0.03,1       ! adj1(11)-adj1(20)
 ${i_phase_constraint},4.,1,0.15,0.4,${i_random},800000.,1.,${i_deex_function},1          ! adj1(21)-adj1(30)
 0,0,0,${pT_width},${pT_width_coal},0,100.,3.,${e_split},${i_stage}           ! adj1(31)-adj1(40)
@@ -688,20 +684,16 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #  nchan: to choose which subset of subprocesses to include in
 #         the generration
 #         =0, inelastic (INEL)
-#         =1, Non-Single Difractive (NSD)
+#         =1, non-single difractive (NSD)
 #         =2, Drell-Yan process
 #         =3, J/psi production (color singlet)
-#         =4, heavy-flavor production
-#         =5, direct photon
-#         =6, soft only
-#         =7, W+/- production
-#         =8: PYTHIA default (MSEL=1)
-#         =9: Z0 production
-#         =10: inelastic, non-diffractive (minimum-bias)
-#         <0: -MSEL defined in PYTHIA 6
-#        -61: NRQCD charmonium production
-#        -62: NRQCD bottomonium production
-#        -63: NRQCD onia production (charm- and bottom-)
+#         =4, c-cbar and b-bbar production
+#         =5, prompt photon
+#         =6, soft QCD
+#         =7, single W+/- production
+#         =8: hard QCD
+#         =9: single Z0 production
+#         =10: inelastic, non-diffractive (minimum-bias, MB)
 #     others: requires the user to specify in the program or "pythia6_extra.cfg" /
 #                                                            "pythia8_extra.cfg" files.
 #
@@ -839,13 +831,13 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 # adj1(i), i=1,40: switches and parameters
 # --------------------------------------------------------------------------------
 # For PYTHIA 6 new model (PYEVNW):
-#     D= 1-10 :  1., 0.47, 0.4,  1000,   1, 0.35,     0.8, 0.35,  0.8, 1.
+#     D= 1-10 :  1., 0.47, 0.4,  1000,   9, 0.35,     0.8, 0.35,  0.8, 1.
 #        11-20: 0.1,    0,   0,     0,  1.,    1,     1.5,    0, 0.03, 1
 #        21-30:   0,   4.,   1,  0.15, 0.4,    1, 800000.,   1.,    5, 0
 #        31-40:   0,    0,   0,  0.33,   0,    0,    100.,   3., 0.66, 4.
 # --------------------------------------------------------------------------------
 # For PYTHIA 8 / Angantyr:
-#     D= 1-10 :  1., 0.47, 0.4,  1000,    1, 0.68,    0.98, 0.68, 0.98, 1.
+#     D= 1-10 :  1., 0.47, 0.4,  1000,    9, 0.68,    0.98, 0.68, 0.98, 1.
 #        11-20: 0.1,    0,   0,     0,   1.,    1,     1.5,    0, 0.03, 1
 #        21-30:   0,   4.,   1,  0.15,  0.4,    1, 800000.,   1.,    5, 0
 #        31-40:   0,    0,   0, 0.335, 0.45,    0,    100.,   3., 0.66, 4.
@@ -860,15 +852,15 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #              =0: without nuclear shadowing or nPDF.
 #          For PYTHIA 6:
 #              =1, Wang's nuclear shadowing (PLB 527 (2002) 85).
-#              =2, EPS09 shadowing. (not available temporarily)
-#              =other, same as 1
+#              =other, same as 1.
 #          For PYTHIA 8:
 #              =-1, only Isospin effect.
 #              = 1, EPS09, LO nPDF.
-#              = 1, EPS09, NLO nPDF.
-#              = 1, EPPS16, NLO nPDF.
+#              = 2, EPS09, NLO nPDF.
+#              = 3, EPPS16, NLO nPDF.
+#              = other, preset 208Pb EPS09 LO nPDF.
 #          EPS/EPPS shadowing requirs for grid files. There is only one default
-#              EPS09 LO grid file for Pb208 in PYTHIA 8. One needs add other 
+#              EPS09 LO grid file for 208Pb in PYTHIA 8. One needs add other 
 #              grid files manually for other nulei or NLO nPDF.
 #       6: 'a' in the Lund fragmentation function of the string fragmentation model (PARJ(41) in PYTHIA).
 #       7: 'b' in the Lund fragmentation function of the string fragmentation model (PARJ(42) in PYTHIA).

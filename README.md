@@ -3,12 +3,12 @@
 // Copyright (C) 2024 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - January 2025.
+// Author: An-Ke Lei, January 2024 - July 2025.
 
 // This is a README file for PACIAE.
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                          Last updated by An-Ke on 17/01/2025
+//                                          Last updated by An-Ke on 03/07/2025
  -->
 
 # The parton and hadron cascade model PACIAE 4
@@ -142,7 +142,7 @@ The released code are available on [https://github.com/ArcsaberHep/PACIAE4/relea
 ## Released papers
 
  - **Recent version:**
-   - PACIAE 4.0: A brief introduction to PACIAE 4.0. (waiting...)
+   - PACIAE 4.0: A brief introduction to PACIAE 4.0, [Comput.Phys.Commun. 310 (2025) 109520](https://doi.org/10.1016/j.cpc.2025.109520) or [2411.14255 [hep-ph]](https://arxiv.org/abs/2411.14255).
    - PACIAE 3.0: An introduction to the parton and hadron cascade model PACIAE 3.0, [Phys. Rev. C 108 (2023) 6, 064909](https://journals.aps.org/prc/abstract/10.1103/PhysRevC.108.064909) or [2309.05110 [hep-ph]](https://arxiv.org/abs/2309.05110).
 <br/>
 
@@ -166,7 +166,7 @@ The released code are available on [https://github.com/ArcsaberHep/PACIAE4/relea
    - JPCIAE: J/psi dynamical suppression in a hadron and string cascade model (or Formation time effect on J/psi dynamical nuclear suppression), [Phys. Rev. C 59 (1999) 2728-2733](https://doi.org/10.1103/PhysRevC.59.2728) or [arXiv:nucl-th/9803033](https://arxiv.org/abs/nucl-th/9803033); J/psi normal and anomalous suppressions in a hadron and string cascade model, [J.Phys.G 25 (1999) 1123-1133](https://doi.org/10.1088/0954-3899/25/6/302) or [arXiv:nucl-th/9809020](https://arxiv.org/abs/nucl-th/9809020); Inclusive and direct photons in S + Au collisions at 200A GeV/c, [Phys. Rev. C 61 (2000) 064905](https://doi.org/10.1103/PhysRevC.61.064905) or [arXiv:nucl-th/9904035](https://arxiv.org/abs/nucl-th/9904035).
 <br/>
 
- - **Origin version:**
+ - **Original version:**
    - LUCIAE 3.0: A New version of a computer program for firecracker model and rescattering in relativistic heavy ion collisions, [Comput. Phys. Commun. 116 (1999) 353](https://doi.org/10.1016/S0010-4655(98)00138-6) or [arXiv:nucl-th/9804001](https://doi.org/10.48550/arXiv.nucl-th/9804001)
 
    - LUCIAE 2.0: An Event generator for the firecracker model and the rescattering in high-energy pA and AA collisions: LUCIAE version 2.0, [Comput. Phys. Commun. 90 (1995) 121-140](https://doi.org/10.1016/0010-4655(95)00066-O); Final state interactions in the (nuclear) FRITIOF string interaction scenario, [Z. Phys. C 70 (1996) 499](https://doi.org/10.1007/s002880050127).
@@ -196,12 +196,17 @@ The released code are available on [https://github.com/ArcsaberHep/PACIAE4/relea
 ## Update notes:
 
 <!----------------------------------------------------------------------------->
-### 11/2024: In version PACIAE 4.0.02
+### 12/2024 ~ 07/2025: In version PACIAE 4.0.03
 - In "analy_40.f90" and "Rms_analysis.f90", fixed analysis code of mean pT \< pT \>. Analysis code of anisotropic flows were added.
+- In "Pythia8CppInterface.cpp", fixed two bugs of "B_PY8" and "C_PY8" frameworks.
+  - When performing lepton-nucleus collisions, nPDF statements might be applied to the lepton.
+  - A "Beams:idB" was wrongly written as "Beams:idA", which caused serious problems for lepton-nucleus collisions when instantiating and initializing subcollisions (*lp*, *ln*, *nl* and *pl*).
+
+  Thanks to Simón Fonseca for reporting the bug. 
 
 <!----------------------------------------------------------------------------->
 ### <font color=red> 11/2024 PACIAE 4.0 is now released! </font>
-- The released version if 4.0.02.
+- The released version is 4.0.02.
 - The code have been refactored and rewrite by the free-format modern Fortran + C++ from the fixed-format FORTRAN77.
 - PYTHIA 8 can be interfaced in now.
 - The gluon splitting and quark deexcitation mechanisms, along with the coalescence hadronization model have been improved.

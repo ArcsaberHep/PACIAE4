@@ -2,13 +2,13 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: An-Ke Lei, January 2024 - January 2025.
+!! Author: An-Ke Lei, January 2024 - July 2025.
 
 !> This is the Fortran interface program to link PACIAE (Fortran 77/90) with
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at CCNU on 03/07/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -2618,6 +2618,21 @@
 
 
     IS_NUCLEUS = ABS(KF) > 1000000000
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_LEPTON( KF )
+!!  Determines whether a particle (KF code) is a lepton.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+
+
+    IS_LEPTON = ABS(KF) >= 11 .AND. ABS(KF) <= 18
 
 
     RETURN

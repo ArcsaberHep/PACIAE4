@@ -2,13 +2,13 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, July 2002 - January 2025.
+!! Author: Ben-Hao Sa, July 2002 - July 2025.
 
 !> This is the program to perform the string fragmentation hadronization by
 !!  interfacing with PYTHIA 6/8.
 
 !!                                             By Ben-Hao at CIAE on 31/07/2002
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at UiO  on 03/07/2025
 
 
         subroutine sfm

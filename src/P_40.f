@@ -13,7 +13,7 @@ C*   8. about iikk, kkii, smadel and shanul stemming from PACIAE;   **
 C*   9. /PYBINS/, DATA IHIST 20000 -> 200000;                       **
 C*  10. printing FORMAT in PYDUMP.                                  **
 C*                                                    By Ben-Hao Sa **
-C*                   Last updated by An-Ke Lei at UiO on 17/01/2025 **
+C*                  Last updated by An-Ke Lei at CCNU on 03/07/2025 **
 C*********************************************************************
 
 C*********************************************************************
@@ -41201,7 +41201,7 @@ C...Symmetric choice for debugging only
       ENDIF
 c112819
         adj15=adj1(5)
-        if( INT(adj15).ne.0 .AND. INT((adj15)).ne. 2 )then
+        if( INT(adj15).ne.0 )then
         call shanul(x,q2,rag,raq)
         do i1=-6,6
         if(i1.eq.0)xppr(i1)=xppr(i1)*rag

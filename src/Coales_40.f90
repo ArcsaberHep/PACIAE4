@@ -2,13 +2,13 @@
 !! Copyright (C) 2024 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, June 2004 - January 2025.
+!! Author: Ben-Hao Sa, June 2004 - July 2025.
 
 !> This is the program to perform the coalescence hadronization via the
 !!  phenomenological coalescence model of PACIAE.
 
 !!                                             By Ben-Hao at CIAE on 04/06/2004
-!!                                  Last updated by An-Ke at UiO  on 17/01/2025
+!!                                  Last updated by An-Ke at UiO  on 03/07/2025
 
 
         subroutine coales( i_coal )

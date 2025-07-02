@@ -1431,7 +1431,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 # Copyright (C) 2024 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, January 2024 - November 2024.
+# Author: An-Ke Lei, January 2024 - July 2025.
 #
 # This is is the Makefile used to complie and build PACIAE program linked with
 #  PYTHIA 8 on POSIX systems.
@@ -1446,7 +1446,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 #  i.e. "man make" or "make --help".
 #
 #                                               By An-Ke at CCNU on 16/01/2024
-#                                  Last updated by An-Ke at UiO  on 11/11/2024
+#                                  Last updated by An-Ke at CCNU on 03/07/2025
 ################################################################################
 
 ################################################################################

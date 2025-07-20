@@ -1,6 +1,6 @@
 #pragma once
 // PaciaeUserHooks.hpp is a part of the PACIAE event generator.
-// Copyright (C) 2024 PACIAE Group.
+// Copyright (C) 2025 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
 // Author: An-Ke Lei, September 2024 - July 2025.
@@ -8,7 +8,7 @@
 // Header file to allow user access to program at different stages.
 
 //                                               By An-Ke at UiO  on 14/09/2024
-//                                  Last updated by An-Ke at CCNU on 03/07/2025
+//                                  Last updated by An-Ke at CCNU on 20/07/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -57,15 +57,20 @@ public:
 class PaciaeImpactParameterGenerator : public ImpactParameterGenerator {
 
 public:
-    PaciaeImpactParameterGenerator() : b(0.0), phi(0.0), weight(1.0) {}
+    PaciaeImpactParameterGenerator() : b(0.0), bMin(0.0), bMax(0.0),
+        phi(0.0), phiSwitch(0), weight(1.0) {}
     ~PaciaeImpactParameterGenerator() {}
 
 //--------------------------------------------------------------------------
 
 //  Sets b, phi and weight parameters via externally passed ones.
-    void setImpactParameter( double bIn, double phiIn, double weightIn ) {
+    void setImpactParameter( double bIn, double bMinIn, double bMaxIn,
+        double phiIn, int phiSwitchIn, double weightIn ) {
         b = bIn;
+        bMin = bMinIn;
+        bMax = bMaxIn;
         phi = phiIn;
+        phiSwitch = phiSwitchIn;
         weight = weightIn;
         return;
     }
@@ -75,12 +80,21 @@ public:
 //  Method for generating impact parameters.
     virtual Vec4 generate( double & weightOut ) const override {
         weightOut = weight;
-        return Vec4( b*cos(phi), b*sin(phi), 0.0, 0.0 );
+        return ( phiSwitch == 1 ) ? Vec4( b*sin(phi), b*cos(phi), 0.0, 0.0 )
+                                  : Vec4( b, 0.0, 0.0, 0.0 );
+    }
+
+//  Returns the cross section scale.
+    double xSecScale() const override {
+        return M_PI*( pow2(bMax) - pow2(bMin) );
     }
 
 private:
     double b;
+    double bMin;
+    double bMax;
     double phi;
+    int phiSwitch;
     double weight;
 
 };

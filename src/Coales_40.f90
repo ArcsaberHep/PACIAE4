@@ -1,5 +1,5 @@
 !! Coales_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, June 2004 - July 2025.
@@ -8,7 +8,7 @@
 !!  phenomenological coalescence model of PACIAE.
 
 !!                                             By Ben-Hao at CIAE on 04/06/2004
-!!                                  Last updated by An-Ke at UiO  on 03/07/2025
+!!                                  Last updated by An-Ke at UiO  on 20/07/2025
 
 
         subroutine coales( i_coal )

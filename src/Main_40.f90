@@ -1,5 +1,5 @@
 !! Main_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, ???? 2006 - July 2025.
@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at CCNU on 03/07/2025
+!!                                  Last updated by An-Ke at CCNU on 20/07/2025
 
 
 
@@ -366,14 +366,22 @@
 !            = energy_A if ifram=2, for back-to-back system (GeV)
 !       energy_B: if ifram=2; energy_A, +Z direction; energy_B, -Z direction
 
-!       bmin,bmax : minimum and maximum impact parameters, bmin=bmax means
-!                   definite impact parameter
-!       psno: = 0, fixed impact parameter (=bmin)
-!             = 1, systematic sampling method
-!             = 2, random sampling method
-!             = 3, for PYTHIA8/Angantyr mode, the original Gaussian sampling,
-!                  This option will generate weighted events and set a
-!                  large range of 0 < b < 20+ fm automatically.
+!       bmin, bmax : minimum and maximum impact parameters, bmin=bmax means
+!                    definite impact parameter
+!       psno: b parameter sampling method for [bmin, bmax].
+!             = 0, fixed b (unit-weight, b = bmin, phi = 0).
+!               1, systematic sampling (unit-weight, phi = 0).
+!               2, random sampling (unit-weight, phi = 0).
+!               3, for Angantyr ion mode, original Gaussian sampling.
+!                  This option will generate weighted events and set
+!                  a large range of 0 < b < 20+ fm automatically
+!                  (weighted, phi = [0, 2*pi] ).
+!               4, for Angantyr ion mode, fixed b
+!                  (unit-weight, b = bmin, phi = [0, 2*pi] ).
+!               5, for Angantyr ion mode, systematic sampling
+!                  (unit-weight, phi = [0, 2*pi] ).
+!               6, for Angantyr ion mode, random sampling
+!                  (unit-weight, phi = [0, 2*pi] ).
 !       2*nmax: the number of intervals segmented in [bmin,bmax] for the
 !               systematic sampling (psno=1)
 
@@ -551,7 +559,7 @@
 !           =0, default seed = 20240116, can be used for debug
 !           =1, seed from the real-time colock
 !           >1, sets seed as adj1(26)
-!       27: largest momentum allowed for particle  into rescatterings ('dpmax')
+!       27: largest momentum allowed for particle into rescatterings ('dpmax')
 !       28: largest position allowed for particle in hadcas ( which is 1. in
 !            usu.dat, but is recalculated in the running,
 !            drmax=para(10)*max(rnt,rnp)*adj1(28) )
@@ -887,9 +895,9 @@
 !       Unneccesary in A- and D-framework. (?)
         if( i_mode == 1 .OR. i_mode == 4 ) adj1(30) = 0D0
 
-!       Lets "psno=3" work well. Angantyr Gaussian b-parameter generator.
-        if( (psno < 0D0 .OR. psno > 2D0) .AND. i_mode /= 8 .AND. i_mode /= 9 ) &
-            psno = 2D0
+!       Lets "psno=3" work well for non-Angantyr modes.
+        if( INT(psno) == 3 .AND. i_mode /= 8 .AND. i_mode /= 9 ) psno = 2D0
+        if( INT(psno) < 0 .OR. INT(psno) > 6 ) psno = 2D0
 
 !       Elastic or el. + inel. collisions and w/ or w/o diquarks breaking-up.
         if( iparres < 0 .OR. iparres > 3 ) iparres = 0
@@ -1317,11 +1325,11 @@
         sreac=0.
 
         averb=0.
-!       N_bin in case of psno=2
+!       N_bin in case of psno=2 or 6
         psnon=0.
-!       parojectile N_part in case of psno=2
+!       parojectile N_part in case of psno=2 or 6
         psnop=0.
-!       target N_part in case of psno=2
+!       target N_part in case of psno=2 or 6
         psnot=0.
 !       statistics of the number of studied leptons
         vnlep=0.d0
@@ -1720,7 +1728,7 @@
          itden == 2) .or. ipden >= 11 ) goto 80001
         csnn1=csnn*10   ! csnn in fm^2 csnn1 in mb
         idw1=idw/50   ! *100
-        if( ipden < 2) call xOVERLAP(nap,nat,rnp,rnt,csnn1,kjp23,kjp24, &
+        if( ipden < 2 ) call xOVERLAP(nap,nat,rnp,rnt,csnn1,kjp23,kjp24, &
          rou0,idw1)
 
 80001   continue
@@ -1729,8 +1737,7 @@
 !       for given b (impact parameter)
 
 !---------------------------------   Fixed b   ---------------------------------
-!       if(dabs(bmin-bmax) < 10d-4)then   ! i.e. case of psno=0.
-        if( INT(psno) == 0 )then
+        if( INT(psno) == 0 .OR. INT(psno) == 4 )then
             bp=bmin
             r4=rnp
             if(rnt > rnp) r4=rnt
@@ -1775,11 +1782,10 @@
             write(19,*) "#! psno, b, N_part_p, N_part_t, N_bin " // &
                         "(optical Glauber)=", psno,bp,vneump,vneumt,evbin
             return
-        endif
 !---------------------------------   Fixed b   ---------------------------------
 
 !--------------------------    Systematic Sampling   ---------------------------
-        if( INT(psno) == 1 )then
+        else if( INT(psno) == 1 .OR. INT(psno) == 5 )then
 !       systematic sampling method for given interval of b according to b**2 law
             nmax2=2*nmax
             bmaxn=(bmax*bmax-bmin*bmin)/(2D0*nmax)
@@ -1866,11 +1872,16 @@
             aanbin=anbin
             astbp=pir
             astbt=tir
-        endif
 !--------------------------    Systematic Sampling   ---------------------------
 
+!-----------------------   Angantyr Gaussian Sampling   ------------------------
+        else if( INT(psno) == 3 )then
+            write(19,*) "#! Angantyr weighted events via Gaussian sampling " &
+                     // "of b from (bmin,bmax)"
+!-----------------------   Angantyr Gaussian Sampling   ------------------------
+
 !-----------------------------   Random Sampling   -----------------------------
-        if(INT(psno) == 2)then
+        else
             write(19,*) "#! Random sampling of b from (bmin,bmax)"
         end if
 !-----------------------------   Random Sampling   -----------------------------
@@ -2208,11 +2219,11 @@
 !-------------------------------------------------------------------------------
 !------------------------   Impact Parameter Sampling   ------------------------
 !       Fixed b.
-        if( INT(psno) == 0 )then
+        if( INT(psno) == 0 .OR. INT(psno) == 4 )then
             bp = bmin
 
 !       Systematic sampling method.
-        else if( INT(psno) == 1 )then
+        else if( INT(psno) == 1 .OR. INT(psno) == 5 )then
             jjj = jjj + 1
             ! For the error event.
             if( iii == iii_0 ) jjj = jjj - 1
@@ -2226,8 +2237,11 @@
 !           10: total number of impact paremeters.
             if( jjj == 10 ) jjj = 0
 
+!       Angantyr Gaussian sampling method.
+        else if( INT(psno) == 3 )then
+
 !       Random sampling method.
-        else if( INT(psno) == 2 )then
+        else
             bmin2 = bmin*bmin   ! 190620
             bp    = sqrt( pyr(1)*( bmax*bmax - bmin2 ) + bmin2 )
 !       calculate the overlap region of two nuclei at given bp
@@ -3226,13 +3240,11 @@
 
 !-----------------------------   Event Averaging   -----------------------------
 !       averaged over events
-        psnono = 0D0
-        if( INT(psno) == 2 )then
-            averbo = averb / flaa
-            psnono = psnon / flaa
-            psnopo = psnop / flaa
-            psnoto = psnot / flaa
-        endif
+        averbo = averb / flaa
+        psnono = psnon / flaa
+        psnopo = psnop / flaa
+        psnoto = psnot / flaa
+
         dnmino  = dnmin  / flaa
         dnminfo = dnminf / flaa
         dnchao  = dncha  / flaa
@@ -3364,25 +3376,25 @@
         write(12,*) "#! Nnp, Ntot, Nep in parini ="
         write(12,*) sknpo, sknno+skppo+sknpo, skepo
 
-        if( INT(psno) == 0 )then
+        if( INT(psno) == 0 .OR. INT(psno) == 4 )then
             write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
                         "(optical Glauber) ="
-            write(12,*) psno, bp, vneump, vneumt, evbin
-        else if( INT(psno) == 1 )then
-            write(12,*) "#! event averaged b, avneu, Npart_p, " // &
+            write(12,*) INT(psno), bp, vneump, vneumt, evbin
+        else if( INT(psno) == 1 .OR. INT(psno) == 5 )then
+            write(12,*) "#! psno, ave. b, Npart_p, " // &
                         "Npart_t, T_pt (optical Glauber) ="
-            write(12,*) avb, avneu, astbp, astbt, aanbin
-        else if( INT(psno) == 2 )then
-            write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
-                        "(optical Glauber) ="
-            write(12,*) psno, averbo, psnopo, psnoto, psnono*csnn
-        else
+            write(12,*) INT(psno), avb, astbp, astbt, aanbin
+        else if( INT(psno) == 3 )then
             write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "
             write(12,*) INT(psno), sum_bParam_ANG(1)  / flaa, &
                                   sum_Npart_ANG(2,1) / flaa, &
                                   sum_Npart_ANG(2,2) / flaa, &
                         ( sum_Ncoll_ANG(3) + sum_Ncoll_ANG(4) &
                         + sum_Ncoll_ANG(5) + sum_Ncoll_ANG(6) ) / flaa
+        else
+            write(12,*) "#! psno, ave. b, Npart_p, Npart_t and N_bin "// &
+                        "(optical Glauber) ="
+            write(12,*) INT(psno), averbo, psnopo, psnoto, psnono*csnn
         end if
         write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"

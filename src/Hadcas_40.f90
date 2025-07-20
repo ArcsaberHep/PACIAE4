@@ -1,5 +1,5 @@
 !! Hadcas_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, September 2000 - July 2025.
@@ -7,7 +7,7 @@
 !> This is the program to deal with the hadron cascade (hadronic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 20/09/2000
-!!                                  Last updated by An-Ke at UiO  on 03/07/2025
+!!                                  Last updated by An-Ke at UiO  on 20/07/2025
 
 
         subroutine hadcas( time_had, ijkk )
@@ -12286,9 +12286,9 @@
 ! PARAM(5) (D=2.0mb) cross-section of pi+pi --> K Kbar
 ! PARAM(6) (D=0.85) ratio of inelastic cross-section to total x-section
 ! PARAM(7) (D=1.0fm) formation time at rest-frame of particle
-! PARAM(8) (D=0.02fm) time accuracy used in hadron cascade
+! PARAM(8) (D=0.00001fm/c) time accuracy used in the partonic initialization
 ! PARAM(9) (D=0.1) accuracy of four-momentum conservation
-! PARAM(10) (D=4.0) size of effective rescattering region is product of
+! PARAM(10) (D=200.0) size of effective rescattering region is product of
 !            PARAM(10) and radius of target, origin is set on (0,0,0)
 ! PARAM(11) (D=0.16fm^-3) nucleon density of nucleus
 ! PARAM(12) (D=0.04 GeV^2/c^2) The <Pt^2> for the Gaussian distribution

@@ -1,5 +1,5 @@
 !! Sfm_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, July 2002 - July 2025.
@@ -8,7 +8,7 @@
 !!  interfacing with PYTHIA 6/8.
 
 !!                                             By Ben-Hao at CIAE on 31/07/2002
-!!                                  Last updated by An-Ke at UiO  on 03/07/2025
+!!                                  Last updated by An-Ke at UiO  on 20/07/2025
 
 
         subroutine sfm

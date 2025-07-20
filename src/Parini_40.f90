@@ -1,5 +1,5 @@
 !! Parini_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: Ben-Hao Sa, December 2003 - July 2025.
@@ -8,7 +8,7 @@
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.
 
 !!                                             By Ben-Hao at CIAE on 04/12/2003
-!!                                  Last updated by An-Ke at CCNU on 03/07/2025
+!!                                  Last updated by An-Ke at CCNU on 20/07/2025
 
 
         subroutine parini( time_ini, ijk )

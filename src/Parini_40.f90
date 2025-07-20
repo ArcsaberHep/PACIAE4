@@ -6891,9 +6891,7 @@
 !---------------------------   Angantyr Statistics   ---------------------------
         if( i_mode == 8 .OR. i_mode == 9 )then
             ! The impact parameter.
-            bp   = VINT(139)
-            ! The impact parameter angle phi.
-            bPhi = VINT(370)
+            bp = VINT(139)
             ! Avoids potential divergence from PYTHIA8/Angantyr pA/AA + HardQCD.
             ! We cannot obtain accurate results from psno=3 but psno /= 3 does.
             if( INT(psno) /= 3 )then
@@ -6904,81 +6902,18 @@
                 PARI(9)   = 1D0
                 PARI(10)  = 1D0
             end if
-            weightSum = VINT(98)
-            ! one_over_weight = VINT(99)   ! 1/weight
-            bWeight   = VINT(100)
-            ! Cross sections.
-            glauberTot    = VINT(371)
-            glauberND     = VINT(372)
-            glauberINEL   = VINT(373)
-            glauberEL     = VINT(374)
-            glauberDiffP  = VINT(375)
-            glauberDiffT  = VINT(376)
-            glauberDDiff  = VINT(377)
-            glauberBSlope = VINT(378)
-            ! Error.
-            glauberTotErr    = VINT(381)
-            glauberNDErr     = VINT(382)
-            glauberINELErr   = VINT(383)
-            glauberELErr     = VINT(384)
-            glauberDiffPErr  = VINT(385)
-            glauberDiffTErr  = VINT(386)
-            glauberDDiffErr  = VINT(387)
-            glauberBSlopeErr = VINT(388)
-
-            nCollTot    = MINT(385)
-            nCollND     = MINT(386)
-            nCollNDTot  = MINT(387)
-            nCollSDP    = MINT(388)
-            nCollSDT    = MINT(389)
-            nCollDD     = MINT(390)
-            nCollCD     = MINT(391)
-            nCollEL     = MINT(392)
-
-            nPartProj   = MINT(393)
+            ! nPartProj   = MINT(393)
             nAbsProj    = MINT(394)
             nDiffProj   = MINT(395)
-            nElProj     = MINT(396)
-            nPartTarg   = MINT(397)
+            ! nElProj     = MINT(396)
+            ! nPartTarg   = MINT(397)
             nAbsTarg    = MINT(398)
             nDiffTarg   = MINT(399)
-            nElTarg     = MINT(400)
-!           Event accumulation.
-            sum_bParam_ANG(1) = sum_bParam_ANG(1) + bp   * bWeight
-            sum_bParam_ANG(2) = sum_bParam_ANG(2) + bPhi * bWeight
-            sum_bParam_ANG(3) = sum_bParam_ANG(3) + bWeight**2
-            sum_sigma_ANG(1,1)  = sum_sigma_ANG(1,1)  + glauberTot      *bWeight
-            sum_sigma_ANG(1,2)  = sum_sigma_ANG(1,2)  + glauberTotErr   *bWeight
-            sum_sigma_ANG(2,1)  = sum_sigma_ANG(2,1)  + glauberND       *bWeight
-            sum_sigma_ANG(2,2)  = sum_sigma_ANG(2,2)  + glauberNDErr    *bWeight
-            sum_sigma_ANG(3,1)  = sum_sigma_ANG(3,1)  + glauberINEL     *bWeight
-            sum_sigma_ANG(3,2)  = sum_sigma_ANG(3,2)  + glauberINELErr  *bWeight
-            sum_sigma_ANG(4,1)  = sum_sigma_ANG(4,1)  + glauberEL       *bWeight
-            sum_sigma_ANG(4,2)  = sum_sigma_ANG(4,2)  + glauberELErr    *bWeight
-            sum_sigma_ANG(5,1)  = sum_sigma_ANG(5,1)  + glauberDiffP    *bWeight
-            sum_sigma_ANG(5,2)  = sum_sigma_ANG(5,2)  + glauberDiffPErr *bWeight
-            sum_sigma_ANG(6,1)  = sum_sigma_ANG(6,1)  + glauberDiffT    *bWeight
-            sum_sigma_ANG(6,2)  = sum_sigma_ANG(6,2)  + glauberDiffTErr *bWeight
-            sum_sigma_ANG(7,1)  = sum_sigma_ANG(7,1)  + glauberDDiff    *bWeight
-            sum_sigma_ANG(7,2)  = sum_sigma_ANG(7,2)  + glauberDDiffErr *bWeight
-            sum_sigma_ANG(8,1)  = sum_sigma_ANG(8,1)  + glauberBSlope   *bWeight
-            sum_sigma_ANG(8,2)  = sum_sigma_ANG(8,2)  + glauberBSlopeErr*bWeight
-            do i=1,8,1
-                j = i + 384
-                sum_Ncoll_ANG(i) = sum_Ncoll_ANG(i) + MINT(j) * bWeight
-            end do
-            sum_Npart_ANG(1,1) = sum_Npart_ANG(1,1) + nPartProj *bWeight
-            sum_Npart_ANG(2,1) = sum_Npart_ANG(2,1) + nAbsProj  *bWeight
-            sum_Npart_ANG(3,1) = sum_Npart_ANG(3,1) + nDiffProj *bWeight
-            sum_Npart_ANG(4,1) = sum_Npart_ANG(4,1) + nElProj   *bWeight
-            sum_Npart_ANG(1,2) = sum_Npart_ANG(1,2) + nPartTarg *bWeight
-            sum_Npart_ANG(2,2) = sum_Npart_ANG(2,2) + nAbsTarg  *bWeight
-            sum_Npart_ANG(3,2) = sum_Npart_ANG(3,2) + nDiffTarg *bWeight
-            sum_Npart_ANG(4,2) = sum_Npart_ANG(4,2) + nElTarg   *bWeight
+            ! nElTarg     = MINT(400)
 
             ! The number of wounded and unwounded nucleons.
             woun = nAbsProj + nDiffProj + nAbsTarg + nDiffTarg
-            unwoun = nap + nat - woun
+            ! unwoun = nap + nat - woun
         end if
 !---------------------------   Angantyr Statistics   ---------------------------
 

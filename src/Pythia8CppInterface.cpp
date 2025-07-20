@@ -1,5 +1,5 @@
 // Pythia8CppInterface.cpp is a part of the PACIAE event generator.
-// Copyright (C) 2024 PACIAE Group.
+// Copyright (C) 2025 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
 // Author: An-Ke Lei, January 2024 - July 2025.
@@ -8,7 +8,7 @@
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 03/07/2025
+//                                  Last updated by An-Ke at CCNU on 20/07/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -612,8 +612,16 @@ using namespace Paciae4;
         || std::abs(MSTI_c[11]) > 1000000000 )
         && bSampleMode != 3 && (iExecMode == 8 || iExecMode == 9) ) {
         double bp = VINT_c[138];
-        (**paciaeHIUserHooks) -> getBGeneratorPtr()
-                              -> setImpactParameter( bp, 0.0, 1.0 );
+        double bpMin = VINT_c[359];
+        double bpMax = VINT_c[360];
+        double phi = 0.0;
+        int phiSwitch = 0;
+        if( bSampleMode == 4 || bSampleMode == 5 || bSampleMode == 6 ) {
+            phi = 2.0*M_PI*((*pythia) -> rndm).flat();
+            phiSwitch = 1;
+        }
+        (**paciaeHIUserHooks) -> getBGeneratorPtr() -> setImpactParameter( bp,
+            bpMin, bpMax, phi, phiSwitch, 1.0 );
     }
 
 // Event generation.

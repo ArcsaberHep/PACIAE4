@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # PACIAE.sh is a part of the PACIAE event generator.
-# Copyright (C) 2024 PACIAE Group.
+# Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
 # Author: An-Ke Lei, October 2022 - July 2025.
@@ -8,7 +8,7 @@
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at CCNU on 03/07/2025
+#                                   Last updated by An-Ke at CCNU on 20/07/2025
 
 
 
@@ -221,12 +221,19 @@ KF_targ=2212   # KF_targ: PDG id code (KF code) of the target.
 b_min=0     # (D=0.)  bmin, min impact parameter.
 b_max=20    # (D=20.) bmax, max impact parameter.
 b_samp=2    # (D=2) psno, b parameter sampling method for [b_min,b_max].
-            #             =0, fixed b
-            #              1, systematic sampling
-            #              2, random sampling
+            #             =0, fixed b (unit-weight, b = bmin, phi = 0).
+            #              1, systematic sampling (unit-weight, phi = 0).
+            #              2, random sampling (unit-weight, phi = 0).
             #              3, for Angantyr ion mode, original Gaussian sampling.
             #                 This option will generate weighted events and set
-            #                 a large range of 0 < b < 20+ fm automatically.
+            #                 a large range of 0 < b < 20+ fm automatically
+            #                 (weighted, phi = [0, 2*pi] ).
+            #              4, for Angantyr ion mode, fixed b
+            #                 (unit-weight, b = bmin, phi = [0, 2*pi] ).
+            #              5, for Angantyr ion mode, systematic sampling
+            #                 (unit-weight, phi = [0, 2*pi] ).
+            #              6, for Angantyr ion mode, random sampling
+            #                 (unit-weight, phi = [0, 2*pi] ).
 i_frame=1   # (D=1) ifram, collision frame: 0 = fixed target with a incident pz;
             #                               1 = collider with CMS energy (win);
             #                               2 = back-to-back beams with
@@ -706,12 +713,20 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 # bmin,bmax,psno,nmax (D=0., 20., 2, 10)
 #  bmin: minimum impact parameters (fm)
 #  bmax: maximum impact parameters
-#  psno: =0 fixed impact parameter
-#        =1 impact parameter is sampled by the systematic sampling method
-#        =2 randomly sampled impact parameter
-#        =3 for PYTHIA8/Angantyr mode, the original Gaussian sampling method
-#           This option will generate weighted events and set a large range of
-#            0 < b < 20+ fm automatically.
+#  psno: b parameter sampling method for [bmin, bmax].
+#        = 0, fixed b (unit-weight, b = bmin, phi = 0).
+#          1, systematic sampling (unit-weight, phi = 0).
+#          2, random sampling (unit-weight, phi = 0).
+#          3, for Angantyr ion mode, original Gaussian sampling.
+#             This option will generate weighted events and set
+#             a large range of 0 < b < 20+ fm automatically
+#             (weighted, phi = [0, 2*pi] ).
+#          4, for Angantyr ion mode, fixed b
+#             (unit-weight, b = bmin, phi = [0, 2*pi] ).
+#          5, for Angantyr ion mode, systematic sampling
+#             (unit-weight, phi = [0, 2*pi] ).
+#          6, for Angantyr ion mode, random sampling
+#             (unit-weight, phi = [0, 2*pi] ).
 #  nmax: the number of intervals segmented in [bmin,bmax] when psno=1
 #
 # kjp21,x_ratio,decpro (D=1, 0.85/0.1, 0.9)
@@ -915,8 +930,8 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #           =1, seed from the real-time clock.
 #           >1, sets seed as "adj1(26)".
 #       27: largest momentum allowed for particles into rescatterings (dpmax).
-#       28: concerned to the largest position allowed for particle in 
-#            hadcas, it will be recalculated in program running 
+#       28: concerned to the largest position allowed for particle in
+#            hadcas, it will be recalculated in program running
 #           ( drmax=para(10)*dmax1(rnt,rnp)*adj1(28) ).
 #       29: For coal, sample the deexcited daughter qqbar-pair energy/light-cone
 #            momentum fraction z taking from mother
@@ -1428,7 +1443,7 @@ NAME_AVE="Rms_analysis"
 read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 ################################################################################
 # Makefile is a part of the PACIAE event generator.
-# Copyright (C) 2024 PACIAE Group.
+# Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
 # Author: An-Ke Lei, January 2024 - July 2025.
@@ -1446,7 +1461,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 #  i.e. "man make" or "make --help".
 #
 #                                               By An-Ke at CCNU on 16/01/2024
-#                                  Last updated by An-Ke at CCNU on 03/07/2025
+#                                  Last updated by An-Ke at CCNU on 20/07/2025
 ################################################################################
 
 ################################################################################
@@ -2038,15 +2053,15 @@ NP=${n_run}
 
 
 # PACIAE_SIM.sh is a part of the PACIAE event generator, and was generated by "PACIAE.sh".
-# Copyright (C) 2024 PACIAE Group.
+# Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, January 2024 - November 2024.
+# Author: An-Ke Lei, January 2024 - July 2025.
 
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 14/02/2024
-#                                   Last updated by An-Ke at UiO  on 11/11/2024
+#                                   Last updated by An-Ke at UiO  on 20/07/2025
 
 
 ################################################################################
@@ -2123,7 +2138,7 @@ NP=${n_run}
 
 
 # Prompts the current date and time.
-echo -e "\nNow is \$(date +"%Y-%m-%d %T")"
+echo -e "Now is \$(date +"%Y-%m-%d %T")"
 
 
 
@@ -2187,7 +2202,6 @@ cp -f ../../../../../bin/${NAME_xAVE} ./Average
 cd ./Average
 
 echo "${n_run},${n_eve}" > input_rms_analysis.dat
-echo "${i_sim_mode},${b_samp}" >> input_rms_analysis.dat
 echo "${n_particle_specie},${n_distribution},${n_kine_cut},${n_bin_hist}" >> input_rms_analysis.dat
 
 # nohup time echo "${n_run}" | ./${NAME_xAVE} > screen.log &

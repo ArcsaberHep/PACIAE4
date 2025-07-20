@@ -1,5 +1,5 @@
 !! Pythia8_fort_interface.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2024 PACIAE Group.
+!! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
 !! Author: An-Ke Lei, January 2024 - July 2025.
@@ -8,7 +8,7 @@
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at CCNU on 03/07/2025
+!!                                  Last updated by An-Ke at CCNU on 20/07/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1336,6 +1336,8 @@
 !           MINT(355): i_NN_pair
 !
 !           VINT(139): bp
+!           VINT(360): b_min
+!           VINT(361): b_max
 !           VINT(290): win
 !--------------------
 !         MSTU & PARU
@@ -1381,7 +1383,7 @@
 !           MINT(389): nCollSDT     from Angantyr
 !           MINT(390): nCollDD      from Angantyr
 !           MINT(391): nCollCD      from Angantyr
-!           MINT(392): nCollEL      from Angantyr
+!           MINT(392): nCollEl      from Angantyr
 !           MINT(393): nPartProj    from Angantyr
 !           MINT(394): nAbsProj     from Angantyr
 !           MINT(395): nDiffProj    from Angantyr
@@ -1944,6 +1946,9 @@
         ! MSTI(111) = iframe
 !   Records the collision energy.
         VINT(290) = WIN
+!   Records the impact parameter range.
+        VINT(360) = b_min
+        VINT(361) = b_max
 !   Records the type of the collision.
         MINT(41) = ipden
         MINT(42) = itden
@@ -2111,6 +2116,9 @@
         ! MSTI(111) = iframe
 !   Records the collision energy.
         VINT(290) = WIN
+!   Records the impact parameter range.
+        VINT(360) = b_min
+        VINT(361) = b_max
 !   Records the type of the collision.
         MINT(41) = ipden
         MINT(42) = itden

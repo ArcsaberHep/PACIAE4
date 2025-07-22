@@ -8,7 +8,7 @@
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 20/07/2025
+//                                  Last updated by An-Ke at CCNU on 22/07/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -55,6 +55,7 @@ using namespace Paciae4;
     *pythia = new Pythia();
     // Shorthand for some public members of pythia (also static ones).
     Settings& settings = (*pythia) -> settings;
+    ParticleData& particleData = (*pythia) -> particleData;
 
 // Note that in Fortran, an array index begins from (1), while in C++ it
 //  is from [0] . So e.g. MSTP_c[4] here represents MSTP(5) in the
@@ -156,6 +157,10 @@ using namespace Paciae4;
     }
 
 // Selects subprocesses.
+    int idA = MSTI_c[10];
+    int idB = MSTI_c[11];
+    int absIdA = std::abs( MSTI_c[10] );
+    int absIdB = std::abs( MSTI_c[11] );
     int& iProcess = MINT_c[0];
     switch (iProcess) {
         // Inelastic (INEL)
@@ -212,9 +217,47 @@ using namespace Paciae4;
             (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
             (*pythia) -> readString( "WeakZ0:gmZmode = 2" );
             break;
-        // Inelastic nondiffrative. (Minimum Bias)
+        // Default.
         case 10 :
-            (*pythia) -> readString( "SoftQCD:nonDiffractive = on" );
+            // For hh/hA/AB, inelastic nondiffrative (minimum-bias, MB).
+            if( ( particleData.isHadron( idA ) && particleData.isHadron( idB ) )
+                || ( particleData.isHadron( idA ) && absIdB > 1000000000 )
+                || ( particleData.isHadron( idB ) && absIdA > 1000000000 )
+                || ( absIdA > 1000000000 && absIdB > 1000000000 ) ) {
+                (*pythia) -> readString( "SoftQCD:nonDiffractive = on" );
+            }
+            // For lh/lA, deep inelastic scatterings (DIS). t-channel boson exchange.
+            else if( ( particleData.isLepton(idA) && particleData.isHadron(idB))
+                || ( particleData.isLepton(idB) && particleData.isHadron(idA) )
+                || ( particleData.isLepton(idA) && absIdB > 1000000000 )
+                || ( particleData.isLepton(idB) && absIdA > 1000000000 ) ) {
+                (*pythia) -> readString( "WeakBosonExchange:all = on" );
+            }
+            // For ll.
+            else if( particleData.isLepton( idA )
+                && particleData.isLepton( idB ) ) {
+                // For l+l- annihilation, e.g. e+e-.
+                // l+ + l- -> gamma*/Z -> q + qbar
+                if( ( idA + idB ) == 0 ) {
+                    // Hadronic Z decays. Switches off all Z decays and then
+                    //  switches back on those to quarks.
+                    (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
+                    (*pythia) -> readString( "23:onMode = off" );
+                    (*pythia) -> readString( "23:onIfAny = 1 2 3 4 5" );
+                }
+                // l1 + l2bar -> W+- -> q1 + q2bar.
+                else {
+                    // Hadronic W decays. Switches off all W decays and then
+                    //  switches back on those to quarks.
+                    (*pythia) -> readString( "WeakSingleBoson:ffbar2W = on" );
+                    (*pythia) -> readString( "24:onMode = off" );
+                    (*pythia) -> readString( "24:onIfAny = 1 2 3 4 5" );
+                }
+            }
+            // Inelastic non-diffractive.
+            else {
+                (*pythia) -> readString( "SoftQCD:nonDiffractive = on" );
+            }
             break;
         default :
             std::cout << "\n PACIAE Warning: You have chosen an undefined " \
@@ -222,16 +265,6 @@ using namespace Paciae4;
                       << ".\n Please specify subprocesses in " \
                          "\"pythia8_extra.cfg\".\n"
                       << std::endl;
-    }
-    // For l+l- annihilation, e.g. e+e-. l+l- -> gamma*/Z -> qqbar.
-    if( std::abs(MSTI_c[10]) >= 11 && std::abs(MSTI_c[10]) <= 18
-        && std::abs(MSTI_c[11]) >= 11 && std::abs(MSTI_c[11]) <= 18
-        && MSTI_c[10]*MSTI_c[11] < 0 && iProcess <= 10 ) {
-        // Hard process, with hadronic Z decays.
-        (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
-        // Switches off all Z0 decays and then switches back on those to quarks.
-        (*pythia) -> readString( "23:onMode = off");
-        (*pythia) -> readString( "23:onIfAny = 1 2 3 4 5");
     }
 
 // Switches of Angantyr machinery.
@@ -470,7 +503,7 @@ using namespace Paciae4;
     (*pythia) -> readString( "Check:event = off" );
 
 // Reads extra setting from the external file.
-    (*pythia) -> readFile("pythia8_extra.cfg");
+    (*pythia) -> readFile( "pythia8_extra.cfg" );
 
 // Instantiates 4 PYTHIA8 objects and does initialization for lA(Al), hA(Ah)
 //   AB collisions. Typically pA(Ap) and AA. On heap, not stack!
@@ -940,7 +973,7 @@ using namespace Paciae4;
     Rndm&   rndm = (*pythia) -> rndm;
 
 // Resets the event record for filling the new one.
-    if( abs( kPY8[0][0] ) == 11 ) {
+    if( std::abs( kPY8[0][0] ) == 11 ) {
         event.reset();
     }
     else {

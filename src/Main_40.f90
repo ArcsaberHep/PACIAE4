@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at CCNU on 20/07/2025
+!!                                  Last updated by An-Ke at CCNU on 22/07/2025
 
 
 
@@ -354,7 +354,13 @@
 !              = 7 , single W+/- production
 !              = 8 , hard QCD
 !              = 9 , single Z0 production
-!              = 10, inelastic， non-diffractive (minimum-bias, MB)
+!              = 10, default.
+!                    For hh/hA/AB, inelastic non-diffractive
+!                                  (minimum-bias, MB).
+!                    For lh/lA, deep inelastic scatterings (DIS).
+!                               t-channel boson exchange (NC + CC).
+!                    For ll, l+ + l-    -> gamma*/Z -> q  + qbar
+!                         or l1 + l2bar -> W+-      -> q1 + q2bar.
 !              = other, user-defined subprocessses in "pythia6_extra.cfg"
 !                       for PYTHIA 6 or "pythia8_extra.cfg" for PYTHIA 8.
 
@@ -1529,7 +1535,7 @@
 !!            to select more subprocesses.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        LOGICAL IS_PYTHIA8, IS_LEPTON
+        LOGICAL IS_PYTHIA8, IS_NUCLEUS, IS_HADRON, IS_LEPTON
         COMMON/PYDAT3/MDCY(500,3),MDME(8000,2),BRAT(8000),KFDP(8000,5)
         COMMON/PYSUBS/MSEL,MSELPD,MSUB(500),KFIN(2,-40:40),CKIN(200)
         common/sa12/ppsa(5),nchan,nsjp,sjp,ttaup,taujp
@@ -1548,8 +1554,9 @@
 !       For PYTHIA 6.
 !       Default PYTHIA, PACIAE-defined or user-defind subprocesses.
         CALL PYGIVE( "MSEL=0" )
+        select case( nchan )
 !       Inelastic (INEL)
-        if( nchan == 0 )then
+        case( 0 )
             CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
             CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
             CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
@@ -1562,7 +1569,7 @@
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
 !       Non-Single Difractive (NSD)
-        else if( nchan == 1 )then
+        case( 1 )
             CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
             CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
             CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
@@ -1575,56 +1582,118 @@
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
 !       Used to generate Drell-Yan
-        else if( nchan == 2 )then
+        case( 2 )
             CALL PYGIVE( "MSUB(1)=1" )   ! q + qbar -> gamma* -> l+ + l-
             CALL PYGIVE( "MSTP(43)=1" )
 !       J/psi production (color singlet)
-        else if( nchan == 3 )then
+        case( 3 )
             CALL PYGIVE( "MSUB(86)=1" )    ! g + g -> J/psi + g
             CALL PYGIVE( "MSUB(106)=1")    ! g + g -> J/psi + gamma
 !       c-cbar and b-bbar production
-        else if( nchan == 4 )then
+        case( 4 )
             CALL PYGIVE( "MSUB(81)=1" )    ! Open HF, f_i+f_i^bar -> Q_k+Q_k^bar
             CALL PYGIVE( "MSUB(82)=1" )    ! Open HF, g + g -> Q_k + Q_k^bar
           ! CALL PYGIVE( "MSUB(83)=1" )    ! Open HF, q_i + f_i -> Q_k + f_l
 !       Prompt photon
-        else if( nchan == 5 )then
+        case( 5 )
             CALL PYGIVE( "MSUB(14)=1" )   !  Prompt photon, f_i+f_i^bar->g+gamma
             CALL PYGIVE( "MSUB(18)=1" )   !  Prompt photon, f_i+f_i^bar->2*gamma
             CALL PYGIVE( "MSUB(29)=1" )   !  Prompt photon, f_i +g -> f_i +gamma
             CALL PYGIVE( "MSUB(114)=1")   !  Prompt photon, g+g -> gamma +gamma
             CALL PYGIVE( "MSUB(115)=1")   !  Prompt photon, g + g -> g + gamma
 !       Soft QCD
-        else if( nchan == 6 )then
+        case( 6 )
             CALL PYGIVE( "MSUB(91)=1" )   ! Soft QCD, elastic scattering
             CALL PYGIVE( "MSUB(92)=1" )   ! Soft QCD, single diffraction(AB->XB)
             CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
             CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
 !       Single W+/- production
-        else if( nchan == 7 )then
+        case( 7 )
             CALL PYGIVE( "MSUB(2)=1" )   ! Single W, f_i + f_j^bar -> W
 !       Hard QCD
-        else if( nchan == 8 )then
+        case( 8 )
             CALL PYGIVE( "MSEL=1" )
-        else if( nchan == 9 )then
+        case( 9 )
 !       Single Z0 production
             CALL PYGIVE( "MSUB(1)=1" )   ! Single Z, f_i + f_i^bar -> Z0
             CALL PYGIVE( "MSTP(43)=2" )   ! Only Z0 included.
-!       Inelastic nondiffrative (Minimum Bias)
-        else if( nchan == 10 )then
-            CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
-            CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
-            CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
-            CALL PYGIVE( "MSUB(28)=1" )   ! Hard QCD, f_i + g -> f_i + g
-            CALL PYGIVE( "MSUB(53)=1" )   ! Hard QCD, g + g -> f_k + f_k^bar
-            CALL PYGIVE( "MSUB(68)=1" )   ! Hard QCD, g + g -> g + g
-          ! CALL PYGIVE( "MSUB(91)=1" )   ! Soft QCD, elastic scattering
-          ! CALL PYGIVE( "MSUB(92)=1" )   ! Soft QCD, single diffraction(AB->XB)
-          ! CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffraction(AB->AX)
-          ! CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
-            CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
-        else
+!       Default.
+        case( 10 )
+!           For hh/hA/AB, inelastic non-diffractive (minimum-bias, MB)
+            if(      ( IS_HADRON( KF_proj )  .AND. IS_HADRON( KF_targ )  ) &
+                .OR. ( IS_HADRON( KF_proj )  .AND. IS_NUCLEUS( KF_targ ) ) &
+                .OR. ( IS_HADRON( KF_targ )  .AND. IS_NUCLEUS( KF_proj ) ) &
+                .OR. ( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) )then
+                CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
+                CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, fi+fi^bar -> fk+fk^bar
+                CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
+                CALL PYGIVE( "MSUB(28)=1" )   ! Hard QCD, f_i + g -> f_i + g
+                CALL PYGIVE( "MSUB(53)=1" )   ! Hard QCD, g + g -> f_k + f_k^bar
+                CALL PYGIVE( "MSUB(68)=1" )   ! Hard QCD, g + g -> g + g
+              ! CALL PYGIVE( "MSUB(91)=1" )   ! Soft QCD, elastic scattering
+              ! CALL PYGIVE( "MSUB(92)=1" )   ! Soft QCD, single diffrac(AB->XB)
+              ! CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffrac(AB->AX)
+              ! CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
+                CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
+!           For lh/lA, deep inela. scatterings (DIS). t-channel boson exchange.
+            else if( ( IS_LEPTON( KF_proj ) .AND. IS_HADRON( KF_targ )  ) &
+                .OR. ( IS_LEPTON( KF_targ ) .AND. IS_HADRON( KF_proj )  ) &
+                .OR. ( IS_LEPTON( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) &
+                .OR. ( IS_LEPTON( KF_targ ) .AND. IS_NUCLEUS( KF_proj ) ) )then
+                CALL PYGIVE( "MSUB(10)=1" )   ! f_i + f_j -> f_k + f_l
+!           For ll.
+            else if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) )then
+                ! l+ + l- -> gamma*/Z -> q + qbar
+                if( KF_proj + KF_targ == 0 )then
+                    ! Hard process, with hadronic Z decays.
+                    CALL PYGIVE( "MSUB(1)=1" )
+                    ! Only allow Z0 decay to quarks (no leptonic final states).
+                    do i = MDCY(23,2), MDCY(23,2) + MDCY(23,3) - 1, 1
+                        if( IABS(KFDP(i,1)) >= 6 )then
+                            MDME(i,1) = MIN( 0, MDME(i,1) )
+                            ME=MIN( 0, MDME(i,1) )
+                            WRITE( CHAR_I, "(I20)" ) i
+                            WRITE( PACIAE_INPUT, "(I20)" ) ME
+                            PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
+                                         // ",1)=" &
+                                         // TRIM(ADJUSTL( PACIAE_INPUT ))
+                            CALL PYGIVE( PARAM_PYTHIA6 )
+                        end if
+                    end do
+                ! l1 + l2bar -> W+- -> q1 + q2bar.
+                else
+                    ! Hard process, with hadronic W decays.
+                    CALL PYGIVE( "MSUB(2)=1" )
+                    ! Only allow W+- decay to quarks (no leptonic final states).
+                    do i = MDCY(24,2), MDCY(24,2) + MDCY(24,3) - 1, 1
+                        if( IABS(KFDP(i,1)) >= 6 )then
+                            MDME(i,1) = MIN( 0, MDME(i,1) )
+                            ME=MIN( 0, MDME(i,1) )
+                            WRITE( CHAR_I, "(I20)" ) i
+                            WRITE( PACIAE_INPUT, "(I20)" ) ME
+                            PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
+                                         // ",1)=" &
+                                         // TRIM(ADJUSTL( PACIAE_INPUT ))
+                            CALL PYGIVE( PARAM_PYTHIA6 )
+                        end if
+                    end do
+                end if
+!           Inelastic non-diffractive.
+            else
+                CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
+                CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, fi+fi^bar -> fk+fk^bar
+                CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
+                CALL PYGIVE( "MSUB(28)=1" )   ! Hard QCD, f_i + g -> f_i + g
+                CALL PYGIVE( "MSUB(53)=1" )   ! Hard QCD, g + g -> f_k + f_k^bar
+                CALL PYGIVE( "MSUB(68)=1" )   ! Hard QCD, g + g -> g + g
+              ! CALL PYGIVE( "MSUB(91)=1" )   ! Soft QCD, elastic scattering
+              ! CALL PYGIVE( "MSUB(92)=1" )   ! Soft QCD, single diffrac(AB->XB)
+              ! CALL PYGIVE( "MSUB(93)=1" )   ! Soft QCD, single diffrac(AB->AX)
+              ! CALL PYGIVE( "MSUB(94)=1" )   ! Soft QCD, double diffraction
+                CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
+            end if
+        case default
 !       Other: user-defined subprocessses in "pythia6_extra.cfg" for
 !              PYTHIA 6 or "pythia8_extra.cfg" for PYTHIA 8.
             write(22,*)
@@ -1633,31 +1702,7 @@
             write(22,*) "Please specify subprocesses in " &
                      // """pythia6_extra.cfg"" or ""pythia8_extra.cfg""."
             write(22,*)
-        end if
-
-!       For l+l- annihilation, e.g. e+e-. l+l- -> gamma*/Z -> qqbar.
-        if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) &
-            .AND. KF_proj*KF_targ < 0 .AND. nchan <= 10 )then
-            CALL PYGIVE( "MSEL=0" )
-!           Hard process, with hadronic Z decays.
-            CALL PYGIVE( "MSUB(1)=1" )
-!           Only allow Z0 decay to quarks (i.e. no leptonic final states).
-            do i = MDCY(23,2), MDCY(23,2) + MDCY(23,3) - 1, 1
-                if( IABS(KFDP(i,1)) >= 6 )then
-                    MDME(i,1) = MIN( 0, MDME(i,1) )
-                    ME=MIN( 0, MDME(i,1) )
-                    WRITE( CHAR_I, "(I20)" ) i
-                    WRITE( PACIAE_INPUT, "(I20)" ) ME
-                    PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
-                                 // ",1)="  // TRIM(ADJUSTL( PACIAE_INPUT ))
-                    CALL PYGIVE( PARAM_PYTHIA6 )
-                end if
-            end do
-!       For lh(hl) and lA(Al) deeply inelastic scatterings (DIS).
-        else if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) &
-                .AND. KF_proj*KF_targ < 0 .AND. nchan <= 10 )then
-            
-        end if
+        end select
 
 !       For PYTHIA 8, they will be done in Pythia8CppInterface.cpp.
 !-------------------------   Subprocesses Selecting   --------------------------

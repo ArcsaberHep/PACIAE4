@@ -130,7 +130,13 @@
 #         =7, single W+/- production
 #         =8: hard QCD
 #         =9: single Z0 production
-#         =10: inelastic, non-diffractive (minimum-bias, MB)
+#         =10: default.
+#              For hh/hA/AB, inelastic non-diffractive
+#                            (minimum-bias, MB).
+#              For lh/lA, deep inelastic scatterings (DIS).
+#                         t-channel boson exchange (NC + CC).
+#              For ll, l+ + l-    -> gamma*/Z -> q  + qbar
+#                   or l1 + l2bar -> W+-      -> q1 + q2bar.
 #     others: requires the user to specify in the program or "pythia6_extra.cfg" /
 #                                                            "pythia8_extra.cfg" files.
 #

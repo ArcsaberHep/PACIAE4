@@ -8,7 +8,7 @@
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at CCNU on 20/07/2025
+#                                   Last updated by An-Ke at CCNU on 22/07/2025
 
 
 
@@ -265,7 +265,13 @@ i_channel=10 # (D=10) nchan, collision channel for non-A simulation frameworks:
              #                 7, single W+/- production.
              #                 8, hard QCD.
              #                 9, single Z0 production.
-             #                10, inelastic, non-diffractive (minimum-bias).
+             #                10, default.
+             #                    For hh/hA/AB, inelastic non-diffractive
+             #                                  (minimum-bias, MB).
+             #                    For lh/lA, deep inelastic scatterings (DIS).
+             #                               t-channel boson exchange (NC + CC).
+             #                    For ll, l+ + l-    -> gamma*/Z -> q  + qbar
+             #                         or l1 + l2bar -> W+-      -> q1 + q2bar.
              #            others, requires user to specify in the program
              #                    or "pythia6_extra.cfg" /
              #                       "pythia8_extra.cfg" files.
@@ -566,7 +572,6 @@ read -d "" PY6_CFG << PY6_CFG_BLOCKTEXT
 !!  [JHEP 05 (2006) 026].
 !!==============================================================================
 !!
-CKIN(3) = 1.0   ! (D=0.0 GeV) The lower limit of allowed pT for hard processes.
 PARJ(1) = 0.087 ! (D=0.087) Diquark suppression
 PARJ(2) = 0.190 ! (D=0.190) Strangeness suppression
 PARJ(3) = 0.950 ! (D=0.950) Strange diquark suppression
@@ -596,7 +601,6 @@ read -d "" PY8_CFG << PY8_CFG_BLOCKTEXT
 //  [https://pythia.org//latest-manual/Welcome.html].
 //==============================================================================
 
-PhaseSpace:pTHatMin = 1.0     // (D=0.0 GeV) The minimum invariant pT.
 StringFlav:probQQtoQ = 0.081  // (D=0.081) Diquark suppression
 StringFlav:probStoUD = 0.217  // (D=0.217) Strangeness suppression
 StringFlav:probSQtoQQ = 0.915 // (D=0.915) Strange diquark suppression
@@ -700,7 +704,13 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #         =7, single W+/- production
 #         =8: hard QCD
 #         =9: single Z0 production
-#         =10: inelastic, non-diffractive (minimum-bias, MB)
+#         =10: default.
+#              For hh/hA/AB, inelastic non-diffractive
+#                            (minimum-bias, MB).
+#              For lh/lA, deep inelastic scatterings (DIS).
+#                         t-channel boson exchange (NC + CC).
+#              For ll, l+ + l-    -> gamma*/Z -> q  + qbar
+#                   or l1 + l2bar -> W+-      -> q1 + q2bar.
 #     others: requires the user to specify in the program or "pythia6_extra.cfg" /
 #                                                            "pythia8_extra.cfg" files.
 #

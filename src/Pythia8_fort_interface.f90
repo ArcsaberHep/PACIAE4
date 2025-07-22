@@ -8,7 +8,7 @@
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at CCNU on 20/07/2025
+!!                                  Last updated by An-Ke at CCNU on 22/07/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -2634,6 +2634,185 @@
 
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_EXOTIC( KF )
+!!  Determines whether a particle (KF code) is an exotic hadron.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
+
+
+    KF_ABS = ABS( KF )
+    IS_EXOTIC = KF_ABS / 1000000 == 9 .AND. KF_ABS < 10000000 &
+        .AND. MOD( KF_ABS, 10 ) /= 0 .AND. &
+        .AND. MOD( KF_ABS / 10, 10 )    /= 0 .AND. &
+        .AND. MOD( KF_ABS / 100, 10 )   /= 0 .AND. &
+        .AND. MOD( KF_ABS / 1000, 10 )  /= 0 .AND. &
+        .AND. MOD( KF_ABS / 10000, 10 ) /= 0
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_HADRON( KF )
+!!  Determines whether a particle (KF code) is a hadron.
+!   Only covers normal hadrons, not e.g. R-hadrons.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
+    LOGICAL :: IS_EXOTIC
+
+
+    IS_HADRON = .TRUE.
+    KF_ABS = ABS( KF )
+
+    IF( IS_EXOTIC( KF_ABS ) ) RETURN
+    IF( KF_ABS <= 100 .OR. ( KF_ABS >= 1000000 .AND. KF_ABS <= 9000000 ) &
+        .OR. KF_ABS >= 9900000 )THEN
+        IS_HADRON = .FALSE.
+        RETURN
+    END IF
+    ! special K_S0 and K_L0.
+    IF( KF_ABS == 130 .OR. KF_ABS == 310 ) RETURN
+    IF( MOD( KF_ABS, 10 ) == 0 .OR. MOD( KF_ABS / 10, 10 ) == 0 &
+        .OR. MOD( KF_ABS / 100, 10 ) == 0 )THEN
+        IS_HADRON = .FALSE.
+    END IF
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_BARYON( KF )
+!!  Determines whether a particle (KF code) is a baryon.
+!   Only covers normal hadrons and and exotic with baryon number 1,
+!    but not e.g. R-hadrons.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
+
+
+    IS_BARYON = .TRUE.
+    KF_ABS = ABS( KF )
+
+    IF( KF_ABS <= 1000 .OR. ( KF_ABS >= 1000000 .AND. KF_ABS <= 9000000 ) &
+        .OR. KF_ABS >= 9900000 )THEN
+        IS_BARYON = .FALSE.
+        RETURN
+    END IF
+    ! Checks that id has non-zero spin type and three quarks.
+    IF( MOD( KF_ABS, 10 ) == 0 .OR. MOD( KF_ABS / 10, 10 ) == 0 &
+        .OR. MOD( KF_ABS / 100, 10 ) == 0 .OR. MOD( KF_ABS/1000, 10 ) == 0 )THEN
+        IS_BARYON = .FALSE.
+        RETURN
+    END IF
+    ! Catches pentaquarks of the form 9qqqqqs.
+    IF( KF_ABS / 1000000 == 9 .AND. MOD( KF_ABS / 10000, 10 ) /= 0 )THEN
+        IS_BARYON = MOD( KF_ABS / 100000, 10 ) /= 0
+        RETURN
+    END IF
+
+    ! Otherwise it is a baryon.
+    IS_BARYON = .TRUE.
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_MESON( KF )
+!!  Determines whether a particle (KF code) is a meson.
+!   Only covers normal hadrons and and exotic with baryon number 0,
+!    but not e.g. R-hadrons.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
+
+
+    IS_MESON = .TRUE.
+    KF_ABS = ABS( KF )
+
+    IF( KF_ABS <= 100 .OR. ( KF_ABS >= 1000000 .AND. KF_ABS <= 9000000 ) &
+        .OR. KF_ABS >= 9900000 )THEN
+        IS_MESON = .FALSE.
+        RETURN
+    END IF
+    ! special K_S0 and K_L0.
+    IF( KF_ABS == 130 .OR. KF_ABS == 310 ) RETURN
+    ! Checks that id has non-zero spin type and at least two quarks.
+    IF( MOD( KF_ABS, 10 ) == 0 .OR. MOD( KF_ABS / 10, 10 ) == 0 &
+        .OR. MOD( KF_ABS / 100, 10 ) == 0 )THEN
+        IS_MESON = .FALSE.
+        RETURN
+    END IF
+    ! If id has three quarks, return true only for tetraquarks.
+    IF( MOD( KF_ABS / 1000, 10 ) /= 0 )THEN
+        IS_MESON = KF_ABS / 1000000 == 9 &
+                .AND. MOD( KF_ABS / 10000, 10 ) /= 0 &
+                .AND. MOD( KF_ABS / 100000, 10 ) == 0
+        RETURN
+    END IF
+
+    ! Otherwise it is a meson.
+    IS_MESON = .TRUE.
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_ONIUM( KF )
+!!  Determines whether a particle (KF code) is a quarkonium.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
+
+
+    IS_ONIUM = .FALSE.
+    KF_ABS = ABS( KF )
+
+    IF( MOD( KF_ABS, 2 ) /= 1 ) RETURN
+    IF( KF_ABS > 1000000 ) RETURN
+    IF( MOD( KF_ABS / 10, 10 ) < 4 ) RETURN
+    IF( MOD( KF_ABS / 10, 10 ) > 6 ) RETURN
+    IF( MOD( KF_ABS / 10, 10 ) /= MOD( KF_ABS / 100, 10 ) ) RETURN
+    IF( MOD( KF_ABS / 1000, 10 ) /= 0 ) RETURN
+
+    ! Otherwise it is an onium.
+    IS_ONIUM = .TRUE.
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_OCTET_HADRON( KF )
+!!  Determines whether a particle (KF code) is an intermediate octet ccbar
+!    or bbar states in the color-octet model.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+
+
+    IS_OCTET_HADRON = ABS( KF ) >= 9940000 .AND. ABS( KF ) < 9960000
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     LOGICAL FUNCTION IS_LEPTON( KF )
 !!  Determines whether a particle (KF code) is a lepton.
     IMPLICIT NONE
@@ -2651,13 +2830,19 @@
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     LOGICAL FUNCTION IS_PARTON( KF )
 !!  Determines whether a particle (KF code) is a parton (quark, gluon, diquark).
+!   Identifies Hidden Valley partons as partons.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: KF
+    INTEGER :: KF_ABS
 
 
-    IS_PARTON = ( ABS(KF) >= 1 .AND. ABS(KF) <= 8 ) .OR. KF == 21 &
-            .OR. ( ( ABS(KF) >= 1103 .AND. ABS(KF) <= 5503 ) &
-            .AND. MOD( ABS(KF) / 10, 10 ) == 0 )
+    KF_ABS = ABS( KF )
+    IS_PARTON = ( KF_ABS >= 1 .AND. KF_ABS <= 8 ) .OR. KF == 21 &
+            .OR. ( ( KF_ABS >= 1103 .AND. KF_ABS <= 5503 ) &
+            .AND. MOD( KF_ABS / 10, 10 ) == 0 ) &
+            .OR. ( KF_ABS > 4900100 .AND. KF_ABS < 4900109 ) &
+            .OR. ( KF_ABS > 4901000 .AND. KF_ABS < 4909000 &
+            .AND. MOD( KF_ABS / 10, 10 ) == 0 )
 
 
     RETURN
@@ -2681,6 +2866,21 @@
 
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_GLUON( KF )
+!!  Determines whether a particle (KF code) is a gluon.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+
+
+    IS_GLUON = KF == 21
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     LOGICAL FUNCTION IS_DIQUARK( KF )
 !!  Determines whether a particle (KF code) is a diquark.
 !   Includes light and heavy diquarks ABS(KF): 1103 ~ 5503.
@@ -2692,6 +2892,35 @@
 
     IS_DIQUARK = ( ABS(KF) >= 1103 .AND. ABS(KF) <= 5503 ) &
             .AND. MOD( ABS(KF) / 10, 10 ) == 0
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    INTEGER FUNCTION KF_HEAVIEST_QUARK( KF ) RESULT( HQ )
+!!  Extracts the heaviest (= largest id) quark in a hadron.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+    INTEGER :: HQ, KF_ABS
+    LOGICAL IS_HADRON
+
+
+    HQ = 0
+    KF_ABS = ABS( KF )
+    IF( .NOT.IS_HADRON( KF ) ) RETURN
+    ! Meson.
+    IF( MOD( KF_ABS / 1000 , 10 ) == 0 )THEN
+        HQ = MOD( KF_ABS / 100, 10 )
+        IF( KF_ABS == 130 ) HQ = 3
+        IF( MOD( HQ, 2 ) == 1 ) HQ = -HQ
+    ! Baryon.
+    ELSE
+        HQ = MOD( KF_ABS / 1000, 10 )
+    END IF
+    IF( KF < 0 ) HQ = -HQ
 
 
     RETURN

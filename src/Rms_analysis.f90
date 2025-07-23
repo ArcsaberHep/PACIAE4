@@ -338,13 +338,13 @@
             read(99,*) Ncoll_call_PYTHIA, Ncoll_not_call_PYTHIA
                 sum_Ncoll_call_PYTHIA     = sum_Ncoll_call_PYTHIA     + Ncoll_call_PYTHIA
                 sum_Ncoll_not_call_PYTHIA = sum_Ncoll_not_call_PYTHIA + Ncoll_not_call_PYTHIA
-            ! #! ave. # of wounded nucleons in parini =
+            ! #! ave. # of wounded nucleons =
             i_line = i_line + 1
             read(99,"(A3000)") comment_line( i_line )
             ! Data.
             read(99,*) Npart_real
                 sum_Npart_real = sum_Npart_real + Npart_real
-            ! #! colli. # suffered by projectile nucleon in target nucleus
+            ! #! N_bin/N_part (optical Glauber)
             i_line = i_line + 1
             read(99,"(A3000)") comment_line( i_line )
             ! Data.

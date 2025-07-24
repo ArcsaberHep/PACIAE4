@@ -2643,10 +2643,10 @@
 
     KF_ABS = ABS( KF )
     IS_EXOTIC = KF_ABS / 1000000 == 9 .AND. KF_ABS < 10000000 &
-        .AND. MOD( KF_ABS, 10 ) /= 0 .AND. &
-        .AND. MOD( KF_ABS / 10, 10 )    /= 0 .AND. &
-        .AND. MOD( KF_ABS / 100, 10 )   /= 0 .AND. &
-        .AND. MOD( KF_ABS / 1000, 10 )  /= 0 .AND. &
+        .AND. MOD( KF_ABS, 10 ) /= 0 &
+        .AND. MOD( KF_ABS / 10, 10 )    /= 0 &
+        .AND. MOD( KF_ABS / 100, 10 )   /= 0 &
+        .AND. MOD( KF_ABS / 1000, 10 )  /= 0 &
         .AND. MOD( KF_ABS / 10000, 10 ) /= 0
 
 
@@ -2904,7 +2904,7 @@
 !!  Extracts the heaviest (= largest id) quark in a hadron.
     IMPLICIT NONE
     INTEGER, INTENT(IN) :: KF
-    INTEGER :: HQ, KF_ABS
+    INTEGER :: KF_ABS
     LOGICAL IS_HADRON
 
 

@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at CCNU on 22/07/2025
+!!                                  Last updated by An-Ke at CCNU on 23/07/2025
 
 
 
@@ -3560,9 +3560,6 @@
                     "partonic initiation, partonic cascade,"
         write(12,*) "#!  hadronization and end of event ="
         write(12,*) segam1o, segam2o, segam3o, segamo
-        if(ipden >= 11.and.ipden <= 16) &
-         write(12,*)'#! event average number of lepton studied ='
-        if(ipden >= 11.and.ipden <= 16) write(12,*) vnlep/flaa
 
         write(12,*) "#!-------------------------------------" // &
                     "----------------------------------------"

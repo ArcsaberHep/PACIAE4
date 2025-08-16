@@ -2,13 +2,13 @@
 !! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, June 2004 - July 2025.
+!! Author: Ben-Hao Sa, June 2004 - August 2025.
 
 !> This is the program to perform the coalescence hadronization via the
 !!  phenomenological coalescence model of PACIAE.
 
 !!                                             By Ben-Hao at CIAE on 04/06/2004
-!!                                  Last updated by An-Ke at UiO  on 20/07/2025
+!!                                  Last updated by An-Ke at UiO  on 16/08/2025
 
 
         subroutine coales( i_coal )
@@ -43,8 +43,6 @@
         common/sa37/nth,npadth,kth(kszj,5),pth(kszj,5),vth(kszj,5)
         common/sbe/nbe,nonbe,kbe(kszj,5),pbe(kszj,5),vbe(kszj,5)
         common/sbh/nbh,nonh,kbh(kszj,5),pbh(kszj,5),vbh(kszj,5)
-        common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
-         napp,natt,nzpp,nztt,pio
 !       Arrays of freeze-out particle information.
         COMMON/PYJETS_FO/ N_FO, NPAD_FO, &
                           K_FO(KSZJ,8), P_FO(KSZJ,7), V_FO(KSZJ,5)
@@ -1079,7 +1077,7 @@
                         pn(nn,1) = sump1
                         pn(nn,2) = sump2
                         pn(nn,3) = sump3
-                        e2 = sump1**2 + sump2**2 + sump3**2 + PYMASS( KF_out )**2
+                        e2 = sump1**2 + sump2**2 + sump3**2 +PYMASS( KF_out )**2
                         e = SQRT(e2)
                         pn(nn,4) = e
                         ! Collects the energy.
@@ -1166,7 +1164,7 @@
                         pn(nn,1) = sump1
                         pn(nn,2) = sump2
                         pn(nn,3) = sump3
-                        e2 = sump1**2 + sump2**2 + sump3**2 + PYMASS( KF_out )**2
+                        e2 = sump1**2 + sump2**2 + sump3**2 +PYMASS( KF_out )**2
                         e = SQRT(e2)
                         pn(nn,4) = e
                         ! Collects the energy.

@@ -3,12 +3,12 @@
 // Copyright (C) 2025 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - July 2025.
+// Author: An-Ke Lei, January 2024 - August 2025.
 
 // This is a README file for PACIAE.
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 23/07/2025
+//                                  Last updated by An-Ke at CCNU on 16/08/2025
  -->
 
 # The parton and hadron cascade model PACIAE 4
@@ -255,7 +255,7 @@ The released code are available on [https://github.com/ArcsaberHep/PACIAE4/relea
 ## Update notes:
 
 <!----------------------------------------------------------------------------->
-### <font color=red> 07/2025 :</font> In version PACIAE 4.0.03
+### <font color=red> 08/2025 :</font> In version PACIAE 4.0.03
 - In "analy_40.f90" and "Rms_analysis.f90", fixed analysis code of mean pT, \< pT \>. Analysis code of anisotropic flows were added.
 - In "main_40.f90", "Pythia8CppInterface.hpp" and "Pythia8CppInterface.cpp", the random 2*pi angle of the impact parameter was introduced for the Angantyr modes.
 - In "main_40.f90" and "Pythia8CppInterface.cpp", the subprocesses for lepton-induced collisions were adjusted.

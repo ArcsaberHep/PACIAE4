@@ -2,13 +2,13 @@
 // Copyright (C) 2025 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - July 2025.
+// Author: An-Ke Lei, January 2024 - August 2025.
 
 // This is the C++ interface program to link PACIAE (Fortran 77/90) with
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 22/07/2025
+//                                  Last updated by An-Ke at CCNU on 16/08/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -157,8 +157,8 @@ using namespace Paciae4;
     }
 
 // Selects subprocesses.
-    int idA = MSTI_c[10];
-    int idB = MSTI_c[11];
+    int& idA = MSTI_c[10];
+    int& idB = MSTI_c[11];
     int absIdA = std::abs( MSTI_c[10] );
     int absIdB = std::abs( MSTI_c[11] );
     int& iProcess = MINT_c[0];
@@ -175,10 +175,12 @@ using namespace Paciae4;
             break;
         // Drell-Yan
         case 2 :
-            (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
-            (*pythia) -> readString( "WeakZ0:gmZmode = 1" );
+            (*pythia) -> readString( "WeakSingleBoson:ffbar2ffbar(s:gmZ) = on");
+            (*pythia) -> readString( "23:onMode = off" );
+            (*pythia) -> readString( "23:onIfAny = 11 12 13 14 15 16" );
+            (*pythia) -> readString( "PhaseSpace:mHatMin = 0.001" );
             break;
-        // J/psi (color-singlet via NRQCD )
+        // J/psi (color-singlet via NRQCD)
         case 3 :
             (*pythia) -> readString( "Charmonium:" \
                                      "gg2ccbar(3S1)[3S1(1)]g = on,off" );
@@ -191,14 +193,15 @@ using namespace Paciae4;
                                      "qqbar2doubleccbar(3S1)[3S1(1)] " \
                                      "= on,on,off" );
             break;
-        // c-cbar and b-bbar production
+        // c-cbar production
         case 4 :
             (*pythia) -> readString( "HardQCD:hardccbar = on" );
-            (*pythia) -> readString( "HardQCD:hardbbbar = on" );
+            (*pythia) -> readString( "PhaseSpace:mHatMin = 0.001" );
             break;
         // Prompt photon
         case 5 :
             (*pythia) -> readString( "PromptPhoton:all = on" );
+            (*pythia) -> readString( "PhaseSpace:mHatMin = 0.001" );
             break;
         // Soft QCD
         case 6 :
@@ -211,6 +214,7 @@ using namespace Paciae4;
         // Hard QCD
         case 8 :
             (*pythia) -> readString( "HardQCD:all = on" );
+            (*pythia) -> readString( "PhaseSpace:mHatMin = 0.001" );
             break;
         // Single Z0 production
         case 9 :
@@ -226,32 +230,36 @@ using namespace Paciae4;
                 || ( absIdA > 1000000000 && absIdB > 1000000000 ) ) {
                 (*pythia) -> readString( "SoftQCD:nonDiffractive = on" );
             }
-            // For lh/lA, deep inelastic scatterings (DIS). t-channel boson exchange.
+            // For lh/lA, deep inel. scatterings(DIS). t-channel boson exchange.
             else if( ( particleData.isLepton(idA) && particleData.isHadron(idB))
                 || ( particleData.isLepton(idB) && particleData.isHadron(idA) )
                 || ( particleData.isLepton(idA) && absIdB > 1000000000 )
                 || ( particleData.isLepton(idB) && absIdA > 1000000000 ) ) {
                 (*pythia) -> readString( "WeakBosonExchange:all = on" );
+                (*pythia) -> readString( "PhaseSpace:mHatMin = 0.001" );
             }
-            // For ll.
+            // For ll, ll -> gamma*/Z/W -> quark(s) + anti-quark(s).
             else if( particleData.isLepton( idA )
                 && particleData.isLepton( idB ) ) {
+                // Hadronic gamma*/Z/W decays. Switches off all decays and then
+                //  switches back on those to quarks.
+                (*pythia) -> readString( "23:onMode = off" );
+                (*pythia) -> readString( "23:onIfAny = 1 2 3 4 5" );
+                (*pythia) -> readString( "24:onMode = off" );
+                (*pythia) -> readString( "24:onIfAny = 1 2 3 4 5" );
+                (*pythia) -> readString( "PhaseSpace:mHatMin = 1e-20" );
                 // For l+l- annihilation, e.g. e+e-.
-                // l+ + l- -> gamma*/Z -> q + qbar
                 if( ( idA + idB ) == 0 ) {
-                    // Hadronic Z decays. Switches off all Z decays and then
-                    //  switches back on those to quarks.
-                    (*pythia) -> readString( "WeakSingleBoson:ffbar2gmZ = on" );
-                    (*pythia) -> readString( "23:onMode = off" );
-                    (*pythia) -> readString( "23:onIfAny = 1 2 3 4 5" );
+                    (*pythia) -> readString( 
+                                    "WeakSingleBoson:ffbar2ffbar(s:gmZ) = on" );
+                    (*pythia) -> readString( 
+                                    "WeakDoubleBoson:ffbar2gmZgmZ = on" );
+                    (*pythia) -> readString( 
+                                    "WeakDoubleBoson:ffbar2WW = on" );
                 }
                 // l1 + l2bar -> W+- -> q1 + q2bar.
                 else {
-                    // Hadronic W decays. Switches off all W decays and then
-                    //  switches back on those to quarks.
                     (*pythia) -> readString( "WeakSingleBoson:ffbar2W = on" );
-                    (*pythia) -> readString( "24:onMode = off" );
-                    (*pythia) -> readString( "24:onIfAny = 1 2 3 4 5" );
                 }
             }
             // Inelastic non-diffractive.
@@ -410,13 +418,9 @@ using namespace Paciae4;
     else {
         settings.parm( "Beams:eCM", eCM );
     }
-// Special setting for l+l- -> gamma*/Z0 -> qqbar with CM energy < 10 GeV.
+
     int absIdA = std::abs( MSTI_c[10] );
     int absIdB = std::abs( MSTI_c[11] );
-    if( absIdA >= 11 && absIdA <= 18 && absIdB >= 11 && absIdB <= 18
-        && MSTI_c[10]*MSTI_c[11] < 0 && eCM < 10. ) {
-        (*pythia) -> readString( "23:mMin = 0." );
-    }
 
 // Nuclear parton distribution functions.
     int useHardNPDF = MSTP_c[193];
@@ -555,7 +559,7 @@ using namespace Paciae4;
 
         // Nuclear parton distribution functions.
         // Lepton projectile/target.
-        if( absIdA < 100 ||  absIdB < 100 ) {
+        if( absIdA < 100 || absIdB < 100 ) {
             (*pythia_pp) -> readString( "PDF:useHardNPDFA = off" );
             (*pythia_pn) -> readString( "PDF:useHardNPDFA = off" );
             (*pythia_np) -> readString( "PDF:useHardNPDFB = off" );
@@ -641,16 +645,16 @@ using namespace Paciae4;
 // Sets the impact parameter generator if Angantyr pA/Ap or AA.
     int& bSampleMode = MINT_c[38];
     int& iExecMode = MSTP_c[190];
-    if( (  std::abs(MSTI_c[10]) > 1000000000
-        || std::abs(MSTI_c[11]) > 1000000000 )
-        && bSampleMode != 3 && (iExecMode == 8 || iExecMode == 9) ) {
+    if( (  std::abs( MSTI_c[10] ) > 1000000000
+        || std::abs( MSTI_c[11] ) > 1000000000 )
+        && bSampleMode != 3 && ( iExecMode == 8 || iExecMode == 9 ) ) {
         double bp = VINT_c[138];
         double bpMin = VINT_c[359];
         double bpMax = VINT_c[360];
         double phi = 0.0;
         int phiSwitch = 0;
         if( bSampleMode == 4 || bSampleMode == 5 || bSampleMode == 6 ) {
-            phi = 2.0*M_PI*((*pythia) -> rndm).flat();
+            phi = 2.0 * M_PI * ( (*pythia) -> rndm ).flat();
             phiSwitch = 1;
         }
         (**paciaeHIUserHooks) -> getBGeneratorPtr() -> setImpactParameter( bp,

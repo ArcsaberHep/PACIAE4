@@ -124,7 +124,7 @@
 #         =1, non-single difractive (NSD)
 #         =2, Drell-Yan process
 #         =3, J/psi production (color singlet)
-#         =4, c-cbar and b-bbar production
+#         =4, c-cbar production
 #         =5, prompt photon
 #         =6, soft QCD
 #         =7, single W+/- production

@@ -3,12 +3,12 @@
 # Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, October 2022 - July 2025.
+# Author: An-Ke Lei, October 2022 - August 2025.
 
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at CCNU on 22/07/2025
+#                                   Last updated by An-Ke at CCNU on 16/08/2025
 
 
 
@@ -259,7 +259,7 @@ i_channel=10 # (D=10) nchan, collision channel for non-A simulation frameworks:
              #                 1, non-single difractive (NSD).
              #                 2, Drell-Yan process.
              #                 3, J/psi production (color singlet).
-             #                 4, c-cbar and b-bbar production.
+             #                 4, c-cbar production.
              #                 5, prompt photon.
              #                 6, soft QCD.
              #                 7, single W+/- production.
@@ -698,7 +698,7 @@ read -d "" USU_ANNO << USU_ANNO_BLOCKTEXT
 #         =1, non-single difractive (NSD)
 #         =2, Drell-Yan process
 #         =3, J/psi production (color singlet)
-#         =4, c-cbar and b-bbar production
+#         =4, c-cbar production
 #         =5, prompt photon
 #         =6, soft QCD
 #         =7, single W+/- production
@@ -1456,7 +1456,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 # Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, January 2024 - July 2025.
+# Author: An-Ke Lei, January 2024 - August 2025.
 #
 # This is is the Makefile used to complie and build PACIAE program linked with
 #  PYTHIA 8 on POSIX systems.
@@ -1471,7 +1471,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 #  i.e. "man make" or "make --help".
 #
 #                                               By An-Ke at CCNU on 16/01/2024
-#                                  Last updated by An-Ke at CCNU on 20/07/2025
+#                                  Last updated by An-Ke at CCNU on 06/08/2025
 ################################################################################
 
 ################################################################################
@@ -2066,12 +2066,12 @@ NP=${n_run}
 # Copyright (C) 2025 PACIAE Group.
 # PACIAE is licensed under the GNU GPL v2 or later, see LICENCE for details.
 # Open source: https://github.com/ArcsaberHep/PACIAE4
-# Author: An-Ke Lei, January 2024 - July 2025.
+# Author: An-Ke Lei, January 2024 - August 2025.
 
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 14/02/2024
-#                                   Last updated by An-Ke at UiO  on 20/07/2025
+#                                   Last updated by An-Ke at UiO  on 06/08/2025
 
 
 ################################################################################

@@ -2,13 +2,13 @@
 !! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, ???? 2006 - July 2025.
+!! Author: Ben-Hao Sa, ???? 2006 - August 2025.
 
 !> This is the main program to administrate the Monte Carlo simulation for
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at CCNU on 23/07/2025
+!!                                  Last updated by An-Ke at CCNU on 16/08/2025
 
 
 
@@ -348,7 +348,7 @@
 !              = 1 , non-single diffractive (NSD)
 !              = 2 , Drell-Yan process
 !              = 3 , J/psi production (color singlet)
-!              = 4 , c-cbar and b-bbar production
+!              = 4 , c-cbar production
 !              = 5 , prompt photon
 !              = 6 , soft QCD
 !              = 7 , single W+/- production
@@ -409,7 +409,6 @@
 !       KF_woDecay: KF code of particles specified not to decay (max=100).
 !       ispkf(i): KF code of i-th particle to be counted (max=100)
 !       asd(i=1,isdmax): bin width, interval of the i-th distribution
-!           for pp, pbarp, pA(Ap), AB etc.
 !               i=1: rapidity distribution (dN/dy v.s. y)
 !                =2: invariant transverse momentum distribution
 !                    (1/pT*dN/dpT v.s. pT)
@@ -418,12 +417,6 @@
 !                =5: event-wise multiplicity distribution (dNev/dmult)
 !                =6: transverse momentum distribution (dN/dpT v.s. pT)
 !                =7: mean transverse momentum distribution (<pT> v.s. mult)
-!           for ep, nu_ep, etc.
-!               i=1: Q^2=-q^2 (fq2 in code) distribution
-!                =2: W^2 (w21) distribution
-!                =3: y (yyl) distribution
-!                =4: p_h (pph) distribution
-!                =5: z (zl) distribution
 !       afl(j,i,1): lower-boundary cut of i-th window for j-th particle
 !       afl(j,i,2): upper-boundary cut of i-th window for j-th particle
 !           for pp, pbarp, pA(Ap), AB etc.
@@ -709,9 +702,11 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         INTEGER PYCHGE
-        LOGICAL IS_PYTHIA8,IS_NUCLEUS
+        LOGICAL IS_PYTHIA8, IS_NUCLEUS, IS_HADRON
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
+        common/sa10/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
+         iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
         common/sa12/ppsa(5),nchan,nsjp,sjp,ttaup,taujp
         common/sa16/x_ratio,decpro,dni(10),dpi(10),edi(10),bmin,bmax, &
          bar(10),abar(10),barf(10),abarf(10),emin(10),eminf(10), &
@@ -748,31 +743,21 @@
 !                For example, deuteron D/2H: 1000010020; 197Au: 1000791970;
 !                                     208Pb: 1000822080, etc.
 
-!       ipden: =0, if projectile is proton/anti-proton/neutron
-!              =1, if projectile is nucleus
-!              =2, for e+e- collisions  ! 180921 yan
-!              =11, projectile is e- (e+)
-!              =12, projectile is nu_e (nu_ebar)
-!              =13, projectile is mu- (mu+)
-!              =14, projectile is nu_mu (nu_mubar)
-!              =15, projectile is tau- (tau+)
-!              =16, projectile is nu_tau (nu_taubar)
-!              =0, any other subatomic partices in principle
-!       itden: =0, if target is proton/anti-proton/neutron
-!              =1, if target is nucleus
-!              =2, for e+e- collisions  ! 180921 yan
+!       ipden: =0, if the projectile is a hadron
+!              =1, if the projectile is a nucleus
+!              =2, if the projectile is a lepton
+!              =3, if the projectile is a photon
+!              =0, any other subatomic particles in principle
+!       itden: =0, if the target is a hadron
+!              =1, if the target is a nucleus
 !              =...
-!              =0, any other subatomic partices in principle
+!              =0, any other subatomic particles in principle
 
-!       nap (nzp) : # of nucleons (protons) in projectile nucleus
-!       nat (nzt) : # of nucleons (protons) in target nucleus
-!       for e-A: formally sets nap=1,nzp=-1,ipden=11,itden=1, kf=11;
-!       for e+A: formally sets nap=1,nzp=1,ipden=11,itden=1, kf=-11;
-!       for nu_eA: formally sets nap=1,nzp=-1,ipden=12,itden=1, kf=12;
-!       for nu_ebarA: formally sets nap=1,nzp=1,ipden=12,itden=1, kf=-12;
-!       If projectile is lepton, set nap =1
-!       Here formally setting nzp=-1 is presently, when one uses it later,
-!        one should make nzp=iabs(nzp)
+!       nap (nzp) : number of nucleons (protons) in the projectile nucleus
+!       nat (nzt) : number of nucleons (protons) in the target nucleus
+
+!       If projectile is a subatomic particle, set nap=1 and
+!        nzp = 1 (charge >= 0) or -1 (charge < 0), formally. So is the target.
 
 !       ipden, itden, nap, nzp, nat and nzt will be assigned automatically
 !        according to the incoming beams.
@@ -783,6 +768,7 @@
 !                rescttering stage
 !       mstptj: =1, PYTHIA-like simulation without partonic
 !                   rescatterings and low energy simulation
+!       mstptj will be assigned automatically.
 
 
 !-------------------------------------------------------------------------------
@@ -792,43 +778,43 @@
         nap = 1
         nzp = 1
         ! Non-nucleus.
-        if( .NOT.IS_NUCLEUS(KF_proj) ) nzp = SIGN(1, PYCHGE( KF_proj ))
+        if( .NOT.IS_NUCLEUS( KF_proj ) ) nzp = SIGN(1, PYCHGE( KF_proj ))
         nat = 1
         nzt = 1
         ! Non-nucleus.
-        if( .NOT.IS_NUCLEUS(KF_targ) ) nzt = SIGN(1, PYCHGE( KF_targ ))
+        if( .NOT.IS_NUCLEUS( KF_targ ) ) nzt = SIGN(1, PYCHGE( KF_targ ))
         ! Flags of collision system the PACIAE defined.
         ipden = 0
         itden = 0
 
 !       Projectile.
         select case( KF_proj_abs )
-        ! e, nu_e, mu, nu_mu, tau and nu_tau
-        case( 11:16 )
-            ipden = KF_proj_abs
-        ! e+ + e-
-            if( KF_proj_abs == 11 .AND. KF_targ_abs == 11 &
-            .AND. KF_targ*KF_targ < 0 )  ipden = 2
         ! A
         case( 1000000000: )
             ipden = 1
             nap = MOD( MOD( KF_proj_abs, 10000000 ), 10000 ) / 10
             nzp = MOD( KF_proj_abs, 10000000 ) / 10000
+        ! e, nu_e, mu, nu_mu, tau, and nu_tau
+        case( 11:16 )
+            ipden = 2
+        ! gamma
+        case( 22 )
+            ipden = 3
         end select
 
 !       Target.
         select case( KF_targ_abs )
-        ! e, nu_e, mu, nu_mu, tau, and nu_tau
-        case( 11:16 )
-            itden = KF_targ_abs
-        ! e+ + e-
-            if( KF_proj_abs == 11 .AND. KF_targ_abs == 11 &
-            .AND. KF_targ*KF_targ < 0 )  itden = 2
         ! B
         case( 1000000000: )
             itden = 1
             nat = MOD( MOD( KF_targ_abs, 10000000 ), 10000 ) / 10
             nzt = MOD( KF_targ_abs, 10000000 ) / 10000
+        ! e, nu_e, mu, nu_mu, tau, and nu_tau
+        case( 11:16 )
+            itden = 2
+        ! gamma
+        case( 22 )
+            itden = 3
         end select
 !------------------------------   Beams Setting   ------------------------------
 !-------------------------------------------------------------------------------
@@ -838,6 +824,9 @@
 !----------------------------   Mistake-proofing   -----------------------------
 !       Automatic assignment of values avoiding some manual input mistakes
 !        in "usu.dat".
+
+!       Simulation frame.
+        if( ifram < 0 .OR. ifram > 2 ) ifram = 1
 
 !       For subatomic-particle + subatomic-particle.
         if( .NOT.IS_NUCLEUS(KF_proj) .AND. .NOT.IS_NUCLEUS(KF_targ) )then
@@ -888,13 +877,22 @@
 
 !       Simulation mode warning.
         if( i_mode < 1 .OR. i_mode == 7 .OR. i_mode > 9 )then
-            write(*,*) "Error, unrecognized i_mode:", i_mode, ", STOP!"
-            write(22,*) "Error, unrecognized i_mode:", i_mode, ", STOP!"
+            write(22,*) "PACIAE Abort from identify_collision_system: " &
+                     // "unrecognized i_mode:", i_mode, "."
             stop
         end if
-        if( i_mode == 4 .AND. ipden /= 1 .AND. itden /= 1 )then
-            write(*,*) "D-framework is only available for the nucleus!"
-            write(22,*) "D-framework is only available for the nucleus!"
+        if( i_mode == 1 .AND. .NOT.IS_HADRON(  KF_proj ) &
+                        .AND. .NOT.IS_NUCLEUS( KF_proj ) &
+                        .AND. .NOT.IS_HADRON(  KF_targ ) &
+                        .AND. .NOT.IS_NUCLEUS( KF_targ ) )then
+            write(22,*) "PACIAE Abort from identify_collision_system: " &
+                    // "A-framework is only available for the hh/hA/Ah !"
+            stop
+        end if
+        if( i_mode == 4 .AND. .NOT.IS_NUCLEUS( KF_proj ) &
+                        .AND. .NOT.IS_NUCLEUS( KF_targ ) )then
+            write(22,*) "PACIAE Abort from identify_collision_system: " &
+                     // "D-framework is only available for hA/Ah/AB !"
             stop
         end if
 
@@ -982,7 +980,7 @@
 !!      Parameters are categorized to "PACIAE-" and "PYTHIA-" related.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        LOGICAL IS_PYTHIA8,IS_NUCLEUS
+        LOGICAL IS_PYTHIA8, IS_NUCLEUS, IS_LEPTON
         PARAMETER (KSZJ=80000)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
         COMMON/PYPARS/MSTP(200),PARP(200),MSTI(200),PARI(200)
@@ -1120,41 +1118,53 @@
         if( IS_NUCLEUS(KF_proj) .OR. IS_NUCLEUS(KF_targ) )then
 !       For PYTHIA 6.4.28, the following CM energies for a NN pair are required.
             if( .NOT.IS_PYTHIA8(i_mode) )then
+                CALL PYGIVE( "PARP(104)=0.001" )
+                CALL PYGIVE( "PARP(111)=0.001" )
                 select case( nchan )
-                case( 0, 1, 6, 8, 10 )
-                    parp2 = 2.7D0
+                case( 0, 1, 6 )
+                    parp2 = 2.3D0
                 case( 2 )
-                    parp2 = 0D0
-                case( 7, 9 )
-                    parp2 = 6.8D0
+                    parp2 = 2.1D0
                 case( 3 )
-                    parp2 = 9.5D0
+                    parp2 = 4.4D0
                 case( 4 )
-                    parp2 = 15.6D0
+                    parp2 = 3.1D0
                 case( 5 )
-                    parp2 = 6.8D0
+                    parp2 = 2.1D0
+                case( 7, 9 )
+                    parp2 = 2.1D0
+                case( 8 )
+                    parp2 = 2.1D0
+                case( 10 )
+                    parp2 = 2.1D0
+                    if( IS_LEPTON( KF_proj ) .OR. IS_LEPTON( KF_targ ) ) &
+                        parp2 = 3.5D0
                 case default
-                    parp2 = 3D0
+                    parp2 = 2.1D0
                 end select
 !       For PYTHIA 8.3, the following CM energies for NN pair are required.
             else if( IS_PYTHIA8(i_mode) )then
                 select case( nchan )
-                case( 0, 1, 6, 10 )
+                case( 0, 1, 6 )
                     parp2 = 3.9D0
-                case( 8 )
-                    parp2 = 6.5D0
                 case( 2 )
-                    parp2 = 0D0
-                case( 7, 9 )
-                    parp2 = 12.8D0
+                    parp2 = 4.2D0
                 case( 3 )
-                    parp2 = 7.2D0
+                    parp2 = 6.5D0
                 case( 4 )
-                    parp2 = 7.3D0
+                    parp2 = 5.3D0
                 case( 5 )
-                    parp2 = 6.9D0
+                    parp2 = 4D0
+                case( 7, 9 )
+                    parp2 = 12.4D0
+                case( 8 )
+                    parp2 = 4.0D0
+                case( 10 )
+                    parp2 = 3.9D0
+                    if( IS_LEPTON( KF_proj ) .OR. IS_LEPTON( KF_targ ) ) &
+                        parp2 = 3.1D0
                 case default
-                    parp2 = 3D0
+                    parp2 = 3.9D0
                 end select
             end if
         end if
@@ -1216,8 +1226,6 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         common/sa6_sum/sthroq,sthrob,sthroc,sthroe(4)
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-         pph,vnlep
         common/schuds/schun,schudn,schudsn,sfra
 !       For PACIAE statistical analysis. ( f: full phase space; else partial )
         common/anly1_sum1/ san(100,10,100),  sbn(100,2), &
@@ -1337,8 +1345,6 @@
         psnop=0.
 !       target N_part in case of psno=2 or 6
         psnot=0.
-!       statistics of the number of studied leptons
-        vnlep=0.d0
 
 !       For Angantyr mode.
         weight_event     = 1D0
@@ -1391,8 +1397,7 @@
 
 
 !       In parini.f90
-        call sysini(win)
-        adj1(28) = para(10) * dmax1(rnt,rnp) * adj1(28)
+        call sysini
 
 
 !-------------------------------------------------------------------------------
@@ -1583,17 +1588,30 @@
             CALL PYGIVE( "MSUB(95)=1" )   ! Soft QCD, low_pT production
 !       Used to generate Drell-Yan
         case( 2 )
-            CALL PYGIVE( "MSUB(1)=1" )   ! q + qbar -> gamma* -> l+ + l-
-            CALL PYGIVE( "MSTP(43)=1" )
+            CALL PYGIVE( "MSUB(1)=1" )    ! f_i +f_i^bar -> gamma*/Z0 -> l+ + l-
+            ! Z0 decays to leptons.
+            do i = MDCY(23,2), MDCY(23,2) + MDCY(23,3) - 1, 1
+                if( ABS( KFDP(i,1) ) < 11 .OR. ABS( KFDP(i,1) ) > 16 )then
+                    MDME(i,1) = MIN( 0, MDME(i,1) )
+                    ME = MIN( 0, MDME(i,1) )
+                    WRITE( CHAR_I, "(I20)" ) i
+                    WRITE( PACIAE_INPUT, "(I20)" ) ME
+                    PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
+                                    // ",1)=" &
+                                    // TRIM(ADJUSTL( PACIAE_INPUT ))
+                    CALL PYGIVE( PARAM_PYTHIA6 )
+                end if
+            end do
 !       J/psi production (color singlet)
         case( 3 )
-            CALL PYGIVE( "MSUB(86)=1" )    ! g + g -> J/psi + g
-            CALL PYGIVE( "MSUB(106)=1")    ! g + g -> J/psi + gamma
-!       c-cbar and b-bbar production
+            CALL PYGIVE( "MSUB(86)=1" )   ! g + g -> J/psi + g
+            CALL PYGIVE( "MSUB(106)=1")   ! g + g -> J/psi + gamma
+!       c-cbar production
         case( 4 )
-            CALL PYGIVE( "MSUB(81)=1" )    ! Open HF, f_i+f_i^bar -> Q_k+Q_k^bar
-            CALL PYGIVE( "MSUB(82)=1" )    ! Open HF, g + g -> Q_k + Q_k^bar
-          ! CALL PYGIVE( "MSUB(83)=1" )    ! Open HF, q_i + f_i -> Q_k + f_l
+            CALL PYGIVE( "MSUB(81)=1" )   ! Open HF, f_i+f_i^bar -> Q_k+Q_k^bar
+            CALL PYGIVE( "MSUB(82)=1" )   ! Open HF, g + g -> Q_k + Q_k^bar
+          ! CALL PYGIVE( "MSUB(83)=1" )   ! Open HF, q_i + f_i -> Q_k + f_l
+            CALL PYGIVE( "MSTP(7)=4" )
 !       Prompt photon
         case( 5 )
             CALL PYGIVE( "MSUB(14)=1" )   !  Prompt photon, f_i+f_i^bar->g+gamma
@@ -1613,10 +1631,15 @@
             CALL PYGIVE( "MSUB(2)=1" )   ! Single W, f_i + f_j^bar -> W
 !       Hard QCD
         case( 8 )
-            CALL PYGIVE( "MSEL=1" )
-        case( 9 )
+            CALL PYGIVE( "MSUB(11)=1" )   ! Hard QCD, f_i + f_j -> f_i + f_j
+            CALL PYGIVE( "MSUB(12)=1" )   ! Hard QCD, f_i+f_i^bar -> f_k+f_k^bar
+            CALL PYGIVE( "MSUB(13)=1" )   ! Hard QCD, f_i + f_i^bar -> g + g
+            CALL PYGIVE( "MSUB(28)=1" )   ! Hard QCD, f_i + g -> f_i + g
+            CALL PYGIVE( "MSUB(53)=1" )   ! Hard QCD, g + g -> f_k + f_k^bar
+            CALL PYGIVE( "MSUB(68)=1" )   ! Hard QCD, g + g -> g + g
 !       Single Z0 production
-            CALL PYGIVE( "MSUB(1)=1" )   ! Single Z, f_i + f_i^bar -> Z0
+        case( 9 )
+            CALL PYGIVE( "MSUB(1)=1" )    ! Single Z, f_i + f_i^bar -> Z0
             CALL PYGIVE( "MSTP(43)=2" )   ! Only Z0 included.
 !       Default.
         case( 10 )
@@ -1642,42 +1665,32 @@
                 .OR. ( IS_LEPTON( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) &
                 .OR. ( IS_LEPTON( KF_targ ) .AND. IS_NUCLEUS( KF_proj ) ) )then
                 CALL PYGIVE( "MSUB(10)=1" )   ! f_i + f_j -> f_k + f_l
-!           For ll.
+!           For ll, ll -> gamma*/Z/W -> quark(s) + anti-quark(s).
             else if( IS_LEPTON( KF_proj ) .AND. IS_LEPTON( KF_targ ) )then
-                ! l+ + l- -> gamma*/Z -> q + qbar
-                if( KF_proj + KF_targ == 0 )then
-                    ! Hard process, with hadronic Z decays.
-                    CALL PYGIVE( "MSUB(1)=1" )
-                    ! Only allow Z0 decay to quarks (no leptonic final states).
-                    do i = MDCY(23,2), MDCY(23,2) + MDCY(23,3) - 1, 1
-                        if( IABS(KFDP(i,1)) >= 6 )then
+                ! Hadronic gamma*/Z/W decays. Switches off all decays and
+                !  then switches back on those to quarks.
+                do iWZ = 23, 24, 1
+                    do i = MDCY(iWZ,2), MDCY(iWZ,2) + MDCY(iWZ,3) - 1, 1
+                        if( ABS(KFDP(i,1)) >= 6 )then
                             MDME(i,1) = MIN( 0, MDME(i,1) )
-                            ME=MIN( 0, MDME(i,1) )
+                            ME = MIN( 0, MDME(i,1) )
                             WRITE( CHAR_I, "(I20)" ) i
                             WRITE( PACIAE_INPUT, "(I20)" ) ME
                             PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
-                                         // ",1)=" &
-                                         // TRIM(ADJUSTL( PACIAE_INPUT ))
+                                            // ",1)=" &
+                                            // TRIM(ADJUSTL( PACIAE_INPUT ))
                             CALL PYGIVE( PARAM_PYTHIA6 )
                         end if
                     end do
+                end do
+                ! For l+l- annihilation, e.g. e+e-.
+                if( KF_proj + KF_targ == 0 )then
+                    CALL PYGIVE( "MSUB(1)=1" )    ! f_i + f_i^bar -> gamma*/Z0
+                    CALL PYGIVE( "MSUB(22)=1" )   ! f_i + f_i^bar ->2(gamma*/Z0)
+                    CALL PYGIVE( "MSUB(25)=1" )   ! f_i + f_i^bar -> W+ + W-
                 ! l1 + l2bar -> W+- -> q1 + q2bar.
                 else
-                    ! Hard process, with hadronic W decays.
-                    CALL PYGIVE( "MSUB(2)=1" )
-                    ! Only allow W+- decay to quarks (no leptonic final states).
-                    do i = MDCY(24,2), MDCY(24,2) + MDCY(24,3) - 1, 1
-                        if( IABS(KFDP(i,1)) >= 6 )then
-                            MDME(i,1) = MIN( 0, MDME(i,1) )
-                            ME=MIN( 0, MDME(i,1) )
-                            WRITE( CHAR_I, "(I20)" ) i
-                            WRITE( PACIAE_INPUT, "(I20)" ) ME
-                            PARAM_PYTHIA6 = "MDME(" // TRIM(ADJUSTL( CHAR_I )) &
-                                         // ",1)=" &
-                                         // TRIM(ADJUSTL( PACIAE_INPUT ))
-                            CALL PYGIVE( PARAM_PYTHIA6 )
-                        end if
-                    end do
+                    CALL PYGIVE( "MSUB(2)=1" )    ! f_i + f_j^bar -> W+/W-
                 end if
 !           Inelastic non-diffractive.
             else
@@ -1732,6 +1745,7 @@
 !!      Independent Optical Glauber calculations.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS, IS_HADRON
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
         common/sa10/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
          iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
@@ -1767,60 +1781,43 @@
 
 !-------------------------------------------------------------------------------
 !------------   Independent Optical Initial Geometry Calculation   -------------
-!       calculates the nuclear overlap function etc.
-!       if((ipden == 0 .and. itden == 0) .or. ipden >= 11) goto 80001
-        if( (ipden == 0 .and. itden == 0) .or. (ipden == 2 .and. &
-         itden == 2) .or. ipden >= 11 ) goto 80001
-        csnn1=csnn*10   ! csnn in fm^2 csnn1 in mb
-        idw1=idw/50   ! *100
-        if( ipden < 2 ) call xOVERLAP(nap,nat,rnp,rnt,csnn1,kjp23,kjp24, &
-         rou0,idw1)
+!       Calculates the nuclear overlap function etc. for hA/Ah/AB collisions.
+        if(      ( IS_HADRON( KF_proj )  .AND. IS_NUCLEUS( KF_targ ) ) &
+            .OR. ( IS_HADRON( KF_targ )  .AND. IS_NUCLEUS( KF_proj ) ) &
+            .OR. ( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) )then
+            ! csnn in fm^2, csnn1 in mb
+            csnn1 = csnn*10D0
+            idw1  = idw / 50
+            call xOVERLAP(nap,nat,rnp,rnt,csnn1,kjp23,kjp24,rou0,idw1)
+        end if
 
-80001   continue
-
-!       calculate the impact parameter etc.
-!       for given b (impact parameter)
+!       Calculates the impact parameter etc. for given b (impact parameter).
 
 !---------------------------------   Fixed b   ---------------------------------
         if( INT(psno) == 0 .OR. INT(psno) == 4 )then
             bp=bmin
-            r4=rnp
-            if(rnt > rnp) r4=rnt
-            rr4=bp/r4
-            vneu=dexp(-rr4*rr4)
+            pir   = 1D0
+            tir   = 1D0
+            evbin = 1D0
+            pirr  = 1D0
+            tirr  = 1D0
 !       calculates the overlap region of two nuclei at given b by
 !        interpolation method
-            if( (ipden == 0 .and. itden == 0) .or. (ipden == 2 .and. &
-             itden == 2) .or. ipden >= 11 ) goto 80002
-            ibpp=int(bp/0.1+1.0)
-            ibpp=min(ibpp,200)
-!           if(ipden == 1 .and. itden == 1)then   ! A+B
-!               overlap function of A+B (1/fm^2)
+            if(      ( IS_HADRON( KF_proj )  .AND. IS_NUCLEUS( KF_targ ) ) &
+                .OR. ( IS_HADRON( KF_targ )  .AND. IS_NUCLEUS( KF_proj ) ) &
+                .OR. ( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) )then
+                ibpp=int(bp/0.1+1.0)
+                ibpp=min(ibpp,200)
+!       overlap function of A+B (1/fm^2)
                 anbin=ta1a2(ibpp)
-!           elseif(ipden == 0 .and. itden == 1)then   ! p+A
-!               overlap function of B nucleus (1/fm^2)
-!               anbin=ta2(ibpp)
-!           elseif(ipden == 1 .and. itden == 0)then   ! A+p
-!               overlap function of A nucleus (1/fm2)
-!               anbin=ta1(ibpp)
-!           else
-!           endif
-            pir=part1(ibpp)
-            tir=part2(ibpp)
+                pir=part1(ibpp)
+                tir=part2(ibpp)
 !           Nbin in current event
-            evbin=anbin*csnn
-            pirr=pir
-            tirr=tir
-!       endif
+                evbin=anbin*csnn
+                pirr=pir
+                tirr=tir
+            end if
 
-80002       if( (ipden == 0 .and. itden == 0) .or. (ipden == 2 .and. &
-             itden == 2) .or. ipden >= 11 )then
-                pir=1.
-                tir=1.
-                evbin=1.
-                pirr=1.
-                tirr=1.
-            endif
             vneump=pir
             vneumt=tir
             write(19,*) "#! Fixed b = bmin"
@@ -1849,26 +1846,17 @@
             stbp=0.
             stbt=0.
 
+            r4=rnp
+            if(rnt > rnp) r4=rnt
             do i1=1,i2
                 bp=bpp(i1)
-                r4=rnp
-                if(rnt > rnp) r4=rnt
                 rr4=bp/r4
                 acoll(i1)=dexp(-rr4*rr4)
 !       calculate the overlap region of two nuclei at given b
                 ibpp=int(bp/0.1+1.0)
                 ibpp=min(ibpp,200)
-!               if(ipden == 1 .and. itden == 1)then   ! A+B
-!                   overlap function of A+B (1/fm^2)
-                    anbin=ta1a2(ibpp)
-!               elseif(ipden == 0 .and. itden == 1)then   ! p+A
-!                   overlap function of B nucleus (1/fm^2)
-!                   anbin=ta2(ibpp)
-!               elseif(ipden == 1 .and. itden == 0)then   ! A+p
-!                   overlap function of A nucleus (1/fm^2) 020718
-!                   anbin=ta1(ibpp)
-!               else
-!               endif
+!       overlap function of A+B (1/fm^2)
+                anbin=ta1a2(ibpp)
                 pir=part1(ibpp)
                 tir=part2(ibpp)
                 stab=stab+bp
@@ -1894,24 +1882,13 @@
 !       average b in [bmin,bmax]
             avb=2./3.*(bmin+bmax)
 !       above equation is correct when bmin=0 only
-            r4=rnp
-            if(rnt > rnp) r4=rnt
             rr4=avb/r4
             avneu=dexp(-rr4*rr4)
 !       calculate the overlap region of two nuclei at given b
             ibpp=int(avb/0.1+1.0)
             ibpp=min(ibpp,200)
-!           if(ipden == 1 .and. itden == 1)then   ! A+B
-!               overlap function of A+B (1/fm^2)
-                anbin=ta1a2(ibpp)
-!           elseif(ipden == 0 .and. itden == 1)then   ! p+A
-!               overlap function of B nucleus (1/fm^2)
-!               anbin=ta2(ibpp)
-!           elseif(ipden == 1 .and. itden == 0)then   ! A+p
-!               overlap function of A nucleus (1/fm2)
-!               anbin=ta1(ibpp)
-!           else
-!           endif
+!       overlap function of A+B (1/fm^2)
+            anbin=ta1a2(ibpp)
             pir=part1(ibpp)
             tir=part2(ibpp)
             aanbin=anbin
@@ -2288,21 +2265,12 @@
 !       Random sampling method.
         else
             bmin2 = bmin*bmin   ! 190620
-            bp    = sqrt( pyr(1)*( bmax*bmax - bmin2 ) + bmin2 )
+            bp    = SQRT( PYR(1)*( bmax*bmax - bmin2 ) + bmin2 )
 !       calculate the overlap region of two nuclei at given bp
-            ibpp  = int( bp/0.1 + 1.0 )
-            ibpp  = min( ibpp, 200 )
-!           if(ipden == 1 .and. itden == 1)then   ! A+B
-!               overlap function of A+B (1/fm^2)
-                anbin = ta1a2(ibpp)
-!           elseif(ipden == 0 .and. itden == 1)then   ! p+A
-!               overlap function of B nucleus (1/fm^2)
-!               anbin=ta2(ibpp)
-!           elseif(ipden == 1 .and. itden == 0)then   ! A+p
-!               overlap function of A nucleus (1/fm^2)
-!               anbin=ta1(ibpp)
-!           else
-!           endif
+            ibpp  = INT( bp/0.1 + 1.0 )
+            ibpp  = MIN( ibpp, 200 )
+!       overlap function of A+B (1/fm^2)
+            anbin = ta1a2(ibpp)
             pir    = part1(ibpp)
             tir    = part2(ibpp)
             evbin  = anbin*csnn
@@ -3064,8 +3032,6 @@
          iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
         common/sa7/ispmax,isdmax,iflmax,ispkf(100),n_bin_hist,asd(10), &
          afl(100,10,2),i_y_or_eta
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-         pph,vnlep
         common/sa23/kpar,knn,kpp,knp,kep,NON_p,skpar,sknn,skpp,sknp,skep
         common/sa25/i_inel_proc,i_time_shower,para1_1,para1_2
         common/sa27/itime,kjp22,gtime,astr,akapa(6),parj1,parj2,parj3, &
@@ -3454,19 +3420,19 @@
 !       Corrects output.
         if( ( .NOT.IS_NUCLEUS(KF_proj) .AND. .NOT.IS_NUCLEUS(KF_targ) ) &
             .AND. i_mode /= 8 .AND. i_mode /= 9 )then
-            snpctl0i    = 1.
-            snpari      = 2.
-            snpctlmi    = 1.
-            eineli(592) = 1.
-            swouni      = 2.
-            skparo      = 2.
-            if( nzp == 0 .AND. nzt == 0 )then
-                sknno = 1.
-            elseif( ABS(nzp) == 1 .AND. ABS(nzt) == 1 )then
-                skppo = 1.
-            elseif( (ABS(nzp) == 1 .AND. nzt == 0) .OR. &
-                (nzp == 0 .AND. ABS(nzt) == 1) )then
-                sknpo = 1.
+            snpctl0i    = 1D0
+            snpari      = 2D0
+            snpctlmi    = 1D0
+            eineli(592) = 1D0
+            swouni      = 2D0
+            skparo      = 2D0
+            if( ABS( KF_proj ) == 2112 .AND. ABS( KF_proj ) == 2112 )then
+                sknno = 1D0
+            elseif( ABS( KF_proj ) == 2212 .AND. ABS( KF_proj ) == 2212 )then
+                skppo = 1D0
+            elseif(  ABS( KF_proj ) == 2212 .AND. ABS( KF_proj ) == 2112 &
+                .OR. ABS( KF_proj ) == 2112 .AND. ABS( KF_proj ) == 2212 )then
+                sknpo = 1D0
             end if
         end if
 
@@ -3474,8 +3440,8 @@
                     "----------------------------------------"
         write(12,*) "#! Number of events ="
         write(12,*)  iii
-        write(12,*) "#! NN(pp) total cross section in parini (mb) ="
-        write(12,*)  para1_1
+        write(12,*) "#! NN(pp), eN(e^- p) total cross section in parini (mb) ="
+        write(12,*)  para1_1, csen*10D0
         write(12,*) "#! NN(pp) total cross section in hadcas (mb) ="
         write(12,*)  para1_2
         write(12,*) "#! MC Glauber-like <N_coll>, <N_part> in the " // &
@@ -3650,37 +3616,6 @@
             j=(i-1)*10
             write(12,*) (dineli(j+kt),kt=1,10,1)
         end do
-
-        if(ipden >= 11.and.ipden <= 16)then
-            do kk=1,10,1
-                sbn1=sbn(1,1)
-                sbn1=dmax1(sbn1,1.d-20)
-                sbnf1=sbnf(1,1)
-                sbnf1=dmax1(sbnf1,1.d-20)
-                if(kk /= 1) sbo(kk,1)=sbn(kk,1)/sbn1
-                if(kk /= 1) sbof(kk,1)=sbnf(kk,1)/sbnf1
-                do i1=1,n_bin_hist,1
-                    do i2=1,isdmax,1
-                        san1=san(i1,i2,1)
-                        san1=dmax1(san1,1.d-20)
-                        sanf1=sanf(i1,i2,1)
-                        sanf1=dmax1(sanf1,1.d-20)
-                        if(kk /= 1) sao(i1,i2,kk)=san(i1,i2,kk)/san1
-                        if(kk /= 1) saof(i1,i2,kk)=sanf(i1,i2,kk)/sanf1
-                    enddo
-                enddo
-            enddo
-        write(12,*) "#! relative multiplicity, p =",(sbo(ll,1),ll=1,10)
-        write(12,*) "#! relative multiplicity, f =",(sbof(ll,1),ll=1,10)
-            do m2=1,isdmax,1
-                write(12,*) "#! ID of relative distribution m2 =",m2
-                do m3=1,10
-                    write(12,*) "#! distribution belong to m3 =",m3
-                    write(12,*) (sao(m1,m2,m3),m1=1,n_bin_hist,1)
-                    write(12,*) (saof(m1,m2,m3),m1=1,n_bin_hist,1)
-                enddo
-            enddo
-        endif
 
         close(12)
 !-------------------------------   User Output   -------------------------------
@@ -4741,10 +4676,10 @@
             pT2= p1**2 + p2**2
             sm2_org = p4**2 - p1**2 - p2**2 - p3**2
             sm2=(p4+dp(4))**2-(p1+dp(1))**2-(p2+dp(2))**2-(p3+dp(3))**2
-!           Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
+!   Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
             if( (sm2 >= 0. .OR. (sm2 < 0. .AND. sm2 >= sm2_org)) .AND. &
                 (p4+dp(4)) >= p5 .AND. kf /= 88 .AND. pT2 > 1D-15 )then
-    !             (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
+                ! (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
                 do i2=1,4,1
                     pbe(i1,i2) = pbe(i1,i2) + dp(i2)
                 end do
@@ -4807,10 +4742,10 @@
             pT2= p1**2 + p2**2
             sm2_org = p4**2 - p1**2 - p2**2 - p3**2
             sm2=(p4+dp(4))**2-(p1+dp(1))**2-(p2+dp(2))**2-(p3+dp(3))**2
-!           Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
+!   Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
             if( (sm2 >= 0. .OR. (sm2 < 0. .AND. sm2 >= sm2_org)) .AND. &
                 (p4+dp(4)) >= p5 .AND. kf /= 88 .AND. pT2 > 1D-15 )then
-    !             (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
+                ! (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
                 do i2=1,4,1
                     P(i1,i2) = P(i1,i2) + dp(i2)
                 end do
@@ -4828,10 +4763,10 @@
             pT2= p1**2 + p2**2
             sm2_org = p4**2 - p1**2 - p2**2 - p3**2
             sm2=(p4+dp(4))**2-(p1+dp(1))**2-(p2+dp(2))**2-(p3+dp(3))**2
-!           Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
+!   Inv. m^2 >= 0 or < 0 but closer to 0, E >= m, and not junction or spectator.
             if( (sm2 >= 0. .OR. (sm2 < 0. .AND. sm2 >= sm2_org)) .AND. &
                 (p4+dp(4)) >= p5 .AND. kf /= 88 .AND. pT2 > 1D-15 )then
-    !             (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
+                ! (p4+dp(4)) > 0. .AND. kf /= 88 .AND. pT2 > 1D-15 )then
                 do i2=1,4,1
                     pn(i1,i2) = pn(i1,i2) + dp(i2)
                 end do
@@ -4890,12 +4825,12 @@
         if( .NOT.IS_NUCLEUS(KF_proj) )then
             ic_init = ic_init + PYCHGE( KF_proj )
         else
-            ic_init = ic_init + nzp*PYCHGE(2212)
+            ic_init = ic_init + nzp*PYCHGE(2212)*SIGN(1,KF_proj)
         end if
         if( .NOT.IS_NUCLEUS(KF_targ) )then
             ic_init = ic_init + PYCHGE( KF_targ )
         else
-            ic_init = ic_init + nzt*PYCHGE(2212)
+            ic_init = ic_init + nzt*PYCHGE(2212)*SIGN(1,KF_targ)
         end if
 !       For Angantyr mode.
         if( i_mode == 8 .OR. i_mode == 9 )then

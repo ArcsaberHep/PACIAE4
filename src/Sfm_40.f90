@@ -2,13 +2,13 @@
 !! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, July 2002 - July 2025.
+!! Author: Ben-Hao Sa, July 2002 - August 2025.
 
 !> This is the program to perform the string fragmentation hadronization by
 !!  interfacing with PYTHIA 6/8.
 
 !!                                             By Ben-Hao at CIAE on 31/07/2002
-!!                                  Last updated by An-Ke at UiO  on 20/07/2025
+!!                                  Last updated by An-Ke at UiO  on 16/08/2025
 
 
         subroutine sfm
@@ -311,6 +311,7 @@
 !       i_begin, e_end: the endpoints of a single string.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS, IS_HADRON
         PARAMETER (KSZJ=80000)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
         COMMON/PYINT1/MINT(400),VINT(400)
@@ -325,10 +326,11 @@
         common/Glauber5/ pathn, evbin, pirr, tirr, spathn, sevbin
 !       For the parini related statistics.
         common/anly_parini1/ woun, swoun, snpctl0, snpctlm, snpar
-        common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
-         nap,nat,nzp,nzt,pio
 !       Local arrays.
         common/sin_local/nsin,non,ksin(kszj,5),psin(kszj,5),vsin(kszj,5)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 !       pathn: N_bin / N_part
 !       itime: number of strings in current event, when i_tension = 1 or 3
 !       gtime: number of gluons in current event, when i_tension = 1 or 3
@@ -364,11 +366,12 @@
                 ckapa = 1D0
             elseif(ampi > 0)then
 !               ampi = ampi*evbin
-                if( (ipden == 0 .and. itden == 0) .or.  &
-                    (ipden == 2 .and. itden == 2) )then
-                    pathn = 1.
-                else
+                if(      ( IS_HADRON( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) &
+                    .OR. ( IS_HADRON( KF_targ ) .AND. IS_NUCLEUS( KF_proj ) ) &
+                    .OR. ( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) )then
                     pathn = evbin / ( pirr + tirr )
+                else
+                    pathn = 1D0
                 end if
 !               evbin: N_bin of collision system (A+B)
 !               pirr: N_part of projectile nucleus (Glauber)
@@ -617,7 +620,7 @@
 !       i_error: 0/1, errors occured and throws away the current event
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        LOGICAL IS_EXIST
+        LOGICAL IS_EXIST, IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
         COMMON/PYINT1/MINT(400),VINT(400)
@@ -628,8 +631,6 @@
         common/sa28/nstr,nstra(kszj),nstrv(kszj),nstr0, &
          nstr1,nstr1a(kszj),nstr1v(kszj)
         common/sa34/itorw,iikk,cp0,cr0,kkii
-        common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
-         nap,nat,nzp,nzt,pio
         common/sbe/nbe,non_be,kbe(kszj,5),pbe(kszj,5),vbe(kszj,5)
         common/aaff/naff,nonff,kaff(kszj,5),paff(kszj,5),vaff(kszj,5)
 !       For the simulation control.
@@ -735,10 +736,8 @@
 !------------------------   Single String Fragmentation ------------------------
 
 !-------------------------   Failed String Treating   --------------------------
-                        if( iikk == 2 .and. &
-                          ( (ipden == 0 .and. itden == 0) .or. &
-                            (ipden == 2 .and. itden == 2) .or. &
-                             ipden >= 11 ) )then
+                        if( iikk == 2 .AND. .NOT.IS_NUCLEUS( KF_proj ) &
+                                      .AND. .NOT.IS_NUCLEUS( KF_targ ) )then
                             ! Throws away this event.
                             i_error = 1
                             return
@@ -1046,8 +1045,6 @@
         common/sa1_h/nn,non1_h,kn(kszj,5),pn(kszj,5),rn(kszj,5)
         common/sa6_p/ithroq_p,ithrob_p,ich_p,non6_p,throe_p(4)
         common/sgam/ngam,nongam,kgam(kszj,5),pgam(kszj,5),vgam(kszj,5)
-        common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
-         nap,nat,nzp,nzt,pio
 !       For the simulation control.
         COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max

@@ -2,12 +2,12 @@
 !! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, November 2002 - July 2025.
+!! Author: Ben-Hao Sa, November 2002 - August 2025.
 
 !> This is the program to deal with the parton cascade (partonic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 19/11/2002
-!!                                  Last updated by An-Ke at UiO  on 20/07/2025
+!!                                  Last updated by An-Ke at UiO  on 16/08/2025
 
 
         subroutine parcas( time_par, iijk )

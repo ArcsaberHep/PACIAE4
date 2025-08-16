@@ -2,13 +2,13 @@
 !! Copyright (C) 2025 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, December 2003 - July 2025.
+!! Author: Ben-Hao Sa, December 2003 - August 2025.
 
 !> This is the initialization program to generate the initial partonic state
 !!  for C-framework or the intermediate hadronic state for A- and B-framework.
 
 !!                                             By Ben-Hao at CIAE on 04/12/2003
-!!                                  Last updated by An-Ke at CCNU on 20/07/2025
+!!                                  Last updated by An-Ke at CCNU on 16/08/2025
 
 
         subroutine parini( time_ini, ijk )
@@ -33,6 +33,7 @@
 !        and lA).
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -52,8 +53,6 @@
         common/sa10/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
          iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
         common/sa14/ipyth(2000),idec(2000),iwide(2000)
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-         pph,vnlep
         common/sa24/adj1(40),nnstop,non24,zstop
         common/sa26/ndiq(kszj),npt(kszj),ifcom(kszj),idi,idio
         common/sa27/itime,kjp22,gtime,astr,akapa(6),parj1,parj2,parj3, &
@@ -63,7 +62,7 @@
         common/saf/naf,nonaf,kaf(kszj,5),paf(kszj,5),vaf(kszj,5)
         common/sbh/nbh,nonbh,kbh(kszj,5),pbh(kszj,5),vbh(kszj,5)
         common/sgam/ngam,nongam,kgam(kszj,5),pgam(kszj,5),vgam(kszj,5)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/count/isinel(600)
         common/papr/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
@@ -94,7 +93,7 @@
 !              (w/o diquark)
 !       c17(i,1-3) : three position of i-th nucleon
 !       tp(i) : time of i-th nucleon counted since collision of two nuclei
-!       p17(i,1-4) : four momentum of i-th nucleon
+!       p17(i,1-5) : four momentum and mass of i-th nucleon
 !       ishp(i)=1 if i-th particle inside the simulated volume
 !              =0 if i-th particle outside the simulated volume
 !       tau(i): formation time of particle i.
@@ -143,7 +142,7 @@
         knp  = 0
         kep  = 0
 !       To avoide infinite loop in parini.
-        ijk = 0
+        ijk  = 0
         tp   = 0D0
         N    = 0
         nbe  = 0
@@ -157,7 +156,7 @@
         ifcom = 0
         nstr0 = 0
         nstr1 = 0
-        nctl = 0
+        nctl  = 0
 !-----------------------   Local Variable Initializing   -----------------------
 !-------------------------------------------------------------------------------
 
@@ -168,7 +167,7 @@
 
         call initialize_position
 
-        call initialize_momentum( win, energy_B )
+        call initialize_momentum
 
 !       Calculates the velocity of the CM of collision system in LAB or
 !        in nucleon-nucleon CM system.
@@ -183,36 +182,49 @@
 
 !-------------------------------------------------------------------------------
 !-----------------------   Particle Properties Giving   ------------------------
-!      '1 -> |nzp|' are projectile protons or lepton, '|nzp|+1 -> nap'
-!        are projectile neutrons; 'nap+1 -> nap+nzt' are targer protons,
-!        the rest are target nuctrons in 'PYJETS' after nuclear initiation above
+!      '1' to "nzp" are projectile protons/hadron/lepton. "nzp+1" to "nap"
+!        are projectile neutrons. "nap+1" to "nap+nzt" are target
+!        protons/hadron/lepton. The rest are target neutrons in /PYJETS/.
         napt = nap + nat
-        n = napt
-        do i=1,N,1
+        N = napt
+        inzp = ABS(nzp)
+        inzt = ABS(nzt)
+        ! Status and KF code.
+        do i=1,nap,1
             K(i,1) = 1
-            K(i,2) = 2112
-            P(i,5) = PYMASS( 2212 )
-!       For NN, NA(AN) and AB.
-            if( (i <= abs(nzp) .and. ipden < 2) &
-                 .OR. (i > nap .and. i <= nap+nzt) )then
-                K(i,2) = 2212
-                P(i,5) = PYMASS( 2212 ) 
-!       For l+N & lbar + N
-            else if( i <= nap .AND. (ipden >= 11 .AND. ipden <= 16 &
-                    .AND. ABS(nzp) == 1) )then
-                K(i,2) = SIGN( ipden, -nzp )
-                P(i,5) = PYMASS( ipden )
+            if( i <= inzp )then
+                if( IS_NUCLEUS( KF_proj ) )then
+                    K(i,2) = SIGN( 2212, KF_proj )
+                else
+                    K(i,2) = KF_proj
+                end if
+            else
+                K(i,2) = SIGN( 2112, KF_proj )
             end if
-            do j=1,3,1
-                p(i,j) = p17(i,j)
-                v(i,j) = c17(i,j)
-            end do
-            p(i,4) = p17(i,4)
-            v(i,4) = tp(i)
         end do
-!       v, vbh and vsa arrays are the position four vector
-!       note: for v etc., we do not take care of their fifth component now.
-!        for array k, we take care of only first three components now.
+        do i = nap+1, napt, 1
+            K(i,1) = 1
+            if( i <= nap+inzt )then
+                if( IS_NUCLEUS( KF_targ ) )then
+                    K(i,2) = SIGN( 2212, KF_targ )
+                else
+                    K(i,2) = KF_targ
+                end if
+            else
+                K(i,2) = SIGN( 2112, KF_targ )
+            end if
+        end do
+        ! Momenta and positions.
+        do i=1,N,1
+            do j=1,3,1
+                P(i,j) = p17(i,j)
+                V(i,j) = c17(i,j)
+            end do
+            do j=4,5,1
+                P(i,j) = p17(i,j)
+            end do
+            V(i,4) = tp(i)
+        end do
 !-----------------------   Particle Properties Giving   ------------------------
 !-------------------------------------------------------------------------------
 
@@ -237,63 +249,54 @@
         end do
         bzp = bzp3 / bzp4
         bzt = bzt3 / bzt4
-        gamp = 1.d0 / dsqrt( dmax1(1.d-20, (1.0d0 - bzp*bzp) ) )
-!       no Lorentz contraction for incident lepton
-        if(ipden >= 2) gamp = 1.
-        gamt = 1.d0 / dsqrt( dmax1(1.d-20, (1.0d0 - bzt*bzt) ) )
-!       try no lorentz contract for target
+        gamp = 1D0 / SQRT( MAX( 1D-20, ( 1D0 - bzp*bzp ) ) )
+!       No Lorentz contraction for incident hadron/lepton (non-nucleus)
+        if( .NOT.IS_NUCLEUS( KF_proj ) ) gamp = 1D0
+        gamt = 1D0 / SQRT( MAX( 1D-20, ( 1D0 - bzt*bzt ) ) )
+        if( .NOT.IS_NUCLEUS( KF_targ ) ) gamt = 1D0
+!       Try no Lorentz contraction for target
 !       gamt = 1.
         do i=1,nap
-            c17(i,3) = c17(i,3) / gamp
-            v(i,3)   = v(i,3)   / gamp
-        enddo
+            V(i,3) = V(i,3) / gamp
+        end do
         do i = nap+1, napt
-            c17(i,3) = c17(i,3) / gamt
-            v(i,3)   = v(i,3)   / gamt
-        enddo
+            V(i,3) = V(i,3) / gamt
+        end do
 
 !       Positions two particles at ( b/2, 0, -20 ) and ( -b/2, 0, 20 ).
 !       20 fm is just a large enough distance in the z-direction.
+!       Now the "c17" is positions before the lorentz contraction, while the 'V'
+!        is that after the contraction.
         do i=1,nap,1
-            V(i,3) = V(i,3) - 20D0
+            c17(i,3) = c17(i,3) - 20D0
+            V(i,3)   = V(i,3)   - 20D0
         end do
         do i = nap+1, napt, 1
-            V(i,3) = V(i,3) + 20D0
+            c17(i,3) = c17(i,3) + 20D0
+            V(i,3)   = V(i,3)   + 20D0
         end do
 !---------------------   CMS Boost & Lorentz Contraction   ---------------------
 !-------------------------------------------------------------------------------
 
 
 !-------------------------------------------------------------------------------
-!----------------------   Particle Filtering & Ordering   ----------------------
-!       filter out those kind of particles wanted to study and make
-!        the order of proton, neutron, ... (cf. 'filt')
-        call filt
-!       since lepton was moved to last position after calling filt, one has to
-!        remove it to the fist position
-        if(ipden >= 2) call ltof(n)
+!---------------------   Initial Collision List Creating   ---------------------
 !       'PYJETS' to 'sa2'
-        nsa = n
+        nsa = N
         do j=1,5
-            do i=1,n
-                ksa(i,j) = k(i,j)
-                psa(i,j) = p(i,j)
-                vsa(i,j) = v(i,j)
-            enddo
-        enddo
-        do i=1,n
+            do i=1,N
+                ksa(i,j) = K(i,j)
+                psa(i,j) = P(i,j)
+                vsa(i,j) = V(i,j)
+            end do
+        end do
+        do i=1,N
             ishp(i) = 1
             tau(i)  = 0D0
-        enddo
-        numb = numbs
-!----------------------   Particle Filtering & Ordering   ----------------------
-!-------------------------------------------------------------------------------
-
-
-!-------------------------------------------------------------------------------
+        end do
 !       note: particle list is composed of the arrays in common block
-!        'sa2', the array 'ishp' in common block 'wz', the array 'tau' in
-!        common block 'sa4', and the array 'numb' in common block 'sa5'
+!        'sa2', the array 'ishp' in common block 'wz', and the array 'tau' in
+!        common block 'sa4'.
         time = time_ini
 !       full_events_history of OSC1999A
         call oscar(0)
@@ -301,8 +304,7 @@
 !        non-freeze-out system. The distance of a particle, when checking
 !        is it freezing out or not, is measured with respect to this center
         call copl(time)
-!       creat the initial collision list, note: be sure that the initial
-!       collision list must not be empty
+!       creat the initial collision list.
         call ctlcre
 !       Resamples a 'b' and positions now.
         if( nctl <= 0 )then
@@ -310,6 +312,7 @@
             ijk = 1
             return
         end if
+!---------------------   Initial Collision List Creating   ---------------------
 !-------------------------------------------------------------------------------
 
 
@@ -326,12 +329,12 @@
         call his(time,istop)
         do ij=1,nsa
             vsa(ij,4) = 1D-5
-        enddo
+        end do
 
 !       move origin of time to collision time of first nucleon-nucleon collision
         do ij=1,nctl
             tc(ij) = tc(ij) - time + 1D-5
-        enddo
+        end do
         time = time_ini
         call copl(time)
 !------------------------   System Time Initializing   -------------------------
@@ -368,11 +371,6 @@
             nsa = 0
         endif
 
-!       boost PYJETS back to lab or nucleon-nucleon cms system.
-!       P(N,5) = SQRT( MAX( -P(N,1)**2 -P(N,2)**2 -P(N,3)**2 +P(N,4)**2, 0D0 ) )
-!       P(N-1,5) = SQRT( MAX( - P(N-1,1)**2 - P(N-1,2)**2 - P(N-1,3)**2 &
-!                + P(N-1,4)**2,0.0))
-!       call PYBORO( 1, N, 0D0, 0D0, -bst(1), -bst(2), -bst(3) )
 
 !-----------------------   A, B & D-framework Treating   -----------------------
         if( mstptj == 1 )then
@@ -445,10 +443,11 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine sysini(win)
+        subroutine sysini
 !!      Gives the initial values to quantities needed in calculation.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS, IS_BARYON, IS_LEPTON
         COMMON/PYCIDAT1/KFACOT(100),DISDET(100),ISINELT(600)
         common/sa5/kfmax,kfaco(100),numb(100),numbs(100),non5, &
          disbe(100,100)
@@ -461,20 +460,25 @@
          nap,nat,nzp,nzt,pio
         common/sa10/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
          iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
+        common/sa24/adj1(40),nnstop,non24,zstop
         common/sa25/i_inel_proc,i_time_shower,para1_1,para1_2
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 !       For cross sections of hh collisions etc.
         common/para_h1/ para(20)
 
 
         anat = nat
         anap = nap
-
 !       rou0 = PARAM(11)
 
 !       considering the nucleus as a sphere with radii rnt for target
 !        and rnp for projectile.
 !       rnt = ( 3D0*anat / ( 4D0 * pio * rou0 ) )**(0.33333)
 !       rnp = ( 3D0*anap / ( 4D0 * pio * rou0 ) )**(0.33333)
+        rnt = 0.5D0
+        rnp = 0.5D0
         ! 1.05 to 1.12
         rp00 = 1.12D0
         rt00 = 1.12D0
@@ -485,28 +489,31 @@
 
 !       Uses PDG RPP2024 charge radius of proton 0.8409 +- 0.0004 fm.
 !           (PDG RPP2024 magnetic radius of neutron 0.864 +0.009 -0.008 fm)
-!       if(itden == 0) rnt = rt00 * anat**(0.33333)
-        if(itden == 0) rnt = 0.841D0
-        ! +0.54
-        if(itden == 1) rnt = rt00 * anat**(0.33333)
-        ! 2.60 2.095 1.54, deuteron
-        if(nat == 2 .and. nzt == 1) rnt = 4.0D0
-        ! lepton
-        if(ipden >= 2) rnt = 0.5D0
-!       if(ipden == 0) rnp = rp00*anap**(0.33333)
-        if(ipden == 0) rnp = 0.841D0
-        ! +0.54
-        if(ipden == 1) rnp = rp00*anap**(0.33333)
-        ! lepton
-        if(ipden >= 2) rnp = 0.5D0
-        ! 2.60 2.095 1.54
-        if(nap == 2 .and. nzp == 1) rnp = 4.0D0
+
+        if( IS_NUCLEUS( KF_proj ) )then
+            ! +0.54
+            rnp = rp00 * anap**(0.33333)
+            ! 2.60 2.095 1.54, deuteron
+            if( nap == 2 .AND. nzp == 1 ) rnp = 4.0D0
+        else if( IS_BARYON( KF_proj ) )then
+            rnp = 0.841D0
+        end if
+
+        if( IS_NUCLEUS( KF_targ ) )then
+            ! +0.54
+            rnt = rt00 * anat**(0.33333)
+            ! 2.60 2.095 1.54, deuteron
+            if( nat == 2 .AND. nzt == 1 ) rnt = 4.0D0
+        else if( IS_BARYON( KF_targ ) )then
+            rnt = 0.841D0
+        end if
+
         rou0 = 3D0 / 4D0 / pio * anat / rnt**3
         r0p = rnp
         r0t = rnt
 
-!       Sets initial values to some quantities
-!       in the program the x-sections are given in a unit of fm^2.
+!       Sets initial values to some quantities.
+!       In the program the x-sections are given in a unit of fm^2.
         PARAM(1) = para1_1
         PARAM(5) = para(5)
         csnn     = PARAM(1)*0.1D0
@@ -521,7 +528,7 @@
         iabsb    = 1
         iabsm    = 1
 !       PARAM(1) : total cross-section of nucleon + nucleon (in mb)
-!       PARAM(5) : cross-section of pi + pi -> K + Kbar (in mb)
+!       PARAM(5) : cross-section of pi + pi -> K + K (in mb)
 !       csnn  : total cross section of nucleon + nucleon
 !       1 mb = 0.1 fm^2
 !       cspin : total cross section of pion + nucleon
@@ -561,31 +568,60 @@
             csspm  = cspsm
         end if
 
-        if( ipden >= 2 )then
-            if(ifram == 0)then
-                ept=sqrt(win*win+0.938*0.938)
-                rots=sqrt((ept+0.938)*(ept+0.938)-win*win)
-            endif
-            if(ifram == 1) rots=win
+!       Total cross section of the lN scattering in lA simulations.
+        csen = 0D0
+        if(      ( IS_LEPTON( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) ) &
+            .OR. ( IS_LEPTON( KF_targ ) .AND. IS_NUCLEUS( KF_proj ) ) &
+            )then
+            pxA = 0D0
+            pxB = 0D0
+            pyA = 0D0
+            pyB = 0D0
+            pzA = 0D0
+            pzB = 0D0
+            dmA = PYMASS( KF_proj )
+            dmB = PYMASS( KF_targ )
+            if( IS_NUCLEUS( KF_proj ) ) dmA = PYMASS( 2212 )
+            if( IS_NUCLEUS( KF_targ ) ) dmB = PYMASS( 2212 )
+            eA   = dmA
+            eB   = dmB
+            rots = win
+            ! Fixed target in lab.
+            if( ifram == 0 )then
+                pzA = win
+                eA  = SQRT( pxA*pxA + pyA*pyA + pzA*pzA + dmA*dmA )
+            ! In CMS.
+            else if( ifram == 1 )then
+                rots = win
+            ! Back-to-back in lab.
+            else if( ifram == 2 )then
+                eA = win
+                eB = energy_B
+                pzA =  SQRT( MAX( eA*eA - pxA*pxA - pyA*pyA - dmA*dmA, 0D0 ) )
+                pzB = -SQRT( MAX( eB*eB - pxB*pxB - pyB*pyB - dmB*dmB, 0D0 ) )
+            end if
+            if( ifram == 0 .OR. ifram == 2 )then
+                e2   = ( eA + eB ) * ( eA + eB )
+                px2  = ( pxA + pxB ) * ( pxA + pxB )
+                py2  = ( pyA + pyB ) * ( pyA + pyB )
+                pz2  = ( pzA + pzB ) * ( pzA + pzB )
+                rots = SQRT( MAX( e2 - px2 - py2 - pz2, 0D0 ) )
+            end if
             ! temporary using e^-p total x-section
-            call crosep(rots,csen)
-            ! e^-p total x-section
-!           if(nzp < 0) call crosep(rots,csen)
-            ! e^+p total x-section
-!           if(nzp >= 0) call crosepp(rots,csen)
+            call crosep( rots, csen )
             csen = csen * 0.1D0
-        endif
+        end if
 
 !       largest collision distance between two colliding particles.
-        edipi  = dsqrt(cspipi / pio)
-        epin   = dsqrt(cspin  / pio)
-        ekn    = dsqrt(cskn   / pio)
-        ecsnn  = dsqrt(csnn   / pio)
-        ecspsn = dsqrt(cspsn  / pio)
-        ecspsm = dsqrt(cspsm  / pio)
-        ecsspn = dsqrt(csspn  / pio)
-        ecsspm = dsqrt(csspm  / pio)
-        ecsen  = dsqrt(csen   / pio)
+        edipi  = SQRT( cspipi / pio )
+        epin   = SQRT( cspin  / pio )
+        ekn    = SQRT( cskn   / pio )
+        ecsnn  = SQRT( csnn   / pio )
+        ecspsn = SQRT( cspsn  / pio )
+        ecspsm = SQRT( cspsm  / pio )
+        ecsspn = SQRT( csspn  / pio )
+        ecsspm = SQRT( csspm  / pio )
+        ecsen  = SQRT( csen   / pio )
 
         anp = nap**0.3333D0
         ant = nat**0.3333D0
@@ -603,8 +639,8 @@
         ! suptc = rt00*ant + 2D0*alt
         suppc = 10D0
         suptc = 10D0
-        suppm = 1D0 / ( 1D0 + EXP(0D0 - r0p/alp) )
-        suptm = 1D0 / ( 1D0 + EXP(0D0 - r0t/alt) )
+        suppm = 1D0 / ( 1D0 + EXP( 0D0 - r0p / alp ) )
+        suptm = 1D0 / ( 1D0 + EXP( 0D0 - r0t / alt ) )
 
         rcsit = PARAM(6)
         t0    = PARAM(7)
@@ -616,23 +652,9 @@
         kfmax  = KFMAXT
         kfaco  = KFACOT
         isinel = ISINELT
-        disbe  = 0D0
-        do j=1,kfmax
-!       something might be missing here ?
-            disbe(1,j)  = DISDET(j)
-            disbe(2,j)  = DISDET(j)
-            disbe(3,j)  = DISDET(j)
-            disbe(4,j)  = DISDET(j)
-!           disbe(26,j) = DISDET(j)
-!           disbe(27,j) = DISDET(j)
-!           disbe(28,j) = DISDET(j)
-!           disbe(29,j) = DISDET(j)
-        end do
-        do i=1,99,1
-            do j = i+1, 100, 1
-                disbe(j,i) = disbe(i,j)
-            end do
-        end do
+
+!       Largest position allowed for particle in hadcas.
+        adj1(28) = para(10) * MAX(rnt,rnp) * adj1(28)
 
 
         return
@@ -646,6 +668,7 @@
 !!       nuclei (and other particles).
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
         common/sa24/adj1(40),nnstop,non24,zstop
@@ -653,8 +676,10 @@
         common/sa33/smadel,ecce,secce,parecc,iparres
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
-
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 !       initialization of x, y,xy, x^2, y^2 and sump (statistics of the
 !         number of nucleons in overlap region, the initial geometry)
@@ -674,7 +699,7 @@
 
 !*****************************   A+B Collisions   ******************************
 !       A+B (nucleus-nucleus)
-        if( ipden == 1 .and. itden == 1 )then
+        if( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) )then
 !       distribute projectile nucleons by Woods-Saxon
             napt = nap
             ! In parini.f90.
@@ -734,7 +759,6 @@
 
 !-------------   Impact-Parameter & Initial Geometry Calculating   -------------
             do i=1,nap
-                ! c17(i,1)=c17(i,1)+bp
                 ! move x-component of origin to 0.5*bp
                 c17(i,1) = c17(i,1) + 0.5*bp
 !       Calculates eccentricity correctly for both adj1(30)=0 and 1.
@@ -743,15 +767,15 @@
                 z = c17(i,3)
 !       Relative distance between the projectile nucleon i and the
 !        target center (-bp/2., 0, 0)
-                rel_dist = SQRT( (x+bp/2.)**2 + y**2 + z**2 )
+                rel_dist = SQRT( (x+bp/2.)*(x+bp/2.) + y*y + z*z )
 !       The projectile nucleon i is inside the target, i.e. inside the
 !        overlap region.
                 if( rel_dist  <=  r0t )then
                     sumx  = sumx  + x
                     sumy  = sumy  + y
                     sumxy = sumxy + x*y
-                    sumx2 = sumx2 + x**2
-                    sumy2 = sumy2 + y**2
+                    sumx2 = sumx2 + x*x
+                    sumy2 = sumy2 + y*y
                     sump  = sump  + 1D0
                 end if
             enddo
@@ -763,15 +787,15 @@
                 z = c17(i,3)
 !       Relative distance between the target nucleon i and the
 !        projectile center (+bp/2., 0, 0)
-                rel_dist = SQRT( (x-bp/2.)**2 + y**2 + z**2 )
+                rel_dist = SQRT( (x-bp/2.)*(x-bp/2.) + y*y + z*z )
 !       The target nucleon i is inside the projectile, i.e. inside the
 !        overlap region.
                 if( rel_dist  <=  r0p )then
                     sumx  = sumx  + x
                     sumy  = sumy  + y
                     sumxy = sumxy + x*y
-                    sumx2 = sumx2 + x**2
-                    sumy2 = sumy2 + y**2
+                    sumx2 = sumx2 + x*x
+                    sumy2 = sumy2 + y*y
                     sump  = sump  + 1D0
                 end if
             enddo
@@ -779,10 +803,10 @@
 
 !*****************************   A+B Collisions   ******************************
 
-!***************************   NA & lA Collisions   ****************************
-!       N+A or lepton+A
-        elseif( (ipden == 0.or.ipden > 1) .and. itden == 1 )then
-!       distribute projectile proton
+!***************************   hA & lA Collisions   ****************************
+!       hadron+A or lepton+A
+        elseif( IS_NUCLEUS( KF_targ ) )then
+!       distribute the projectile particle
             do i=1,3
                 c17(1,i) = 0D0
                 if(i == 1) c17(1,i) = c17(1,i) + 0.5*bp
@@ -803,11 +827,11 @@
             do i = nap+1, nap+nat
                 c17(i,1) = c17(i,1) - 0.5*bp
             enddo
-!***************************   NA & lA Collisions   ****************************
+!***************************   hA & lA Collisions   ****************************
 
-!******************************   AN Collisions   ******************************
-!       A+N
-        elseif( ipden == 1 .and. itden == 0 )then
+!***************************   Ah & Al Collisions   ****************************
+!       A+hadron or A+lepton
+        elseif( IS_NUCLEUS( KF_proj ) )then
 !       distribute projectile nucleons by Woods-Saxon
             napt = nap
             alpt = get_nuclear_skin_depth( napt )
@@ -823,23 +847,22 @@
             do i=1,napt
                 c17(i,1) = c17(i,1) + 0.5*bp
             enddo
+!       distribute the target particle
             do i=1,3
                 c17(nap+1,i) = 0D0
                 if(i == 1) c17(nap+1,i) = -0.5*bp
             enddo
 !******************************   AN Collisions   ******************************
 
-!***************************   NN & lN Collisions   ****************************
-!       N+N or lepton+N
-!       Now NN and e+e- collisions have been processed in main.f90 directly.
-        elseif( (ipden == 0  .and. itden == 0) .or. &
-                (ipden >= 11 .and. itden == 0) )then
+!**************************   Elementary Collisions   **************************
+!       Now elementary collisions have been processed in main.f90 directly.
+        else
             do i=1,3
                 c17(1,i) = 0D0
                 c17(2,i) = 0D0
             enddo
         endif
-!***************************   NN & lN Collisions   ****************************
+!**************************   Elementary Collisions   **************************
 
         r0pt = r0p + r0t
 
@@ -892,7 +915,7 @@
 !       the beam direction is identified as the z axis
 !       the origin in position space is set on (0, 0, 0)
 !       and the origin of time is set at the moment of
-!       first nn colission assumed to be 1.e-5
+!       first colission assumed to be 1.e-5
 !--------------------------   Position Initializing   --------------------------
 !-------------------------------------------------------------------------------
 
@@ -955,7 +978,7 @@
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
 
@@ -964,8 +987,8 @@
         iiii = 0
 54      iiii = iiii + 1
         if( iiii == 10000 )then
-            write(*,*) "PACIAE warning: difficult to arrange produced " &
-                    // "nucleons in subroutine arrove, infinite loop may occur."
+            write(*,*) "PACIAE warning from arrove: difficult to arrange " &
+                    // "nucleons, infinite loop may occur."
             write(*,*) "b =", b, "fm"
             return
         end if
@@ -1015,7 +1038,7 @@
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
 
@@ -1026,9 +1049,8 @@
         iiii = 0
 100     iiii = iiii + 1
         if( iiii == 100000 )then
-            write(*,*) "PACIAE warning: difficult to arrange produced " &
-                    // "nucleons in subroutine woodsax, infinite loop may " &
-                    // "happen."
+            write(*,*) "PACIAE warning from woodsax_samp: difficult to " &
+                    // "arrange nucleons, infinite loop may happen."
             return
         end if
 
@@ -1080,9 +1102,9 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/papr/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
-         rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen   ! 060813
+         rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
 
@@ -1106,7 +1128,7 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
 
 
 100     continue
@@ -1126,182 +1148,135 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine initialize_momentum( win, energy_B )
+        subroutine initialize_momentum
 !!      Initializes momenta of particles (nucleons inside nuclei and
 !!       other particles).
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
         common/sa10/csnn,cspin,cskn,cspipi,cspsn,cspsm,rcsit,ifram, &
          iabsb,iabsm,i_sigma_AQM,ajpsi,csspn,csspm,csen
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-         pph,vnlep
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
 !       For the charge and 4-momentum check.
         common/cp_check/ p_init(4), p_final(4)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 
 !-------------------------------------------------------------------------------
 !--------------------------   Momentum Initializing   --------------------------
-!       In momentum phase space.
-        ep1 = 0D0
-        ep2 = 0D0
-        et1 = 0D0
-        et2 = 0D0
-        pp1 = 0D0
-        pp2 = 0D0
-        pt1 = 0D0
-        pt2 = 0D0
+!       In momentum phase space (without Fermi motion, i.e. px = py = 0).
+        ! Masses of protons, neutrons, projectile and target.
+        dm_p = PYMASS( 2212 )
+        dm_n = PYMASS( 2112 )
+        dm_proj = PYMASS( KF_proj )
+        dm_targ = PYMASS( KF_targ )
+        ! Projectile particle (proton).
+        pz_proj_1 = 0D0
+        e_proj_1  = 0D0
+        dm_proj_1 = dm_p
+        ! Projectile particle (neutron).
+        pz_proj_2 = 0D0
+        e_proj_2  = 0D0
+        dm_proj_2 = dm_n
+        ! Target particle (proton).
+        pz_targ_1 = 0D0
+        e_targ_1  = 0D0
+        dm_targ_1 = dm_p
+        ! Target particle (neutron).
+        pz_targ_2 = 0D0
+        e_targ_2  = 0D0
+        dm_targ_2 = dm_n
+
         p17 = 0D0
-        ! Sets the default frame as CMS.
-        if( ifram > 2 ) ifram = 1
 
 !       Fixed target in lab.
         if( ifram == 0 )then
-            pp1 = win     ! momentum of projetile particle (if proton)
-            pt1 = 1D-20   ! momentum of target    particle (if proton)
-            pp2 = win     ! momentum of projetile particle (if neutron)
-            pt2 = 1D-20   ! momentum of target    particle (if neutron)
-            pm2 = PYMASS(2212)**2         ! square mass of proton
-            ep1 = SQRT( pp1*pp1 + pm2 )   ! energy of projetile (proton)
-            et1 = SQRT( pt1*pt1 + pm2 )   ! energy of target    (proton)
-            pm2 = PYMASS(2112)**2         ! square mass of neutron
-            ep2 = SQRT( pp2*pp2 + pm2 )   ! energy of projetile (neutron)
-            et2 = SQRT( pt2*pt2 + pm2 )   ! energy of target    (neutron)
-!       Sets four momentum and mass for incident lepton.
-            if( ipden >= 11 .AND. ipden <= 16 )then
-                pincl(1) = 0D0
-                pincl(2) = 0D0
-                pincl(3) = win
-                pincl(5) = PYMASS(ipden)
-                pincl4   = pincl(3)*pincl(3) + pincl(5)*pincl(5)
-                pincl4   = dmax1( pincl4, 1D-20 )
-                pincl(4) = dsqrt(pincl4)
-                pinch(1) = 0D0
-                pinch(2) = 0D0
-                pinch(3) = 0D0
-                pinch(5) = PYMASS(2212)
-                pinch(4) = pinch(5)
-            end if
-        end if
-
+            ! Momenta of projetile particles.
+            pz_proj_1 = win
+            pz_proj_2 = win
 !       In cms.
-        if( ifram == 1 )then
-            ep1 = 0.5D0*win   ! energy of projetile particle (if proton)
-            et1 = ep1         ! energy of target    particle (if proton)
-            ep2 = 0.5D0*win   ! energy of projetile particle (if neutron)
-            et2 = ep2         ! energy of target    particle (if neutron)
-            pm2 = PYMASS(2212)**2          ! square mass of proton
-            pp1 =  SQRT( ep1*ep1 - pm2 )   ! momentum of projetile (proton)
-            pt1 = -SQRT( et1*et1 - pm2 )   ! momentum of target    (proton)
-            pm2 = PYMASS(2112)**2          ! square mass of nucleon
-            pp2 =  SQRT( ep2*ep2 - pm2 )   ! momentum of projetile (neutron)
-            pt2 = -SQRT( et2*et2 - pm2 )   ! momentum of target    (neutron)
-!       Sets four momentum and mass for incident lepton.
-            if( ipden >= 11 .AND. ipden <= 16 )then
-                pincl(1) = 0D0
-                pincl(2) = 0D0
-                pincl(4) = 0.5D0*win
-                pincl(5) = PYMASS(ipden)
-                pincl3   = pincl(4)*pincl(4) - pincl(5)*pincl(5)
-                pincl3   = dmax1( pincl3, 1D-20)
-                pincl(3) = SQRT(pincl3)
-                pinch(1) = 0D0
-                pinch(2) = 0D0
-                pinch(4) = 0.5D0*win
-                pinch(5) = PYMASS(2212)
-                pinch3   = pinch(4)*pinch(4) - pinch(5)*pinch(5)
-                pinch3   = dmax1( pinch3, 1D-20 )
-                pinch(3) = SQRT(pinch3)
+        else if( ifram == 1 )then
+            s = win*win
+            ! Uses the mass of proton to estimate pz.
+            dm_A = dm_p
+            dm_B = dm_p
+            ! A+B
+            if( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) )then
+                ! Have done.
+            ! hA or lA
+            else if( IS_NUCLEUS( KF_targ) )then
+                dm_A = dm_proj
+            ! Ah or Al
+            else if( IS_NUCLEUS( KF_proj) )then
+                dm_B = dm_targ
+            else
+                dm_A = dm_proj
+                dm_B = dm_targ
             end if
+            pz = SQRT( MAX( ( ( s - dm_A*dm_A - dm_B*dm_B )**2 &
+               - ( 2D0 * dm_A * dm_B )**2 ) / ( 4D0 * s ), 0D0 ) )
+            ! Momenta of projectile.
+            pz_proj_1 =  pz
+            pz_proj_2 =  pz
+            ! Momenta of target.
+            pz_targ_1 = -pz
+            pz_targ_2 = -pz
+!       Back-to-back in lab.
+        else if( ifram == 2 )then
+            e_proj_1 = win
+            e_proj_2 = win
+            e_targ_1 = energy_B
+            e_targ_2 = energy_B
+            dm_A = dm_p
+            dm_B = dm_p
+            ! A+B
+            if( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) )then
+                ! Have done.
+            ! hA or lA
+            else if( IS_NUCLEUS( KF_targ) )then
+                dm_A = dm_proj
+            ! Ah or Al
+            else if( IS_NUCLEUS( KF_proj) )then
+                dm_B = dm_targ
+            else
+                dm_A = dm_proj
+                dm_B = dm_targ
+            end if
+            pz_proj_1 =  SQRT( MAX( e_proj_1*e_proj_1 - dm_A*dm_A, 0D0 ) )
+            pz_proj_2 =  SQRT( MAX( e_proj_2*e_proj_2 - dm_n*dm_n, 0D0 ) )
+            pz_targ_1 = -SQRT( MAX( e_targ_1*e_targ_1 - dm_B*dm_B, 0D0 ) )
+            pz_targ_2 = -SQRT( MAX( e_targ_2*e_targ_2 - dm_n*dm_n, 0D0 ) )
         end if
 
-!       Back-to-back in lab.
-        if( ifram == 2 )then
-            eA = win
-            eB = energy_B
-            ep1 = eA
-            et1 = eB
-            ep2 = eA
-            et2 = eB
-            if( ep1 < PYMASS(2212) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! win(energy_A) < m_pronton " // &
-                                "in the back-to-back collision frame. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_proton."
-                    write(22,*)
-                end if
-                ep1 = PYMASS(2212)
-            end if
-            if( et1 < PYMASS(2212) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! energy_B < m_pronton " // &
-                                "in the back-to-back collision frame. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_proton."
-                    write(22,*)
-                end if
-                et1 = PYMASS(2212)
-            end if
-            if( ep2 < PYMASS(2112) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! win(energy_A) < m_neutron " // &
-                                "in the back-to-back collision frame. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_neutron."
-                    write(22,*)
-                end if
-                ep2 = PYMASS(2112)
-            end if
-            if( et2 < PYMASS(2112) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! energy_B < m_neutron " // &
-                                "in the back-to-back collision frame. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_neutron."
-                    write(22,*)
-                end if
-                et2 = PYMASS(2112)
-            end if
-            pm2 = PYMASS(2212)**2
-            pp1 =  SQRT( ep1*ep1 - pm2 )
-            pt1 = -SQRT( et1*et1 - pm2 )
-            pm2 = PYMASS(2112)**2
-            pp2 =  SQRT( ep2*ep2 - pm2 )
-            pt2 = -SQRT( et2*et2 - pm2 )
-            if(       ( ABS(pp1) < 1D-10 .AND. ABS(pp2) < 1D-10 ) &
-                .AND. ( ABS(pp1) < 1D-10 .AND. ABS(pt2) < 1D-10 ) &
-                .AND. ( ABS(pt1) < 1D-10 .AND. ABS(pp2) < 1D-10 ) &
-                .AND. ( ABS(pt1) < 1D-10 .AND. ABS(pt2) < 1D-10 ) )then
-                write(22,*)
-                write(22,*) "Abort! Too low win(energy_A) and energy_B!"
-                write(22,*)
-                stop
-            end if
-            if( ipden >= 11 .AND. ipden <= 16 )then
-                pincl(1) = 0D0
-                pincl(2) = 0D0
-                pincl(4) = eA
-                pincl(5) = PYMASS(ipden)
-                pincl3   = pincl(4)*pincl(4) - pincl(5)*pincl(5)
-                pincl3   = MAX( pincl3, 1D-20 )
-                pincl(3) = SQRT( pincl3 )
-                pinch(1) = 0D0
-                pinch(2) = 0D0
-                pinch(4) = eB
-                pinch(5) = PYMASS(2212)
-                pinch3   = pinch(4)*pinch(4) - pinch(5)*pinch(5)
-                pinch3   = MAX( pinch3, 1D-20 )
-                pinch(3) = SQRT( pinch3 )
-            end if
+!       Sets masses.
+        ! A+B
+        if( IS_NUCLEUS( KF_proj ) .AND. IS_NUCLEUS( KF_targ ) )then
+            ! Have done.
+        ! hA or lA
+        else if( IS_NUCLEUS( KF_targ) )then
+            dm_proj_1 = dm_proj
+        ! Ah or Al
+        else if( IS_NUCLEUS( KF_proj) )then
+            dm_targ_1 = dm_targ
+        else
+            dm_proj_1 = dm_proj
+            dm_targ_1 = dm_targ
+        end if
+
+!       Eveluates energies for "FIXT" and "CMS" frames.
+        if( ifram == 0 .OR. ifram == 1 )then
+            ! Energies of projectile and target (protons).
+            e_proj_1 = SQRT( pz_proj_1*pz_proj_1 + dm_proj_1*dm_proj_1 )
+            e_targ_1 = SQRT( pz_targ_1*pz_targ_1 + dm_targ_1*dm_targ_1 )
+            ! Energies of projectile and target (neutrons).
+            e_proj_2 = SQRT( pz_proj_2*pz_proj_2 + dm_proj_2*dm_proj_2 )
+            e_targ_2 = SQRT( pz_targ_2*pz_targ_2 + dm_targ_2*dm_targ_2 )
         end if
 
         inzp = ABS(nzp)
@@ -1310,26 +1285,30 @@
             p17(i,1) = 0D0
             p17(i,2) = 0D0
             if( i <= inzp )then
-                p17(i,3) = pp1
-                p17(i,4) = ep1
+                p17(i,3) = pz_proj_1
+                p17(i,4) = e_proj_1
+                p17(i,5) = dm_proj_1
             else
-                p17(i,3) = pp2
-                p17(i,4) = ep2
+                p17(i,3) = pz_proj_2
+                p17(i,4) = e_proj_2
+                p17(i,5) = dm_proj_2
             end if
             ! The initial total 4-momentum.
             p_init(3) = p_init(3) + p17(i,3)
             p_init(4) = p_init(4) + p17(i,4)
-        enddo
+        end do
         napt = nap + nat
         do i = nap+1, napt, 1
             p17(i,1) = 0D0
             p17(i,2) = 0D0
             if( i <= nap+inzt )then
-                p17(i,3) = pt1
-                p17(i,4) = et1
+                p17(i,3) = pz_targ_1
+                p17(i,4) = e_targ_1
+                p17(i,5) = dm_targ_1
             else
-                p17(i,3) = pt2
-                p17(i,4) = et2
+                p17(i,3) = pz_targ_2
+                p17(i,4) = e_targ_2
+                p17(i,5) = dm_targ_2
             end if
             ! The initial total 4-momentum.
             p_init(3) = p_init(3) + p17(i,3)
@@ -1648,7 +1627,7 @@
 !!      It is equivalent to implementing a nucleus-nucleus collision.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
-        LOGICAL IS_PYTHIA8,IS_EXIST,IS_DIQUARK
+        LOGICAL IS_PYTHIA8, IS_EXIST, IS_DIQUARK
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
         COMMON/PYDAT3/MDCY(500,3),MDME(8000,2),BRAT(8000),KFDP(8000,5)
@@ -1660,7 +1639,7 @@
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa4/tau(kszj),tlco(kszj,4)
@@ -1678,8 +1657,6 @@
          bar(10),abar(10),barf(10),abarf(10),emin(10),eminf(10), &
          eplu(10),epluf(10),nmax
         common/sa18/i_deex,n_deex_step,i_pT_coal,i_pT_endpoint,a_FF,aPS_c,aPS_b
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-          pph,vnlep
         common/sa23/kpar,knn,kpp,knp,kep,NON_p,skpar,sknn,skpp,sknp,skep
         common/sa24/adj1(40),nnstop,non24,zstop
         common/sa25/i_inel_proc,i_time_shower,para1_1,para1_2
@@ -1703,8 +1680,7 @@
         COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
         dimension pi(4),pj(4),pint(4)
-        dimension b(3),pl(100,5)
-        logical flag_hh, flag_lh, INEL_coll
+        dimension b(3)
 !       arrays in 'PYJETS' are given after calling 'PYTHIA'
 !       arrays in 'sa2' are used in the collision processes
 !       arrays in 'sbh' are used to store hadron after calling 'PYTHIA'
@@ -1753,12 +1729,6 @@
 !-------------------------------------------------------------------------------
 !-----------------------   Local Variable Initializing   -----------------------
         ijk = 0
-        m1 = numb(1)
-        m2 = numb(2)
-        m3 = numb(3)
-        m4 = numb(4)
-        m6 = numb(6)
-        m7 = numb(7)
         nctl0 = nctl
         nctlm = nctl0
 !       The hadronization model.
@@ -1772,10 +1742,10 @@
 !---------------------------   Sub-Collisions Loop   ---------------------------
 !       loop over hadron-hadron (NN), ll, lN sub-collisions.
         iiii = 1
-10      if(iiii > 1) call copl(time)
+10      if( iiii > 1 ) call copl(time)
 !       find out the binary colli. with minimum collsion time
-        call find(icp,tcp,1)
-        if(icp == 0) goto 100
+        call find( icp, tcp, 1 )
+        if( icp == 0 ) goto 100
 !       icp=0 means the collision list is empty
         naf00  = naf
         ngam00 = ngam
@@ -1802,58 +1772,51 @@
         time0 = time
         kfa   = ksa(l,2)
         kfb   = ksa(l1,2)
-        ikfa  = iabs(kfa)
-        ikfb  = iabs(kfb)
-        kfaab = iabs(kfa)
-        kfbab = iabs(kfb)
+        ikfa  = ABS(kfa)
+        ikfb  = ABS(kfb)
+        kfaab = ABS(kfa)
+        kfbab = ABS(kfb)
 !       record this collision time
         time  = tcp
-
-!       tlco(l,4)  = tcp
-!       tlco(l1,4) = tcp
 
 
 !-------------------------------------------------------------------------------
 !------------------------   Kinematics Pre-Estimating   ------------------------
-        ilo = 0
         pi(4) = psa(l,4)
         pj(4) = psa(l1,4)
 !       pi (pj): four momentum of current colliding hadron of l (l1)
-        if(pi(4) < 1.e-20) pi(4)=1.e-20   ! 041204
-        if(pj(4) < 1.e-20) pj(4)=1.e-20   ! 041204
+        if( pi(4) < 1D-20 ) pi(4) = 1D-20
+        if( pj(4) < 1D-20 ) pj(4) = 1D-20
         do i=1,3
             pi(i) = psa(l,i)
             pj(i) = psa(l1,i)
             b(i)  = ( pi(i) + pj(i) ) / ( pi(4) + pj(4) )
         end do
-        pti = dsqrt( pi(1)**2 + pi(2)**2 )
-        ptj = dsqrt( pj(1)**2 + pj(2)**2 )
 
 !       Recalculates energies to avoid potential errors from the hadrons
 !        with bad energies due to last "PYTHIA" execution.
-        pi4_R = SQRT( pi(1)**2 + pi(2)**2 + pi(3)**2 + PYMASS(kfa)**2 )
-        pj4_R = SQRT( pj(1)**2 + pj(2)**2 + pj(3)**2 + PYMASS(kfb)**2 )
-        ss    = SQRT( ( pi4_R + pj4_R )**2 &
-                    - ( pi(1) + pj(1) )**2 &
-                    - ( pi(2) + pj(2) )**2 &
-                    - ( pi(3) + pj(3) )**2 )
+        pi4_R = SQRT( pi(1)*pi(1) + pi(2)*pi(2) + pi(3)*pi(3) + PYMASS(kfa)**2 )
+        pj4_R = SQRT( pj(1)*pj(1) + pj(2)*pj(2) + pj(3)*pj(3) + PYMASS(kfb)**2 )
+        ss    = SQRT( ( pi4_R + pj4_R )*( pi4_R + pj4_R ) &
+                    - ( pi(1) + pj(1) )*( pi(1) + pj(1) ) &
+                    - ( pi(2) + pj(2) )*( pi(2) + pj(2) ) &
+                    - ( pi(3) + pj(3) )*( pi(3) + pj(3) ) )
 
 !       boost to CMS frame of colliding pair from CMS or Lab. frame of heavy
 !        ion collision system
+        ilo = 0
         call lorntz(ilo,b,pi,pj)
-!       ss = pi(4)+pj(4)
-!       if(ss < 1.e-18 ) ss = 1D-18
 
 !       calculate the angular 'theta' of the momenta pi and pj
-        ctai  = PYANGL( pi(3), SQRT( pi(1)**2 + pi(2)**2 ) )
-        ctaj  = PYANGL( pj(3), SQRT( pj(1)**2 + pj(2)**2 ) )
+        ctai  = PYANGL( pi(3), SQRT( pi(1)*pi(1) + pi(2)*pi(2) ) )
+        ctaj  = PYANGL( pj(3), SQRT( pj(1)*pj(1) + pj(2)*pj(2) ) )
         cctai = COS(ctai)
         cctaj = COS(ctaj)
         if( cctai > 0D0 )then
 !       calculate the 'orentation' of the vector pi
-            call codi(pi,cfi1,sfi1,ccta1,scta1)
+            call codi( pi, cfi1, sfi1, ccta1, scta1 )
         else
-            call codi(pj,cfi1,sfi1,ccta1,scta1)
+            call codi( pj, cfi1, sfi1, ccta1, scta1 )
         end if
 !------------------------   Kinematics Pre-Estimating   ------------------------
 !-------------------------------------------------------------------------------
@@ -1861,41 +1824,19 @@
 
 !       Performs classical Newton motion.
         call his( time, istop )
-        if(istop == 1) goto 100
+        if( istop == 1 ) goto 100
 !       istop = 1 means all particles have get out of considered volume
 
-!       Updated numb(i).
-        ! Upto p.
-        m1 = numb(1)
-        ! Upto p and n.
-        m2 = numb(2)
-        ! Upto p, n and pbar.
-        m3 = numb(3)
-        ! Upto p, ..., nbar.
-        m4 = numb(4)
-        ! Upto p, ..., pi+.
-        m5 = numb(5)
-        ! Upto p, ..., pi-.
-        m6 = numb(6)
-        ! Upto p, ..., pi0.
-        m7 = numb(7)
 
 
 !-------------------------------------------------------------------------------
 !---------------------------   B, C & D-framework   ----------------------------
 !       High energy frameworks.
         if( i_mode /= 1 )then
-            ! Enough energy to call PYTHIA (inelastic).
-            INEL_coll = ss >= parp2
-            ! Hadrons to be considered for a hh collision.
-            flag_hh = ipden < 2 .AND. ( l <= numb(i_mm) .AND. l1 <= numb(i_mm) )
-            ! Leptons/hadrons to be considered  for a lh collision.
-            flag_lh = ipden > 2 &
-                    .AND. ( ( kfaab >= 11 .AND. kfaab <= 16 .AND. l1 <= m2 ) &
-                    .OR.    ( kfbab >= 11 .AND. kfbab <= 16 .AND. l  <= m2 ) )
 
 !**************************   Inelastic Collisions   ***************************
-            if( INEL_coll .AND. ( flag_hh .OR. flag_lh ) )then
+!       Enough energy to call PYTHIA (inelastic).
+            if( ss >= parp2 )then
 
 !-----------------------------   Event Executing   -----------------------------
 !       Executes collision event.
@@ -1921,74 +1862,6 @@
 !       592-th scattering process is referred to calling 'PYTHIA'
                 noinel(592) = noinel(592) + 1
 !-----------------------------   Event Executing   -----------------------------
-
-!-----------------------------   Lepton Counting   -----------------------------
-!       statistics of number of leptons studied, identify scattered lepton,
-!        and fill up pscal(5)
-                if( ipden >= 11.and.ipden <= 16 )then
-!       identify the studied leptons
-                    kfl = ipden
-                    if(nzp > 0) kfl = -ipden
-                    nlep = 0
-                    do j=1,N,1
-                        ikl = k(j,2)
-                        if(ikl == kfl)then
-                            nlep = nlep + 1
-                            pl(nlep,1) = p(j,1)
-                            pl(nlep,2) = p(j,2)
-                            pl(nlep,3) = p(j,3)
-                            pl(nlep,4) = p(j,4)
-                            pl(nlep,5) = p(j,5)
-                        end if
-                    end do
-!       find the scattered lepton (with largest energy among studied leptons)
-                    if( nlep > 1 )then
-                        vnlep = vnlep + nlep
-                        elep = 1D0
-                        jj = 0
-                        pscal = 0D0
-                        do j1=1,nlep,1
-                            plj14 = pl(j1,4)
-                            if(plj14 >= elep)then
-                                elep = plj14
-                                jj = j1
-                            end if
-                        end do
-                        if(jj > 0)then
-                            do j2=1,5
-                                pscal(j2) = pl(jj,j2)
-                            end do
-                        end if
-                    else if(nlep == 1)then
-                        vnlep = vnlep + nlep
-                        do j2=1,5
-                            pscal(j2) = pl(nlep,j2)
-                        end do
-                    end if
-!       calculate kinematic variables relevant to incident and scattered
-!        lepton only, in cms
-                    pdotk = pinch(4)*pincl(4) - pinch(1)*pincl(1) &
-                          - pinch(2)*pincl(2) - pinch(3)*pincl(3)   ! P.k
-                    q11   = pincl(1) - pscal(1)
-                    q22   = pincl(2) - pscal(2)
-                    q33   = pincl(3) - pscal(3)
-                    q44   = pincl(4) - pscal(4)
-                    q112  = q11 * q11
-                    q222  = q22 * q22
-                    q332  = q33 * q33
-                    q442  = q44 * q44
-                    pdotq = pinch(4)*q44 - pinch(1)*q11 - pinch(2)*q22 &
-                          - pinch(3)*q33   ! P.q
-                    vnu   = pdotq / pinch(5)   ! \nu
-                    fq2   = -( q442 - q112 - q222 - q332 )   ! Q^2=-q^2
-                    w2l   = ( pinch(4) + q44)**2 - ( pinch(1) + q11 )**2 &
-                          - ( pinch(2) + q22)**2 - ( pinch(3) + q33 )**2   ! W^2
-                    pdotk = dmax1( pdotk, 1D-20 )
-                    yyl   = pdotq / pdotk   ! y
-                    pdotq = dmax1( pdotq, 1D-20 )
-                    xb    = fq2 / 2D0 / pdotq   ! x_b
-                end if
-!-----------------------------   Lepton Counting   -----------------------------
 
 !------------------   B-framework Gamma 22 & Hadron Removing  ------------------
                 if( mstptj == 1 )then
@@ -2214,7 +2087,7 @@
 !        from 'sa2'.
                 call updpip(l,l1,time)
 !       Updates collision list after calling 'PYTHIA'
-                call updtlp(time,i_mode)   ! 250423
+                call updtlp(time)   ! 250423
 !       Resets "nbh=0" to avoid potential errors.
                 nbh = 0
 !---------------------   Particle & Time Lists Updating   ----------------------
@@ -2236,7 +2109,7 @@
 !        high energy channel
                 noinel(1) = noinel(1) + 1
 !       Updates the collision list after ela. scattering.
-                call updatl(l,l1,time,i_mode)
+                call updatl(l,l1,time)
 !       Recovers for D-framework.
                 if( i_mode == 4 )then
                     naf  = naf00
@@ -2349,6 +2222,7 @@
 !       Uses "3MOM" frame in PYTHIA 6 covering "CMS" and "FIXT".
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS, IS_HADRON
         INTEGER PYCHGE
         PARAMETER (KSZJ=80000,KSZJ_PY8=300000)
         LOGICAL IS_PYTHIA8,IS_EXIST
@@ -2528,8 +2402,8 @@
 !       Re-generates the event if we consider the leading-particle
 !        reconstructions (only in pA/Ap now). Reduces complexity.
 !#TODO(Lei20240218): need new model for the initial multiple nucleon interaction
-                if( ( ipden == 0 .AND. itden == 1 ) &
-                    .OR. ( ipden == 1 .AND. itden == 0 ) )then
+                if(      ( IS_HADRON(KF_proj) .AND. IS_NUCLEUS(KF_targ) ) &
+                    .OR. ( IS_HADRON(KF_targ) .AND. IS_NUCLEUS(KF_proj) ) )then
                     if( MSTU(29) == 1 ) goto 100
                 end if
             END IF
@@ -2577,10 +2451,11 @@
         if( (ipden < 2) .AND. (itden < 2) )then
             if( (kf_a == kf_b) .AND. (kf_a == 2212) ) kpp = kpp + 1
             if( (kf_a == kf_b) .AND. (kf_a == 2112) ) knn = knn + 1
-            if(  kf_a /= kf_b  )                      knp = knp + 1
+            if( (kf_a /= kf_b) .AND. (kf_a == 2212) .OR. (kf_b == 2212) ) &
+                knp = knp + 1
             if(  pT_a <= 1D-4 ) kpar = kpar + 1
             if(  pT_b <= 1D-4 ) kpar = kpar + 1
-        else if( (ipden >= 11) .AND. (itden < 2) )then
+        else
             kep = kep + 1
         end if
         ! Deduction due to the regenerated event.
@@ -2588,10 +2463,11 @@
             if( (ipden < 2) .AND. (itden < 2) )then
                 if( (kf_a == kf_b) .AND. (kf_a == 2212) ) kpp = kpp - 1
                 if( (kf_a == kf_b) .AND. (kf_a == 2112) ) knn = knn - 1
-                if(  kf_a /= kf_b  )                      knp = knp - 1
+            if( (kf_a /= kf_b) .AND. (kf_a == 2212) .OR. (kf_b == 2212) ) &
+                knp = knp - 1
                 if(  pT_a <= 1D-4 ) kpar = kpar - 1
                 if(  pT_b <= 1D-4 ) kpar = kpar - 1
-            else if( (ipden >= 11) .AND. (itden < 2) )then
+            else
                 kep = kep - 1
             end if
         end if
@@ -2637,7 +2513,7 @@
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa4/tau(kszj),tlco(kszj,4)
@@ -2656,8 +2532,6 @@
         common/sa16/x_ratio,decpro,dni(10),dpi(10),edi(10),bmin,bmax, &
          bar(10),abar(10),barf(10),abarf(10),emin(10),eminf(10), &
          eplu(10),epluf(10),nmax
-        common/sa21/pincl(5),pscal(5),pinch(5),vnu,fq2,w2l,yyl,zl,xb, &
-          pph,vnlep
         common/sa23/kpar,knn,kpp,knp,kep,NON_p,skpar,sknn,skpp,sknp,skep
         common/sa24/adj1(40),nnstop,non24,zstop
         common/sa25/i_inel_proc,i_time_shower,para1_1,para1_2
@@ -3100,7 +2974,7 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine his(t1,istop)
+        subroutine his( t1, istop )
 !!      Classical Newton motion in cms system of colliding pair.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
@@ -3112,12 +2986,12 @@
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
         common/ctllist/nctl,noinel(600),nctl0,nctlm
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
 
 
         istop = 1
         i_n   = 0
-        r0 = rao * dmax1( rnt, rnp )
+        r0 = rao * MAX( rnt, rnp )
         do 200 i=1,nsa,1
 !           if(t1 <= tau(i)) goto 100
 !       do move particles which have not produced
@@ -3276,206 +3150,93 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine updpip(l,l1,time)
-!!      update hadron list 'sa2' after calling PYTHIA ('sbh' to 'sa2')
-!!       remove collision pair composed of l and/or l1, remove l (l1)
-!!       from 'sa2'.
+        subroutine updpip( l, l1, time )
+!!      Updates hadron list "sa2" after calling PYTHIA ("sbh" to "sa2"),
+!!       removes collision pair composed of l and/or l1, and removes l (l1)
+!!       from "sa2".
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_HADRON, IS_ONIUM
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
-        COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/sbh/nbh,nonbh,kbh(kszj,5),pbh(kszj,5),vbh(kszj,5)
         common/ctllist/nctl,noinel(600),nctl0,nctlm
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
-        common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
-        common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
+        common/sa2/nsa,nsa0,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa4/tau(kszj),tlco(kszj,4)
-        common/sa5/kfmax,kfaco(100),numb(100),numbs(100),non5, &
-         disbe(100,100)
-        common/sa6/kfmaxi,nwhole
         common/sa12/ppsa(5),nchan,nsjp,sjp,taup,taujp
-        common/sa14/ipyth(2000),idec(2000),iwide(2000)
-        common/sa30/vneump,vneumt,mstptj
         common/papr/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
-        common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
-         nap,nat,nzp,nzt,pio
-!       ipyth: stord line number of produced hadron in hadron list (sa2)
 
 
-        do m=1,2000
-            ipyth(m)=0
-        enddo
-!       'sbh' to 'sa2' (i.e. produced hadrons-> hadron list 'sa2')
-        ll  = l
-        ll1 = l1
-        if(nbh == 0) goto 200
-        do 500 i=1,nbh
-            kf = kbh(i,2)
-            do 600 j=1,kfmax,1
-                if(kf /= kfaco(j)) goto 600
-                jj = numb(j) + 1
-!       update particle list etc.
-                do m=nsa,jj,-1
-                    mm = m + 1
-!080104             ksa(mm,2) = ksa(m,2)
-!080104             ksa(mm,1) = 1
-!080104             ksa(mm,3) = ksa(m,3)
-                    do m1=1,5
-                        ksa(mm,m1) = ksa(m,m1)   ! 080104
-                        psa(mm,m1) = psa(m,m1)
-                        vsa(mm,m1) = vsa(m,m1)
-                    enddo
-                    ishp(mm) = ishp(m)
-                    tau(mm)  = tau(m)
-                enddo
-                do m=1,2000
-                    ipym = ipyth(m)
-                    if(ipym >= jj) ipyth(m) = ipym + 1
-                enddo
-                if(ll  >= jj) ll  = ll  + 1
-                if(ll1 >= jj) ll1 = ll1 + 1
-!       update the values of lc(m,1-2) with value >= jj
-                do m=1,nctl
-                    lc1 = lc(m,1)
-                    if(lc1 >= jj) lc(m,1) = lc1 + 1
-                    lc2 = lc(m,2)
-                    if(lc2 >= jj) lc(m,2) = lc2 + 1
-                enddo
-!       give proper values to particle jj.
-!221203         ksa(jj,2) = kf
-!221203         ksa(jj,1) = 1
-!221203         ksa(jj,3) = 0
-                do m=1,5
-                    ksa(jj,m) = kbh(i,m)   ! 221203
-                    psa(jj,m) = pbh(i,m)
-                    vsa(jj,m) = vbh(i,m)
-                enddo
-                ishp(jj) = 1
-                tau(jj) = time + t0 * pbh(i,4)/pbh(i,5)
-!       the values of 'ishp' and 'tau' for hadrons from 'PYTHIA'
-!        are given here, the proper formation time of 'PYTHIA' particle
-!        is assume to be equal to t0 fm/c, except nucleon and j/psi
-                if(kf == 2212 .or. kf == 2112)then
-                    tau(jj) = time + t0 * pbh(i,4)/pbh(i,5) * taup
-                elseif(kf == 443.or.kf == 100443)then
-                    tau(jj) = time + t0 * pbh(i,4)/pbh(i,5) * taujp
-                endif
-                ipyth(i) = jj
-                do m=j,kfmax
-                    numb(m) = numb(m) + 1
-                enddo
-                nsa = nsa + 1
-                goto 500
-600         enddo   ! 040223
-!040223 if produced hadron is not in given hadron classification
+!       'sbh' to 'sa2' (i.e. produced hadrons -> the end of the list 'sa2').
+        nsa0 = nsa
+        do i=1,nbh,1
             nsa = nsa + 1
-            do m=1,5
+!       Updates particle list etc.
+            do m=1,5,1
                 ksa(nsa,m) = kbh(i,m)
                 psa(nsa,m) = pbh(i,m)
                 vsa(nsa,m) = vbh(i,m)
-            enddo
-            ishp(nsa) = 0
-            tau(nsa)  = 0D0
-            ipyth(i)  = nsa
-500     enddo   ! 040223
-200     continue   ! 241110
-        l  = ll
-        l1 = ll1
-!       remove colli. pair composed of l or l1
+            end do
+            ishp( nsa ) = 1
+            tau( nsa )  = time + t0 * pbh(i,4)/pbh(i,5)
+!       The values of "ishp" and "tau" for hadrons from "PYTHIA"
+!        are given here. The proper formation time of "PYTHIA" particle
+!        is assume to equal t0 fm/c, except nucleons and j/psi (onia).
+            if( IS_HADRON( kf ) )then
+                if( ABS( kf ) == 2212 .OR. ABS( kf ) == 2112 )then
+                    tau( nsa ) = time + t0 * pbh(i,4)/pbh(i,5) * taup
+                elseif( IS_ONIUM( kf ) )then
+                    tau( nsa ) = time + t0 * pbh(i,4)/pbh(i,5) * taujp
+                end if
+            else
+                tau( nsa ) = time
+            end if
+        end do
+!       Removes colli. pair composed of l or l1.
         jj = 0
-        do 300 ii=1,nctl
+        do ii=1,nctl,1
             i1 = lc(ii,1)
             j1 = lc(ii,2)
-            if(i1 == l .or. i1 == l1) goto 300
-            if(j1 == l .or. j1 == l1) goto 300
+            if( i1 == l .OR. i1 == l1 ) cycle
+            if( j1 == l .OR. j1 == l1 ) cycle
             jj = jj + 1
             tc(jj) = tc(ii)
             tw(jj) = tw(ii)
-            do m=1,5
+            do m=1,5,1
                 lc(jj,m) = lc(ii,m)
-            enddo
-300     continue
-        do ii = jj+1, nctl+1
-            tc(ii) = 0.0
-            tw(ii) = 0.0
-            do m=1,5
-                lc(ii,m) = 0
-            enddo
-        enddo
+            end do
+        end do
         nctl = jj
-!       remove hadrons l and l1 from 'sa2'
-        kf1 = ksa(l,2)
-        kf2 = ksa(l1,2)
-        kf = kf1
-        ll = l
-        do 700 i=1,2
-            if(ll == nsa)then   !
-                do i1=1,kfmax
-                    if(kf /= kfaco(i1)) goto 400
-!241110             numbm = numb(i1)
-!241110             do i2=1,i1
-!241110                 if(numb(i2) == numbm) numb(i2) = numb(i2) - 1
-!241110             enddo
-                    do m=i1,kfmax
-                        numb(m) = numb(m) - 1
-                    enddo
-                    if(i1 > 1)then
-                        numba = numb(i1)
-                        do m=1,i1-1
-                            if(numb(m) == numba) numb(m) = numb(m) - 1
-                        enddo
-                    endif
-!241110
-                    goto 100
-400             enddo
-            endif   !
-            do j=ll+1,nsa
+!       Removes l and l1 from 'sa2'.
+        i_remove = MAX( l, l1 )
+        do i=1,2,1
+            do j = i_remove+1, nsa, 1
                 jj = j - 1
-!080504         ksa(jj,2) = ksa(j,2)
-!080504         ksa(jj,1) = 1
-!080504         ksa(jj,3) = ksa(j,3)
                 do m=1,5
-                    ksa(jj,m) = ksa(j,m)   ! 080504
+                    ksa(jj,m) = ksa(j,m)
                     psa(jj,m) = psa(j,m)
                     vsa(jj,m) = vsa(j,m)
-                enddo
+                end do
                 ishp(jj) = ishp(j)
                 tau(jj)  = tau(j)
-            enddo
-            if(nctl == 0) goto 900
-            do m=1,nctl
+            end do
+            do m=1,nctl,1
                 lc1 = lc(m,1)
                 lc2 = lc(m,2)
-                if(lc1 > ll) lc(m,1) = lc1 - 1
-                if(lc2 > ll) lc(m,2) = lc2 - 1
-            enddo
-900         do 800 j=1,kfmax
-                if(kf /= kfaco(j)) goto 800
-                do m=j,kfmax
-                    numb(m) = numb(m) - 1
-                enddo
-                if(j > 1)then
-                    numba = numb(j)
-                    do m=1,j-1
-                        if(numb(m) == numba) numb(m) = numb(m) - 1
-                    enddo
-                endif
-                goto 100
-800         continue
-100         continue
+                if( lc1 > i_remove ) lc(m,1) = lc1 - 1
+                if( lc2 > i_remove ) lc(m,2) = lc2 - 1
+            end do
             nsa = nsa - 1
-            if(l1 > ll) l1 = l1 - 1
-            do m=1,2000
-                ipym = ipyth(m)
-                if(ipym > ll) ipyth(m) = ipym - 1
-            enddo
-            if(i == 2) goto 700
-            ll = l1
-            kf = kf2
-700     continue
+            if( i_remove == l )then
+                i_remove = l1
+            else
+                i_remove = l
+            end if
+        end do
+        nsa0 = nsa0 - 2
 
 
         return
@@ -3736,8 +3497,8 @@
         enddo
         jj=jj+1
         if(jj == 4000)then
-            write(*,*) "PACIAE warning: infinitive loop may occur in " // &
-                       "subroutine conse(), which means four-momentum " // &
+            write(*,*) "PACIAE Warning from conse: infinitive loop may " // &
+                       "occur, which means four-momentum " // &
                        "conservation needed is hard to be achieved," // &
                        "check value of PARAM(9)."
             return
@@ -4187,8 +3948,8 @@
         jj = jj + 1
 
         if( jj == 4000 )then
-            write(*,*) "PACIAE warning: infinitive loop may occur in " // &
-                       "subroutine conser(), which means four-momentum " // &
+            write(*,*) "PACIAE Warning from conser: infinitive loop may " // &
+                       " occur in, which means four-momentum " // &
                        "conservation needed is hard to be achieved, " // &
                        "check value of PARAM(9)."
             return
@@ -4239,7 +4000,7 @@
         PARAMETER (KSZJ=80000)
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa4/tau(kszj),tlco(kszj,4)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
 
 
         tt = time
@@ -4272,9 +4033,6 @@
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
         PARAMETER (KSZJ=80000,NSIZE=750000)
-        COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
-        common/sa5/kfmax,kfaco(100),numb(100),numbs(100),non5, &
-         disbe(100,100)
         common/sa35/ncpart,ncpar(kszj)
         common/ctllist/nctl,noinel(600),nctl0,nctlm
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
@@ -4282,77 +4040,28 @@
          nap,nat,nzp,nzt,pio
 
 
-!       time = 0D0
         nctl = 1
-        dminf = 100D0
-        ! In order to consider ppbar or pbarp.
-        nzpab = ABS(nzp)
-        nztab = ABS(nzt)
-        nzpt  = nzpab + nztab
-        napt  = nap   + nat
+!      '1' to "nzp" are projectile protons/hadron/lepton. "nzp+1" to "nap"
+!        are projectile neutrons. "nap+1" to "nap+nzt" are target
+!        protons/hadron/lepton. The rest are target neutrons in /PYJETS/.
+        napt   = nap + nat
         ncpart = 0
-        do i1=1,napt,1
+        do i1 = 1, napt, 1
             ncpar(i1) = 0
         end do
-        ! projectile proton or lepton
-        do 10 l=1,nzpab,1
-            ! target proton
-            do l1 = nzpab+1, nzpt, 1
+        ! Projectile.
+        do i_proj = 1, nap, 1
+            ! Target.
+            do i_targ = nap+1, napt, 1
                 tc(nctl) = 0D0
-                mtc = 0
-                call coij( l, l1, nctl, mtc, dminf, iif, jf )
-                if(mtc > 0)then
-                    nctl = nctl + 1
-                    mtc = 0
-                end if
+                call coij( i_proj, i_targ, nctl, mtc )
+                if( mtc > 0 ) nctl = nctl + 1
             end do
-            ! target neutron
-            do l1 = nap+nztab+1 , napt, 1
-                tc(nctl) = 0D0
-                mtc = 0
-                call coij( l, l1, nctl, mtc, dminf, iif, jf )
-                if(mtc > 0)then
-                    nctl = nctl + 1
-                    mtc = 0
-                end if
-            end do
-10      continue
-        ! projectile neutron
-        do 20 l = nzpt+1, nap+nztab, 1
-            ! target proton
-            do l1 = nzpab+1, nzpt, 1
-                tc(nctl) = 0D0
-                mtc = 0
-                call coij( l, l1, nctl, mtc, dminf, iif, jf )
-                if(mtc > 0)then
-                    nctl = nctl + 1
-                    mtc = 0
-                end if
-            end do
-            ! target neutron
-            do l1= nap+nztab+1, napt, 1
-                tc(nctl) = 0D0
-                mtc = 0
-                call coij( l, l1, nctl, mtc, dminf, iif, jf )
-                if(mtc > 0)then
-                    nctl = nctl + 1
-                    mtc = 0
-                end if
-            end do
-20      continue
-        if(mtc == 0) nctl = nctl - 1
-        if( nctl == 0 )then
-!       at least one collision should occur. this collision has the smallest
-!        'least approaching distance', that is guaranteed by the variable
-!        'dminf'
-!           lc(1,1) = iif
-!           lc(1,2) = jf
-!           tc(1) = 0.02D0
-!           tw(1) = 0D0
-!           nctl = 1
-!       Regenerates a new event now.
-            return
-        end if
+        end do
+        nctl = nctl - 1
+!       Regenerates a new event if there are no collision pairs.
+        if( nctl == 0 ) return
+!       Counts the nominal Npart.
         do i1=1,napt,1
             if( ncpar(i1) >= 1 ) ncpart = ncpart + 1
         end do
@@ -4364,134 +4073,136 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine coij(i,j,icp,mtc,dminf,iif,jf)
-!!      Calculates collision time & fill up lc(J,1-2) as well as tc(J)
+        subroutine coij( i, j, icp, mtc )
+!!      Calculates collision time & fill up lc(icp,1-2) as well as tc(icp)
 !!       for creating the particle initial collsion time list
 !!       with particle linear trajectory assumption.
 !       i (j): line # of colliding particle in 'sa2'
 !       i: prijectile particle moving toward z direction
 !       j: target particle moving toward -z direction
+!       icp: order # in collision time list
 !       mtc=1: calculation is success; =0: calculation is fail
-!       J: order # in collision time list
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_LEPTON
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/papr/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
-         rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen   ! 060813
+         rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
-        common/sa35/ncpart,ncpar(kszj)   ! 280722
+        common/sa35/ncpart,ncpar(kszj)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
         dimension dr(3),db(3),dv(3),px(4),py(4),vi(4),vj(4), &
          pi(4),pj(4),b(3)
 
 
         mtc = 0
-        ki=ksa(i,2)
-        kj=ksa(j,2)
-        pi(4)=psa(i,4)   ! energy of particle i
-        if(pi(4) < 1.e-20) pi(4)=1.e-20
-        pj(4)=psa(j,4)   ! energy of particle j
-        if(pj(4) < 1.e-20) pj(4)=1.e-20
-        deno6=pi(4)+pj(4)   ! total energy of ij-th colliding pair
+        ki = ksa(i,2)
+        kj = ksa(j,2)
+!       energy of particle i & j
+        pi(4) = MAX( psa(i,4), 1D-20 )
+        pj(4) = MAX( psa(j,4), 1D-20 )
+!       total energy of ij-th colliding pair
+        deno6 = pi(4) + pj(4)
         do k=1,3
-            pi(k)=psa(i,k)   ! three momentum of particle i
-            pj(k)=psa(j,k)   ! three momentum of particle j
-            b(k)=(pi(k)+pj(k))/deno6   ! velocity of i and j cms
-        enddo
-        ilo=0
-        call lorntz(ilo,b,pi,pj)   ! boost to cms of i and j for momentum
+           ! three momentum of particle i & j
+            pi(k) = psa(i,k)
+            pj(k) = psa(j,k)
+            ! velocity of i and j cms
+            b(k) = ( pi(k) + pj(k) ) / deno6
+        end do
+!       boost to cms of i and j for momentum
+        ilo = 0
+        call lorntz( ilo, b, pi, pj )
+!       three coordinate of particle i & j
         do l=1,3
-            px(l)=vsa(i,l)    ! three coordinate of particle i
-            py(l)=vsa(j,l)    ! three coordinate of particle j
-        enddo
-        px(4)=0.   ! time of particle i
-        py(4)=0.   ! time of particle j
-        call lorntz(ilo,b,px,py)   ! boost to cms of i and j for coordinate
+            px(l) = vsa(i,l)
+            py(l) = vsa(j,l)
+        end do
+!       time of particle i & j
+        px(4) = 0D0
+        py(4) = 0D0
+!       boost to cms of i and j for coordinate
+        call lorntz( ilo, b, px, py )
 !       calculate instant relative distance between i and j
-        rb=0.
-        bb=0.
-        rr=0.
-        rtai=0.
+        rb = 0D0
+        bb = 0D0
+        rr = 0D0
+        rtai = 0D0
+!       three velocity of i & j
         do k=1,3
-            vi(k)=pi(k)/pi(4)   ! three velocity of i
-            vj(k)=pj(k)/pj(4)   ! three velocity of j
+            vi(k) = pi(k) / pi(4)
+            vj(k) = pj(k) / pj(4)
         enddo
         do k=1,3
-            dr(k)=px(k)-py(k)-(vi(k)*px(4)-vj(k)*py(4))
+            dr(k) = px(k) - py(k) - ( vi(k)*px(4) - vj(k)*py(4) )
 !       instant relative distance between i and j in k dimension (in above
 !        equation i is target particle and j is projetile particle indeed,
 !        but for calculation of relative distance, it does matter whether i
 !        is target j is projectile or opposite
-            db(k)=vi(k)-vj(k)   ! relative velocity between i and j
-            dv(k)=db(k)
-            rb=rb+dr(k)*db(k)
+            ! relative velocity between i and j
+            db(k) = vi(k) - vj(k)
+            dv(k) = db(k)
+            rb = rb + dr(k)*db(k)
 !       rb=(relative distance)*(relative velocity)=(relative distance)^2/t
-            bb=db(k)**2+bb
+            bb = db(k)*db(k) + bb
 !       bb: square of relative velocity
-            rr=rr+dr(k)*dr(k)   ! (?)
-!       dr(k)*dr(k): (relative distance between i and j)^2 in k dimension (?)
-        enddo
-        if(bb <= 1.e-10) return   ! (bb <= 1.e-10) it is true
-        tcol=0.-rb/bb
+            rr = rr + dr(k)*dr(k)
+!       dr(k)*dr(k): (relative distance between i and j)^2 in k dimension
+        end do
+        if( bb <= 1D-10 ) return
+        tcol = 0D0 - rb/bb
 !       rb/bb=(relative distance)^2/t/(relative velocity)^2
 !        =(relative distance)^2/t/((relative distance)^2/t^2)=t
 !       why tcol=-rb/bb ? it is because of i must be projectile particle
 !        and j must be target particle
-!        if(tcol-px(4)  <=  ddt) return
-!        if(tcol-py(4)  <=  ddt) return
-!       for collision to occur,time must one step ahead
-!sa     if(tcol < 1.0e-7)return
+!        if( tcol - px(4)  <=  ddt ) return
+!        if( tcol - py(4)  <=  ddt ) return
+!       for collision to occur, time must one step ahead
+!       if( tcol < 1D-7 ) return
         do iik=1,3
-            dr(iik)=px(iik)-py(iik)-(vi(iik)* &
-             px(4)-vj(iik)*py(4))+tcol*db(iik)
-!sa     relative distance between i and j at current time
-            rtai=rtai+dr(iik)*dr(iik)
-        enddo
-        sg=rtai   ! square of instant relative distance between i and j
-!       sg=rr+tcol*rb
-!       if(sg < 0)then
-!           write(*,*)'sg=',sg   !
-!           return
-!       endif
-        dmin=dsqrt(sg)   ! instant relative distance between i and j
-        if(dmin < dminf)then
-            dminf=dmin
-            iif=i
-            jf=j
-        endif
-        if(ipden < 2 .and. dmin > ecsnn) return
-!       ecsnn: largest interaction distance of NN
-        if(ipden > 2 .and. dmin > ecsen) return
+            dr(iik) = px(iik) - py(iik) - ( vi(iik)*px(4) - vj(iik)*py(4) ) &
+                    + tcol*db(iik)
+!       relative distance between i and j at current time
+            rtai = rtai + dr(iik)*dr(iik)
+        end do
+!       square of instant relative distance between i and j
+        sg = rtai
+!       sg = rr + tcol*rb
+!       instant relative distance between i and j
+        dmin = SQRT(sg)
+        if( IS_LEPTON( KF_proj ) .OR. IS_LEPTON( KF_targ ) )then
 !       ecsen: largest interaction distance of eN
+            if( dmin > ecsen ) return
+        else
+!       ecsnn: largest interaction distance of NN
+            if( dmin > ecsnn ) return
+        end if
 !       distance between the two particles should be smaller than ecsnn (ecsen)
         do ik=1,3
-            px(ik)=px(ik)+vi(ik)*(tcol-px(4))
-            py(ik)=py(ik)+vj(ik)*(tcol-py(4))
-        enddo
+            px(ik) = px(ik) + vi(ik)*( tcol - px(4) )
+            py(ik) = py(ik) + vj(ik)*( tcol - py(4) )
+        end do
 !       move along Newton trajectory in CMS
-        px(4)=tcol
-        py(4)=tcol
-        ilo=1
-
-        call lorntz(ilo,b,px,py)
-
+        px(4) = tcol
+        py(4) = tcol
 !       transform back to Lab.
-        if(px(4) > py(4)) px(4)=py(4)
-        tcol=px(4)
-        drmax=rao*dmax1(rnt,rnp)
-        if(tcol <= drmax) goto 180
-        return
-180     tc(icp)=tcol
-        mtc=1
-        lc(icp,1)=i
-        lc(icp,2)=j
+        ilo = 1
+        call lorntz( ilo, b, px, py )
+        tcol = MIN( px(4), py(4) )
+        tc(icp) = tcol
+        lc(icp,1) = i
+        lc(icp,2) = j
         tw(icp) = 0D0
         ncpar(i) = ncpar(i) + 1
         ncpar(j) = ncpar(j) + 1
+        mtc = 1
 
 
         return
@@ -4528,14 +4239,15 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine updtlp(time,i_mode)
-!!      Updates collision list after calling 'PYTHIA' successfully.
+        subroutine updtlp( time )
+!!      Updates collision list after calling "PYTHIA" successfully.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
         common/sa1/kjp21,non1,bp,iii,neve,nout,nosc
-        common/sa2/nsa,nonsa,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
+        common/sa2/nsa,nsa0,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa5/kfmax,kfaco(100),numb(100),numbs(100),non5, &
          disbe(100,100)
         common/sa12/ppsa(5),nchan,nsjp,sjp,taup,taujp
@@ -4549,82 +4261,51 @@
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
         common/coal1/bmrat,i_mm
-!       ipyth: store line number of produced hardon in hadron list 'sa2'
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 
-!       loop over old colliding pairs
-        j=0
+!       Loops over old colliding pairs.
+        j = 0
         do i=1,nctl,1
-            if( ABS(tc(i)-time) <= ddt ) cycle
-!       through away the pair whih tc<= time
-            j=j+1
-            tc(j)=tc(i)
-            tw(j)=tw(i)
-            do m=1,5
-                lc(j,m)=lc(i,m)
+!       Through away the pair whih tc <= time.
+            if( ABS( tc(i) - time ) <= ddt ) cycle
+            j = j + 1
+            tc(j) = tc(i)
+            tw(j) = tw(i)
+            do m=1,5,1
+                lc(j,m) = lc(i,m)
             end do
         end do
-
         nctl = j + 1
 
-!       for B-framework (PYTHIA-like framework)
-        if( mstptj == 1)then
+!       For B-framework (PYTHIA-like framework)
+        if( mstptj == 1 )then
             nctl = j
             return
         end if
 
-        m2=numb(2)
-        m4=numb(4)
-        m6=numb(6)
-        m7=numb(7)
-!       m9=numb(9)
-!       m17=numb(17)
-!       m19=numb(19)
-!       m25=numb(25)
-!       m29=numb(29)
-!       m32=numb(32)
-!       m34=numb(34)
-!       note: # of produced hadrons equal to zero (nbh=0) after call 'PYTHIA'
-!        in case of w/o reconstruction leading proton
-!       proceed for case of with reconstruction leading nucleon
-!       constract hadron collision pair composed of one from produced hadrons
-!        and another one in 'sa2'
-!       loop over produced hadrons in 'sbh'
-        do j11=1,nbh,1
-            j1 = ipyth(j11)
-            kfjab = ABS( ksa(j1,2) )
-            if( ( i_mm  ==  2 .and. &
-             ( kfjab /= 2212 .and. kfjab /= 2112 .and. &
-               kfjab /= 11   .and. kfjab /= 12   .and. kfjab /= 13 .and. &
-               kfjab /= 14   .and. kfjab /= 15   .and. kfjab /= 16 ) ) &
-             .OR. &
-             ( i_mm == 6.and. &
-             ( kfjab /= 2212 .and. kfjab /= 2112 .and. kfjab /= 211.and. &
-               kfjab /= 11   .and. kfjab /= 12   .and. kfjab /= 13 .and. &
-               kfjab /= 14   .and. kfjab /= 15   .and. kfjab /= 16 ) ) &
-            ) cycle
-!       consider only the reinteraction among nucleons & nucleon with lepton
-!       nucleon with pion, and among pions.
-
-!       loop over particle list ('sa2')
-            mm = numb(i_mm)
-!       consider only the reinteraction of j11 with nucleons
-            do i=1,mm,1
-                do j22=1,nbh,1
-                    j2 = ipyth(j22)
-                    ! avoid particle collide with itself
-                    if( i == j2 ) goto 600
-                end do
-                i1 = i
-                kfi = ksa(i1,2)
-                iflag = 0
-                call rsfilt(j1,i1,iflag,i_mode)
-                if(iflag == 0) cycle
-                tc(nctl) = 0D0
-                call tcolij(j1,i1,time,nctl,i_mode)
-                if( tc(nctl) > 1D-7 ) nctl = nctl + 1
-600         end do
-        end do
+!       Loops over produced hadrons in "sa2" from "nsa0+1" to "nsa".
+        loop_nsa0: do j1 = nsa0+1, nsa, 1
+            KF_j1 = ksa(j1,2)
+!       Considers only the reinteraction between particles upto "i_mm".
+            do i = 1, i_mm, 1
+                if( KF_j1 == kfaco(i) ) exit
+                ! Non-AB collisions.
+                if(      .NOT.IS_NUCLEUS( KF_proj ) &
+                    .OR. .NOT.IS_NUCLEUS( KF_targ ) )then
+                    if( KF_j1 == KF_proj .OR. KF_j1 == KF_targ ) exit
+                end if
+                if( i == i_mm ) cycle loop_nsa0
+            end do
+!       With original particles.
+            do i1 = 1, nsa0, 1
+                tc( nctl ) = 0D0
+                call tcolij( j1, i1, time, nctl, i_mode )
+                if( tc( nctl ) > 1D-7 ) nctl = nctl + 1
+            end do
+        end do loop_nsa0
         nctl = nctl - 1
 
 
@@ -4634,7 +4315,7 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine rsfilt(l,l1,iflag,i_mode)
+        subroutine rsfilt( l, l1, iflag, i_mode )
 !!      Subroutine rsfilt plays the role of first range filter.
 !!      Subroutine intdis plays the role of second range filter.
 !!      Collision pairs not interested can not filter through both of
@@ -4646,16 +4327,16 @@
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa5/kfmax,kfaco(100),numb(100),numbs(100),non5, &
          disbe(100,100)
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
 
 
         iflag = 0
         kl    = ksa(l,2)
         kl1   = ksa(l1,2)
-        klab  = iabs(kl)
-        kl1ab = iabs(kl1)
+        klab  = ABS(kl)
+        kl1ab = ABS(kl1)
         if( l == l1 ) return
-        if( ishp(l) == 0 .or. ishp(l1) == 0 ) return
+        if( ishp(l) == 0 .OR. ishp(l1) == 0 ) return
 
 !       high energy B-, C- and D-frameworks
         if( i_mode /= 1 )then
@@ -4685,7 +4366,7 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine tcolij(l,l1,time,icp,i_mode)
+        subroutine tcolij( l, l1, time, icp, i_mode )
 !!      Calculates collision time & fill up lc(i,1-2) as well as tc(i).
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
@@ -4699,7 +4380,7 @@
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/papr/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
          rnt,rnp,rao,rou0,vneu,vneum,ecsspn,ecsspm,ecsen   ! 060813
-        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,4)
+        common/wz/c17(500,3),ishp(kszj),tp(500),coor(3),p17(500,5)
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
         dimension dr(3),db(3),pi(4),pj(4),vi(3),vj(3)
         dimension ri(4),rj(4),rfi(4),rfj(4),b(3)
@@ -4941,10 +4622,11 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        subroutine updatl(ic,jc,time,i_mode)
+        subroutine updatl( ic, jc, time )
 !!      Updates collision time list after elastic scattering.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000)
         PARAMETER (NSIZE=750000)
         COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
@@ -4959,20 +4641,21 @@
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
         common/coal1/bmrat,i_mm
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 
-!       loop over old colliding pairs
-        j=0
+!       Loops over old colliding pairs.
+        j = 0
         do i=1,nctl,1
             i1 = lc(i,1)
             j1 = lc(i,2)
-!           ia=(i1-ic)*(j1-jc)*(i1-jc)*(j1-ic)
-!           if(ia == 0) cycle
-            if(i1 == ic .or. i1 == jc) cycle
-            if(j1 == ic .or. j1 == jc) cycle
-            if(i1 == j1) cycle
-            if( ABS(tc(i)-time) <= ddt ) cycle
-!       through away the pair whih tc<= time
+            if( i1 == ic .OR. i1 == jc ) cycle
+            if( j1 == ic .OR. j1 == jc ) cycle
+            if( i1 == j1 ) cycle
+            if( ABS( tc(i) - time ) <= ddt ) cycle
+!       Through away the pair whih tc<= time.
             j = j + 1
             tc(j) = tc(i)
             tw(j) = tw(i)
@@ -4980,45 +4663,35 @@
                 lc(j,m) = lc(i,m)
             end do
         end do
-
         nctl = j + 1
-!       loop over particle list
 
+!       Loops over scattered particles.
         j1 = ic
-        do ik=1,2,1
-            kfjab = ABS( ksa(j1,2) )
-
-            if( ( i_mm  ==  2 .and. &
-             ( kfjab /= 2212 .and. kfjab /= 2112 .and. &
-               kfjab /= 11   .and. kfjab /= 12   .and. kfjab /= 13 .and. &
-               kfjab /= 14   .and. kfjab /= 15   .and. kfjab /= 16) ) &
-             .OR. &
-             ( i_mm == 6.and. &
-             ( kfjab /= 2212 .and. kfjab /= 2112 .and. kfjab /= 211.and. &
-               kfjab /= 11   .and. kfjab /= 12   .and. kfjab /= 13 .and. &
-               kfjab /= 14   .and. kfjab /= 15   .and. kfjab /= 16) ) &
-            )then
-                j1 = jc
-                cycle
-            end if
-!       consider only the reinteraction among nucleons & nucleon with lepton
-!       nucleon with pion, and among pions.
-            mm = numb(i_mm)
-            do i=1,mm,1
-!       forbiden scattered particles colliding with each other
-                if(j1 == ic .and. i == jc) cycle
-                if(j1 == jc .and. i == ic) cycle
+        loop_icjc: do ik=1,2,1
+            KF_j1 = ksa(j1,2)
+!       Considers only the reinteraction between particles upto "i_mm".
+            do i = 1, i_mm, 1
+                if( KF_j1 == kfaco(i) ) exit
+                ! Non-AB collisions.
+                if(      .NOT.IS_NUCLEUS( KF_proj ) &
+                    .OR. .NOT.IS_NUCLEUS( KF_targ ) )then
+                    if( KF_j1 == KF_proj .OR. KF_j1 == KF_targ ) exit
+                end if
+                if( i == i_mm ) cycle loop_icjc
+            end do
+!       With other particles.
+            do i=1,nsa,1
+!       Forbids scattered particles colliding with each other.
+                if( j1 == ic .AND. i == jc ) cycle
+                if( j1 == jc .AND. i == ic ) cycle
                 if( i == j1 ) cycle
                 i1 = i
-                iflag = 0
-                call rsfilt(j1,i1,iflag,i_mode)
-                if(iflag == 0) cycle
-                tc(nctl) = 0D0
-                call tcolij(i1,j1,time,nctl,i_mode)
-                if(tc(nctl) > 1D-7) nctl = nctl + 1
+                tc( nctl ) = 0D0
+                call tcolij( i1, j1, time, nctl, i_mode )
+                if( tc(nctl) > 1D-7 ) nctl = nctl + 1
             end do
             j1 = jc
-        end do
+        end do loop_icjc
         nctl = nctl - 1
 
 
@@ -5137,7 +4810,7 @@
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
         subroutine crosep(rots,csen)
 !!exponential interpolation for ep total cross section (in mbarn)
-!! calculated with herafitter by Xing-Long Li on 10/Dec./2013
+!! calculated with HERAFitter by Xing-Long Li on 10/Dec./2013
         IMPLICIT DOUBLE PRECISION (A-H,O-Z)
         IMPLICIT INTEGER(I-N)
         !!the lower limit of rots (GeV)
@@ -5217,12 +4890,15 @@
 
 
 !!check if rots is in range of data set,if not in range 2~1003,return -1
-        if(rots < rotsMin.or.rots > rotsMax)then
+        if( rots < rotsMin .OR. rots > rotsMax )then
             csen = -1D0
-            return
+            write(22,*) "PACIAE Abort from crosep: SQRT(s) < 2 or SQRT(s) > " &
+                     // "1003 GeV, SQRT(s) =", rots
+            stop
+            ! return
         end if
 !!calculate csen by Interpolation
-        x = LOG( rots / 2D0 ) / LOG( 1.02D0) + 1D0
+        x = LOG( rots / 2D0 ) / LOG( 1.02D0 ) + 1D0
         i = floor(x)
         csen = ( sect(i+1) - sect(i) ) * (x - i) + sect(i)
 
@@ -5307,144 +4983,62 @@
 !       Initialization for a nucleon-nucleon collision in 'PYJETS'
         N = 2
 !       Initiation array 'K'.
-        K(1,1) = 2   ! A
-        K(2,1) = 1   ! V
-
-        if(nzp == 1)then
-            K(1,2) = 2212
-        else if(nzp == -1)then
-            K(1,2) = -2212
-        else if(nzp == 0)then
-            K(1,2) = 2112
-        end if
-
-        if(nzt == 1)then
-            K(2,2) = 2212
-        else if(nzt == -1)then
-            K(2,2) = -2212
-        else if(nzt == 0)then
-            K(2,2) = 2112
-        end if
+        K(1,1) = 2
+        K(2,1) = 1
+        K(1,2) = KF_proj
+        K(2,2) = KF_targ
 
 !       Initialization in spatial phase space.
-!       v = 0D0
+        do i=1,5,1
+            V(1,i) = 0D0
+            V(2,i) = 0D0
+        end do
 
-!       Initialization in momentum phase space.
+!       Initialization in momentum phase space (without Fermi motion,
+!        i.e. px = py = 0).
+        ! Projectile particle.
+        pz_proj = 0D0
+        e_proj  = 0D0
+        dm_proj = PYMASS( KF_proj )
+        ! Target particle.
+        pz_targ = 0D0
+        e_targ  = 0D0
+        dm_targ = PYMASS( KF_targ )
 
-        ep1 = 0D0
-        ep2 = 0D0
-        et1 = 0D0
-        et2 = 0D0
-        pp1 = 0D0
-        pp2 = 0D0
-        pt1 = 0D0
-        pt2 = 0D0
-        ! Sets the default frame as CMS.
-        if(ifram > 2) ifram = 1
+!       Fixed target in lab.
+        if( ifram == 0 )then
+            ! Momenta of projetile particles.
+            pz_proj = win
+!       In cms.
+        else if( ifram == 1 )then
+            s = win*win
+            pz = SQRT( MAX( ( ( s - dm_proj*dm_proj - dm_targ*dm_targ )**2 &
+               - ( 2D0 * dm_proj * dm_targ )**2 ) / ( 4D0 * s ), 0D0 ) )
+            ! Momenta of projectile.
+            pz_proj =  pz
+            ! Momenta of target.
+            pz_targ = -pz
+!       Back-to-back in lab.
+        else if( ifram == 2 )then
+            e_proj = win
+            e_targ = energy_B
+            pz_proj =  SQRT( MAX( e_proj*e_proj - dm_proj*dm_proj, 0D0 ) )
+            pz_targ = -SQRT( MAX( e_targ*e_targ - dm_targ*dm_targ, 0D0 ) )
+        end if
 
-        if(ifram == 0)then
-            pp1 = win     ! momentum of projetile (if proton)
-            pt1 = 1D-20   ! momentum of target    (if proton)
-            pp2 = win     ! momentum of projetile (if neutron)
-            pt2 = 1D-20   ! momentum of target    (if neutron)
-            pm2 = PYMASS(2212)**2       ! square mass of proton
-            ep1 = SQRT(pp1*pp1 + pm2)   ! energy of projetile (if proton)
-            et1 = SQRT(pt1*pt1 + pm2)   ! energy of target    (if proton)
-            pm2 = PYMASS(2112)**2       ! square mass of neutron
-            ep2 = SQRT(pp2*pp2 + pm2)   ! energy of projetile (if neutron)
-            et2 = SQRT(pt2*pt2 + pm2)   ! energy of target    (if neutron)
-        endif
-
-        if(ifram == 1)then
-            ep1 = 0.5D0*win   ! energy of projetile (if proton)
-            et1 = ep1         ! energy of target    (if proton)
-            ep2 = 0.5D0*win   ! energy of projetile (if neutron)
-            et2 = ep2         ! energy of target    (if neutron)
-            pm2 = PYMASS(2212)**2          ! square mass of proton
-            pp1 =  SQRT( ep1*ep1 - pm2 )   ! momentum of projetile (if proton)
-            pt1 = -SQRT( et1*et1 - pm2 )   ! momentum of target    (if proton)
-            pm2 = PYMASS(2112)**2          ! square mass of nucleon
-            pp2 =  SQRT( ep2*ep2 - pm2 )   ! momentum of projetile (if neutron)
-            pt2 = -SQRT( et2*et2 - pm2 )   ! momentum of target    (if neutron)
-        endif
-
-        if(ifram == 2)then
-            eA = win
-            eB = energy_B
-            ep1 = eA   ! energy of projetile particle (if proton)
-            et1 = eB   ! energy of target particle    (if proton)
-            ep2 = eA   ! energy of projetile particle (if neutron)
-            et2 = eB   ! energy of target particle    (if neutron)
-            if( ep1 < PYMASS(2212) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! win(energy_A) < m_pronton " // &
-                                "in the back-to-back collision " // &
-                                "frame of A-framework. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_proton."
-                    write(22,*)
-                end if
-                ep1 = PYMASS(2212)
-            end if
-            if( et1 < PYMASS(2212) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! energy_B < m_pronton " // &
-                                "in the back-to-back collision " // &
-                                "frame of A-framework. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_proton."
-                    write(22,*)
-                end if
-                et1 = PYMASS(2212)
-            end if
-            if( ep2 < PYMASS(2112) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! win(energy_A) < m_neutron " // &
-                                "in the back-to-back collision " // &
-                                "frame of A-framework. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_neutron."
-                    write(22,*)
-                end if
-                ep2 = PYMASS(2112)
-            end if
-            if( et2 < PYMASS(2112) )then
-                if( iii == 1 )then
-                    write(22,*)
-                    write(22,*) "Warning! energy_B < m_neutron " // &
-                                "in the back-to-back collision " // &
-                                "frame of A-framework. " // &
-                                "Re-evaluated the energy " // &
-                                "according to m_neutron."
-                    write(22,*)
-                end if
-                et2 = PYMASS(2112)
-            end if
-            pm2 = PYMASS(2212)**2          ! square mass of proton
-            pp1 =  SQRT( ep1*ep1 - pm2 )   ! momentum of projetile       (if proton)
-            pt1 = -SQRT( et1*et1 - pm2 )   ! momentum of target particle (if proton)
-            pm2 = PYMASS(2112)**2          ! square mass of nucleon
-            pp2 =  SQRT( ep2*ep2 - pm2 )   ! momentum of projetile       (if neutron)
-            pt2 = -SQRT( et2*et2 - pm2 )   ! momentum of target particle (if neutron)
-        endif
+!       Eveluates energies for "FIXT" and "CMS" frames.
+        if( ifram == 0 .OR. ifram == 1 )then
+            ! Energies of projectile and target.
+            e_proj = SQRT( pz_proj*pz_proj + dm_proj*dm_proj )
+            e_targ = SQRT( pz_targ*pz_targ + dm_targ*dm_targ )
+        end if
 
 !       Four momenta of projectile particle.
         P(1,1) = 0D0
         P(1,2) = 0D0
-        ! projectile particle is p (pbar)
-        if( ABS(nzp) == 1 )then
-            P(1,3) = pp1
-            P(1,4) = ep1
-            P(1,5) = PYMASS(2212)
-        ! projectile particle is neutron
-        else if(nzp == 0)then
-            P(1,3) = pp2
-            P(1,4) = ep2
-            P(1,5) = PYMASS(2112)
-        end if
+        P(1,3) = pz_proj
+        P(1,4) = e_proj
+        P(1,5) = dm_proj
         ! The initial total 4-momentum.
         p_init(3) = p_init(3) + P(1,3)
         p_init(4) = p_init(4) + P(1,4)
@@ -5452,23 +5046,17 @@
 !       Four momenta of target particle.
         P(2,1) = 0D0
         P(2,2) = 0D0
-        ! target particle is p (pbar)
-        if( ABS(nzt) == 1 )then
-            P(2,3) = pt1
-            P(2,4) = et1
-            P(2,5) = PYMASS(2212)
-        ! target particle is neutron
-        else if( nzt == 0 )then
-            P(2,3) = pt2
-            P(2,4) = et2
-            P(2,5) = PYMASS(2112)
-        end if
+        P(2,3) = pz_targ
+        P(2,4) = e_targ
+        P(2,5) = dm_targ
         ! The initial total 4-momentum.
         p_init(3) = p_init(3) + P(2,3)
         p_init(4) = p_init(4) + P(2,4)
-        if( ABS(P(1,3)) < 1D-10 .AND. ABS(P(2,3)) < 1D-10 )then
+
+        if( ABS( P(1,3) ) < 1D-10 .AND. ABS( P(2,3) ) < 1D-10 )then
             write(22,*)
-            write(22,*) "Abort! Too low win(energy_A) and energy_B!"
+            write(22,*) "PACIAE Abort from simulate_NN_in_framework_A: Too " &
+                     // "low win(energy_A) and/or energy_B!"
             write(22,*)
             stop
         end if
@@ -5846,7 +5434,7 @@
         elseif( (kfa == 211.and.kfb == 2212).or. &   ! (pi+)p   !!
                 (kfb == 211.and.kfa == 2212) )then
 !           percen   = 0.33333333   ! for the case without resonance production
-            percen   = 0.00000001   ! for the case with resonance production only
+            percen   = 0.00000001   ! for the case with resonance prod. only
 !           percen=0.25  ! for the case with both
             percen_1 = percen
             percen_2 = percen_1 + percen
@@ -6008,11 +5596,15 @@
 !       pi (pj): four momentum of scattered particle after scatering
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_NUCLEUS
         PARAMETER (KSZJ=80000,NSIZE=750000)
         common/sa2/nsa,non2,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
         common/syspar/ipden,itden,suppm,suptm,suppc,suptc,r0p,r0t, &
          nap,nat,nzp,nzt,pio
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
         dimension pi(4),pj(4),b(3)
         ss=pi(4)+pj(4)
 !       ss: cms energy (total energy) of current hh collision pair
@@ -6024,7 +5616,7 @@
         call updple(l,l1,b,pi,pj)
 !       update particle list, pi and pj have been boosted back
 !        to Lab or cms frame of nucleus-nucleus collision system
-        if( ipden == 0.and.itden == 0 ) return   ! for NN collision system
+        if( .NOT.IS_NUCLEUS(KF_proj) .AND. IS_NUCLEUS(KF_targ) ) return
 
         call updatl_nn(l,l1,time,3,nsa0,i_mode)   ! 250423
 !       update collision list after ela. scattering
@@ -6552,7 +6144,7 @@
         MSTP(122) = 0
         if( i_call == 1 )then
             MSTP(122)=1
-        endif
+        end if
 
 !       To accelerate the calculation of PYTHIA 8, the forward initialization
 !        has been done by calling the "SUBROUTINE PAINIT_KF" indisde
@@ -6596,11 +6188,13 @@
                 if( energy_A < PYMASS( KF_proj ) )then
                     if( iii == 1 )then
                         write(22,*)
-                        write(22,*) "Warning! win(energy_A) < m_proj " // &
-                                    "in the back-to-back collision " // &
-                                    "frame of B/C-framework. " // &
-                                    "Re-evaluated the energy " // &
-                                    "according to m_proj."
+                        write(22,*) "PACIAE Warning from " &
+                                 // "simulate_lh_and_angantyr_in_framework_BC:"&
+                                 // " win(energy_A) < m_proj " &
+                                 // "in the back-to-back collision " &
+                                 // "frame of B/C-framework. " &
+                                 // "Re-evaluated the energy " &
+                                 // "according to m_proj."
                         write(22,*)
                         win = PYMASS( KF_proj )
                         energy_A = win
@@ -6609,11 +6203,13 @@
                 if( energy_B < PYMASS( KF_proj ) )then
                     if( iii == 1 )then
                         write(22,*)
-                        write(22,*) "Warning! energy_B < m_targ " // &
-                                    "in the back-to-back collision " // &
-                                    "frame of B/C-framework. " // &
-                                    "Re-evaluated the energy " // &
-                                    "according to m_targ."
+                        write(22,*) "PACIAE Warning from " &
+                                 // "simulate_lh_and_angantyr_in_framework_BC:"&
+                                 // " energy_B < m_targ " &
+                                 // "in the back-to-back collision " &
+                                 // "frame of B/C-framework. " &
+                                 // "Re-evaluated the energy " &
+                                 //  "according to m_targ."
                         write(22,*)
                         energy_B = PYMASS( KF_targ )
                     end if
@@ -6622,7 +6218,9 @@
                 P(2,3) = -SQRT( energy_B**2 - PYMASS( KF_targ )**2 )
                 if( ABS(P(1,3)) < 1D-10 .AND. ABS(P(2,3)) < 1D-10 )then
                     write(22,*)
-                    write(22,*) "Abort! Too low win(energy_A) and energy_B!"
+                    write(22,*) "PACIAE Abort from " &
+                             // "simulate_lh_and_angantyr_in_framework_BC: " &
+                             // "too low win(energy_A) and energy_B!"
                     write(22,*)
                     stop
                 end if

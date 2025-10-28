@@ -8,7 +8,7 @@
 // Header file to allow user access to program at different stages.
 
 //                                               By An-Ke at UiO  on 14/09/2024
-//                                  Last updated by An-Ke at CCNU on 16/08/2025
+//                                  Last updated by An-Ke at GZNU on 29/10/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -84,10 +84,12 @@ public:
                                   : Vec4( b, 0.0, 0.0, 0.0 );
     }
 
-//  Returns the cross section scale.
-    double xSecScale() const override {
-        return M_PI*( pow2(bMax) - pow2(bMin) );
-    }
+//  Returns the cross section scale. From PYTHIA 8.313 onwards.
+    #if PYTHIA_VERSION_INTEGER >= 8313
+        double xSecScale() const override {
+            return M_PI*( pow2(bMax) - pow2(bMin) );
+        }
+    #endif
 
 private:
     double b;

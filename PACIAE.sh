@@ -8,7 +8,7 @@
 # This is a toy SHELL-script to run PACIAE program.
 
 #                                                By An-Ke at CCNU on 17/10/2022
-#                                   Last updated by An-Ke at CCNU on 16/08/2025
+#                                   Last updated by An-Ke at CCNU on 04/11/2025
 
 
 
@@ -1471,7 +1471,7 @@ read -d "" PACIAE_MAKEFILE << PACIAE_MAKEFILE_BLOCKTEXT
 #  i.e. "man make" or "make --help".
 #
 #                                               By An-Ke at CCNU on 16/01/2024
-#                                  Last updated by An-Ke at CCNU on 06/08/2025
+#                                  Last updated by An-Ke at CCNU on 04/11/2025
 ################################################################################
 
 ################################################################################
@@ -1490,12 +1490,6 @@ endif
 
 # Includes the configuration from PYTHIA 8.
 -include ${MAKE_CFG}
-
-# Checks PYTHIA 8 distribution (use local version first, then installed one).
-ifneq ("\$(wildcard ../pythia8311/lib/libpythia8.*)","")
-  PREFIX_LIB:=../pythia8311/lib
-  PREFIX_INCLUDE:=../pythia8311/include
-endif
 
 # PACIAE distribution.
 DIR_TOP:=\$(shell pwd)

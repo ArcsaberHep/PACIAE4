@@ -8,7 +8,7 @@
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at CCNU on 16/08/2025
+!!                                  Last updated by An-Ke at GZNU on 06/11/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -2265,8 +2265,9 @@
         END DO
         ! In Pythia8_fort_interface.f90.
         CALL PYDECY_PY8
+        N = N_PY8
         DO J=1,5,1
-            DO I=1,N,1
+            DO I=1,N_PY8,1
                 K(I,J) = K_PY8(I,J)
                 P(I,J) = P_PY8(I,J)
                 V(I,J) = V_PY8(I,J)

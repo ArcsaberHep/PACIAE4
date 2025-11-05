@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at CCNU on 16/08/2025
+!!                                  Last updated by An-Ke at GZNU on 06/11/2025
 
 
 
@@ -2722,10 +2722,6 @@
                KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 
 
-!       Gives status code KS=1 to avoid potential misidentification for PYTHIA8.
-        do i=1,N,1
-            K(i,1) = 1
-        end do
         i_error = 0
 
 !       Puts particles on-shell by hand to avoid potential errors.

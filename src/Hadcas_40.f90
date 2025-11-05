@@ -7,7 +7,7 @@
 !> This is the program to deal with the hadron cascade (hadronic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 20/09/2000
-!!                                  Last updated by An-Ke at UiO  on 16/08/2025
+!!                                  Last updated by An-Ke at GZNU on 06/11/2025
 
 
         subroutine hadcas( time_had, ijkk )
@@ -8047,6 +8047,7 @@
 !!       truncate collision list correspondingly.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_PYTHIA8
         PARAMETER (KSZJ=80000,NSIZE=750000)
         common/sa12/ppsa(5),nchan,nsjp,sjp,taup,taujp
         common/sa1_h/nsa,non1,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
@@ -8058,6 +8059,9 @@
          rnt,rnp,ecsspn,ecsspm
         common/ctllist_h/nctl,noinel(600),nctl0,noel
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
         dimension pii(4),pjj(4),pp(4)
 
 
@@ -8123,7 +8127,7 @@
                 do m = nsa, jj, -1
                     mm = m + 1
                     ksa(mm,2) = ksa(m,2)
-                    ksa(mm,1) = 1
+                    ksa(mm,1) = ksa(m,1)
                     ksa(mm,3) = ksa(m,3)
                     do m1=1,5,1
                         psa(mm,m1) = psa(m,m1)
@@ -8151,6 +8155,8 @@
 !           Gives proper values to particle jj.
                 ksa(jj,2) = kf
                 ksa(jj,1) = 1
+!           If PYTHIA 8 modes, gives status code 151.
+                if( IS_PYTHIA8( i_mode ) ) ksa(jj,1) = 151
                 ksa(jj,3) = 0
                 do m=1,4,1
                     psa(jj,m) = pp(m)
@@ -8188,6 +8194,8 @@
             jj = nsa + 1
             ksa(jj,2) = kf
             ksa(jj,1) = 1
+!           If PYTHIA 8 modes, gives status code 151.
+            if( IS_PYTHIA8( i_mode ) ) ksa(jj,1) = 151
             ksa(jj,3) = 0
             do m=1,4,1
                 psa(jj,m) = pp(m)
@@ -8237,7 +8245,7 @@
             do j = ll+1, nsa, 1
                 jj = j - 1
                 ksa(jj,2) = ksa(j,2)
-                ksa(jj,1) = 1
+                ksa(jj,1) = ksa(j,1)
                 ksa(jj,3) = ksa(j,3)
                 do m=1,5,1
                     psa(jj,m) = psa(j,m)
@@ -8387,6 +8395,7 @@
 !!      Updates the particle list after elastic scattering.
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_PYTHIA8
         PARAMETER (KSZJ=80000)
         common/sa1_h/nsa,non1,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
 !       note the name of the arrays in 'sa2' in this subroutine
@@ -8394,6 +8403,9 @@
         common/sa19_h/coor(3)
         common/sa20_h/t0,cspipiKK,dep,ddt,edipi,epin,ecsnn,ekn,ecspsn,ecspsm, &
          rnt,rnp,ecsspn,ecsspm
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
         dimension pi(4),pj(4),b(3)
 
 
@@ -8404,6 +8416,11 @@
             psa(ic,i) = pi(i)
             psa(jc,i) = pj(i)
         end do
+!       If PYTHIA 8 mode, gives status code 152.
+        if( IS_PYTHIA8( i_mode ) )then
+            ksa(ic,1) = 152
+            ksa(jc,1) = 152
+        end if
 
 
         return
@@ -11882,6 +11899,7 @@
 !       ij: line number (in particle list 'sa1_h') of decaying particle
         IMPLICIT DOUBLE PRECISION(A-H, O-Z)
         IMPLICIT INTEGER(I-N)
+        LOGICAL IS_PYTHIA8
         PARAMETER (KSZJ=80000,NSIZE=750000)
         common/sa1_h/nsa,non1,ksa(kszj,5),psa(kszj,5),vsa(kszj,5)
         common/sa8_h/tau(kszj),ishp(kszj)
@@ -11893,6 +11911,9 @@
          rnt,rnp,ecsspn,ecsspm
         common/ctllist_h/nctl,noinel(600),nctl0,noel
         common/ctllist_t/ lc(nsize,5), tc(nsize), tw(nsize)
+!       For the simulation control.
+        COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+               KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
 !       idec: stord the order number (in the particle list) of
 !        particles after decay
 
@@ -11926,6 +11947,8 @@
 !       give proper values to particle jj.
         ksa(jj,2)=kf
         ksa(jj,1)=1
+!       If PYTHIA 8 mode, gives status code 97.
+        if( IS_PYTHIA8( i_mode ) ) ksa(jj,1) = 97
         ksa(jj,3)=0
         do m=1,4
         psa(jj,m)=pde(i,m)
@@ -12019,7 +12042,7 @@
         do j=ll+1,nsa
         jj=j-1
         ksa(jj,2)=ksa(j,2)
-        ksa(jj,1)=1
+        ksa(jj,1)=ksa(j,1)
         ksa(jj,3)=ksa(j,3)
         do m=1,5
         psa(jj,m)=psa(j,m)

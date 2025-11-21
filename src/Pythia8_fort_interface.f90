@@ -8,7 +8,7 @@
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at GZNU on 06/11/2025
+!!                                  Last updated by An-Ke at GZNU on 21/11/2025
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -1173,17 +1173,114 @@
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-!>  Lists event records.
+!>  Interfaces into PYTHIA8, Info::list().
     SUBROUTINE PYLIST_PY8( I_LIST )
 
 !---Imports mudules.
-    ! USE, INTRINSIC :: ISO_C_BINDING
+    USE, INTRINSIC :: ISO_C_BINDING
     IMPLICIT NONE
 
-    INTEGER :: I_LIST
+!---Fortran data type.
 
+!***********************************************************************
+!   Local variables.
+    INTEGER, PARAMETER :: KSZJ = 80000, KSZJ_PY8 = 300000
+    INTEGER :: I, J, I_LIST
+!***********************************************************************
 
-    CALL PYLIST( I_LIST )
+!***********************************************************************
+!---PYTHIA 6.
+!-----------------------------------------------------------------------
+    INTEGER :: N, NPAD
+    INTEGER :: K(KSZJ,5)
+    REAL(KIND=8) :: P(KSZJ,5), V(KSZJ,5)
+    COMMON/PYJETS/ N, NPAD, K, P, V
+    SAVE /PYJETS/
+!-----------------------------------------------------------------------
+    INTEGER :: I_PTR2AA(KSZJ), K6K7K8(KSZJ,3)
+    REAL(KIND=8) :: P6P7(KSZJ,2)
+    COMMON/PYJET2/ I_PTR2AA, K6K7K8, P6P7
+    SAVE /PYJET2/
+!***********************************************************************
+
+!***********************************************************************
+!---PYTHIA 8 information storage for feeding-back.
+!-----------------------------------------------------------------------
+    INTEGER :: N_PY8, NPAD_PY8
+    INTEGER :: K_PY8(KSZJ_PY8,8)
+    REAL(KIND=8) :: P_PY8(KSZJ_PY8,7), V_PY8(KSZJ_PY8,5)
+    COMMON/PYJETS_PY8/ N_PY8, NPAD_PY8, K_PY8, P_PY8, V_PY8
+    SAVE /PYJETS_PY8/
+!***********************************************************************
+
+!---C++ data type.
+
+!***********************************************************************
+    INTEGER(KIND=C_INT) :: nPY8, nPadPY8, iListPY8
+    INTEGER(KIND=C_INT) :: kPY8(KSZJ_PY8,8)
+    REAL(KIND=C_DOUBLE) :: pPY8(KSZJ_PY8,7), vPY8(KSZJ_PY8,5)
+    COMMON/PYJETS_c/ nPY8, nPadPY8, kPY8, pPY8, vPY8
+    SAVE /PYJETS_c/
+!***********************************************************************
+
+!---Pointer.
+
+!***********************************************************************
+!---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
+!-----------------------------------------------------------------------
+!---Pointers to PYTHIA8 objects.
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
+                        pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
+    TYPE(C_PTR) :: localPythia8
+!***********************************************************************
+
+!---Interfaces to C++.
+
+!***********************************************************************
+    INTERFACE
+        SUBROUTINE list_PY8( iListPY8In, nPY8In, kPY8In, pPY8In, vPY8In, &
+                             localPythia8In ) &
+                             BIND( C, NAME="list_PY8" )
+            USE, INTRINSIC :: ISO_C_BINDING
+            INTEGER(C_INT) :: nPY8In, iListPY8In
+            INTEGER(C_INT) :: kPY8In(*)
+            REAL(C_DOUBLE) :: pPY8In(*), vPY8In(*)
+            TYPE(C_PTR) :: localPythia8In
+        END SUBROUTINE list_PY8
+    END INTERFACE
+!***********************************************************************
+
+!   Feeds in the information to be listed.
+    ! Warning: from integer*8 -> integer*4
+    nPY8 = N_PY8
+    DO J=1,5,1
+        DO I=1,N_PY8,1
+            kPY8(I,J) = K_PY8(I,J)
+            pPY8(I,J) = P_PY8(I,J)
+            vPY8(I,J) = V_PY8(I,J)
+        END DO
+    END DO
+    DO J=6,7,1
+        DO I=1,N_PY8,1
+            kPY8(I,J) = K_PY8(I,J)
+            pPY8(I,J) = P_PY8(I,J)
+        END DO
+    END DO
+    DO I=1,N_PY8,1
+        kPY8(I,8) = K_PY8(I,8)
+    END DO
+
+!   Selects the instance.
+    localPythia8 = pythia8
+    iListPY8 = I_LIST
+    CLOSE( UNIT=22 )
+
+!   Accesses to C++ program in Pythia8CppInterface.cpp .
+    CALL list_PY8( iListPY8, nPY8, kPY8, pPY8, vPY8, localPythia8 )
+
+    OPEN( UNIT=22, FILE = "main.out", STATUS = "UNKNOWN", POSITION = "APPEND" )
 
 
     RETURN
@@ -2294,6 +2391,32 @@
 
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    SUBROUTINE PALIST( I_LIST )
+!!  Lists event records inside /PYJETS/ to "main,out".
+    IMPLICIT DOUBLE PRECISION(A-H, O-Z)
+    IMPLICIT INTEGER(I-N)
+    LOGICAL IS_PYTHIA8
+    COMMON/SA1_PY8/ i_mode, i_tune, KF_woDecay(100), &
+           KF_proj, KF_targ, win, energy_B, psno, b_min, b_max
+
+
+!   PYTHIA 6 printer.
+    IF( .NOT.IS_PYTHIA8(i_mode) )THEN
+        ! In P_40.f.
+        CALL PYLIST( I_LIST )
+!   PYTHIA 8 printer.
+    ELSE IF( IS_PYTHIA8(i_mode) )THEN
+        ! In Pythia8_fort_interface.f90.
+        CALL PYLIST_PY8( I_LIST )
+    END IF
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     SUBROUTINE PAEDIT( MEDIT )
 !!  Performs global manipulations on the event record, in particular
 !!   to exclude unexisted unstable or undetectable partons/particles.
@@ -2930,6 +3053,47 @@
 
 
 !CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_ALICE_LONGLIVED( KF )
+!!  Determines whether a particle (KF code) is a ALICE-defined long-lived
+!!   particle, cf. ALICE-PUBLIC-2017-005.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+
+
+    SELECT CASE( ABS(KF) )
+    CASE( 11, 13, 22, 211, 130, 310, 311, 321, &
+          2212, 2112, 3122, 3112, 3222, 3312, 3322, 3334 )
+        IS_ALICE_LONGLIVED = .TRUE.
+    CASE DEFAULT
+        IS_ALICE_LONGLIVED = .FALSE.
+    END SELECT
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    LOGICAL FUNCTION IS_ALICE_LONGLIVED_CH( KF )
+!!  Determines whether a particle (KF code) is a ALICE-defined long-lived
+!!   charged particle, cf. ALICE-PUBLIC-2017-005.
+    IMPLICIT NONE
+    INTEGER, INTENT(IN) :: KF
+
+
+    SELECT CASE( ABS(KF) )
+    CASE( 11, 13, 211, 321, 2212, 3112, 3222, 3312, 3334 )
+        IS_ALICE_LONGLIVED_CH = .TRUE.
+    CASE DEFAULT
+        IS_ALICE_LONGLIVED_CH = .FALSE.
+    END SELECT
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     FUNCTION PAPYP(I,J)
 !!  Provides various real-valued event related data in /PYJETS/.
 !   Rewritten from the function PYP of PYTHIA 6. See PYP in the PYTHIA 6 manual.
@@ -3015,6 +3179,91 @@
         IF( J == 23 ) PAPYP = 2D0 * P(I,4) / PARU(21)
         IF( J == 24 ) PAPYP = ( P(I,4) + P(I,3) ) / PARU(21)
         IF( J == 25 ) PAPYP = ( P(I,4) - P(I,3) ) / PARU(21)
+    END IF
+
+
+    RETURN
+    END
+
+
+
+!CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    FUNCTION PAPYP2(I,J)
+!!  Provides various real-valued event related data in /PYJETS/.
+!   Rewritten from the function PYP of PYTHIA 6. See PYP in the PYTHIA 6 manual.
+!   This version does not exludes any entries.
+    IMPLICIT DOUBLE PRECISION(A-H, O-Z)
+    IMPLICIT INTEGER(I-N)
+    INTEGER PYCHGE
+    PARAMETER (KSZJ=80000)
+    COMMON/PYJETS/N,NPAD,K(KSZJ,5),P(KSZJ,5),V(KSZJ,5)
+    COMMON/PYDAT1/MSTU(200),PARU(200),MSTJ(200),PARJ(200)
+    COMMON/PYDAT2/KCHG(500,4),PMAS(500,4),PARF(2000),VCKM(4,4)
+    SAVE /PYJETS/,/PYDAT1/,/PYDAT2/
+    DIMENSION PSUM(4)
+
+
+!   Set default value. For I = 0 sum of momenta or charges,
+!    or invariant mass of system.
+    PAPYP2 = 0D0
+    IF( I < 0 .OR. I > MSTU(4) .OR. J <= 0 )THEN
+    ELSE IF( I == 0 .AND. J <= 4 )THEN
+        DO I1=1,N,1
+            KF = K(I1,2)
+            PAPYP2 = PAPYP2 + P(I1,J)
+        END DO
+    ELSE IF( I == 0 .AND. J == 5 )THEN
+        DO J1=1,4,1
+            PSUM(J1) = 0D0
+            DO I1=1,N,1
+                KF = K(I1,2)
+                PSUM(J1) = PSUM(J1) + P(I1,J1)
+            END DO
+        END DO
+        PAPYP2 = SQRT( MAX(0D0, PSUM(4)**2 -PSUM(1)**2 -PSUM(2)**2 -PSUM(3)**2))
+    ELSE IF( I == 0 .AND. J == 6 )THEN
+        DO I1=1,N
+            KF = K(I1,2)
+            PAPYP2 = PAPYP2 + PYCHGE(K(I1,2)) / 3D0
+        END DO
+    ELSE IF( I == 0 )THEN
+
+!   Direct readout of P matrix.
+    ELSE IF( J <= 5 )THEN
+        PAPYP2 = P(I,J)
+
+!   Charge, total momentum, transverse momentum, transverse mass.
+    ELSE IF( J <= 12 )THEN
+        IF( J == 6 ) PAPYP2 = PYCHGE(K(I,2)) / 3D0
+        IF( J == 7  .OR. J == 8  ) PAPYP2 = P(I,1)**2 + P(I,2)**2 + P(I,3)**2
+        IF( J == 9  .OR. J == 10 ) PAPYP2 = P(I,1)**2 + P(I,2)**2
+        IF( J == 11 .OR. J == 12 ) PAPYP2 = P(I,5)**2 + P(I,1)**2 + P(I,2)**2
+        IF( J == 8  .OR. J == 10 .OR. J == 12 ) PAPYP2 = SQRT(PAPYP2)
+
+!   Theta and phi angle in radians or degrees.
+    ELSE IF( J <= 16 )THEN
+        IF( J <= 14 ) PAPYP2 = PYANGL( P(I,3), SQRT( P(I,1)**2 + P(I,2)**2) )
+        IF( J >= 15 ) PAPYP2 = PYANGL( P(I,1), P(I,2) )
+        IF( J == 14 .OR. J == 16 ) PAPYP2 = PAPYP2 * 180D0 / PARU(1)
+
+!   True rapidity, rapidity with pion mass, pseudorapidity.
+    ELSE IF( J <= 19 )THEN
+        PMR = 0D0
+        IF( J == 17 ) PMR = P(I,5)
+        IF( J == 18 ) PMR = PYMASS(211)
+        PR  = MAX( 1D-20, PMR**2 + P(I,1)**2 + P(I,2)**2 )
+        PAPYP2 = SIGN( LOG( MIN( ( SQRT(PR + P(I,3)**2) + ABS(P(I,3)) ) &
+            / SQRT(PR), 1D20 ) ), P(I,3) )
+
+!   Energy and momentum fractions (only to be used in CM frame).
+    ELSE IF( J <= 25 )THEN
+        IF( J == 20 ) PAPYP2 = 2D0 &
+                            * SQRT(P(I,1)**2 +P(I,2)**2 +P(I,3)**2)/PARU(21)
+        IF( J == 21 ) PAPYP2 = 2D0 * P(I,3) / PARU(21)
+        IF( J == 22 ) PAPYP2 = 2D0 * SQRT( P(I,1)**2 + P(I,2)**2 ) / PARU(21)
+        IF( J == 23 ) PAPYP2 = 2D0 * P(I,4) / PARU(21)
+        IF( J == 24 ) PAPYP2 = ( P(I,4) + P(I,3) ) / PARU(21)
+        IF( J == 25 ) PAPYP2 = ( P(I,4) - P(I,3) ) / PARU(21)
     END IF
 
 
@@ -3632,6 +3881,83 @@
 
 
     RETURN
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW2( X ) RESULT( FX )
+!   Quick X^2.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW3( X ) RESULT( FX )
+!   Quick X^3.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW4( X ) RESULT( FX )
+!   Quick X^4.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW5( X ) RESULT( FX )
+!   Quick X^5.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X*X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW6( X ) RESULT( FX )
+!   Quick X^6.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X*X*X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW7( X ) RESULT( FX )
+!   Quick X^7.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X*X*X*X*X
+    END
+
+
+
+!ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+    FUNCTION POW8( X ) RESULT( FX )
+!   Quick X^8.
+    IMPLICIT NONE
+    REAL(KIND=8), INTENT(IN) :: X
+    REAL(KIND=8) :: FX
+    FX = X*X*X*X*X*X*X*X
     END
 !
 !                                            Written by Anke at CCNU on 01/2024.

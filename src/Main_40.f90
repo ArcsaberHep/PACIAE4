@@ -5146,18 +5146,15 @@
 
 !***********************************************************************
 !***************************** Event Block *****************************
+        if( nosc == 0 ) return
         open( 34, file = "oscar.out", status = "old", position = "append" )
         phi = VINT(370)
         weight = 1D0
         if( ABS(VINT(100)) >= 1D-10 ) weight = VINT(100)
 
-!cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
-        if( nosc == 0 )then
-!cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
-
 !cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
 !       Prints final particles.
-        else if( nosc == 1 )then
+        if( nosc == 1 )then
             write(34,101) iii, neve, N, bp, phi, weight
             do i=1,N,1
                 KS = K(i,1)

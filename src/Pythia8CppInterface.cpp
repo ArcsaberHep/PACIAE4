@@ -8,7 +8,7 @@
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 16/08/2025
+//                                  Last updated by An-Ke at GZNU on 21/11/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -754,10 +754,10 @@ using namespace Paciae4;
     PARI_c[8]  = 1. / info.weight();
     VINT_c[99] = info.weight();
     PARI_c[9]  = info.weight();
-    // Totak cross sections generated.
+    // Total cross sections generated.
     PARI_c[0]  = info.sigmaGen();
-    // Normallized factor of cross section.
-    PARI_c[1]  = info.sigmaGen() / info.weightSum();
+    PARI_c[1]  = info.sigmaErr();
+
     // Impact parameter in MPI. Not physical unit like fm, but only 
     //  rescaled so that the average should be unity for minimum-bias 
     //  events (meaning less than that for events with hard processes).
@@ -1050,6 +1050,69 @@ using namespace Paciae4;
     }
 
     // Recovers the std::cout .
+    std::cout.rdbuf( coutBuff );
+    outputFile.close();
+
+    return;
+    }
+
+//--------------------------------------------------------------------------
+
+//  This function will print out the particle information to "main.out"
+//   via PYTHIA 8 printer.
+    void list_PY8( int& iListPY8,
+                   int& nPY8, int (&kPY8)[8][300000],
+                   double (&pPY8)[7][300000],
+                   double (&vPY8)[5][300000],
+                   Pythia** pythia ) {
+
+// Specifies output target file, i.e. "cout" redirection.
+    std::streambuf* coutBuff = std::cout.rdbuf();
+    std::ofstream outputFile;
+    outputFile.open( "main.out", ios::out | ios::app );
+    std::streambuf* fileBuff = outputFile.rdbuf();
+    std::cout.rdbuf( fileBuff );
+
+// Shorthand for some public members of pythia (also static ones).
+// The pythia object was passed in from the external calling.
+    Event& event = (*pythia) -> event;
+
+// Resets the event record for filling the new one.
+    event.clear();
+    for( int iParticle = 0; iParticle < nPY8; ++iParticle ) {
+        int& id        = kPY8[1][iParticle] ;
+        int& status    = kPY8[0][iParticle] ;
+        int& mother1   = kPY8[2][iParticle] ;
+        int& mother2   = kPY8[5][iParticle] ;
+        int& daughter1 = kPY8[3][iParticle] ;
+        int& daughter2 = kPY8[4][iParticle] ;
+        int& col       = kPY8[6][iParticle] ;
+        int& acol      = kPY8[7][iParticle] ;
+        double& px     = pPY8[0][iParticle] ;
+        double& py     = pPY8[1][iParticle] ;
+        double& pz     = pPY8[2][iParticle] ;
+        double& e      = pPY8[3][iParticle] ;
+        double& m      = pPY8[4][iParticle] ;
+        double& scale  = pPY8[5][iParticle] ;
+        double& pol    = pPY8[6][iParticle] ;
+        int iEntry     = event.append( id, status, mother1, mother2,
+                                       daughter1, daughter2, col, acol,
+                                       px, py, pz, e, m, scale, pol );
+        double x   = vPY8[0][iParticle] ;
+        double y   = vPY8[1][iParticle] ;
+        double z   = vPY8[2][iParticle] ;
+        double t   = vPY8[3][iParticle] ;
+        double tau = vPY8[4][iParticle] ;
+        event[iEntry].vProd(x, y, z, t) ;
+        event[iEntry].tau(tau) ;
+    }
+
+// Prints data.
+    bool printVertex = false;
+    if( iListPY8 == 3 ) printVertex = true;
+    event.list( printVertex );
+
+// Recovers the std::cout .
     std::cout.rdbuf( coutBuff );
     outputFile.close();
 

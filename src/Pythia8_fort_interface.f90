@@ -1537,7 +1537,7 @@
 !           MSTI
 !
 !           PARI(1): sigmaGen
-!           PARI(2): sigmaGen / weightSum
+!           PARI(2): sigmaGenErr
 !           PARI(9): 1/weight
 !           PARI(10): weight
 !       MINT(360): number of NN pairs. !#TODO(Lei20240220): use or not?

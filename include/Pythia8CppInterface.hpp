@@ -9,7 +9,7 @@
 //   PYTHIA 8 (C++).
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 16/08/2025
+//                                  Last updated by An-Ke at GZNU on 21/11/2025
 
 // PYTHIA 8 header files.
 #include "Pythia8/Pythia.h"
@@ -125,6 +125,14 @@ extern "C" {
                        double (&pPY8)[7][300000],
                        double (&vPY8)[5][300000],
                        Pythia** pythia );
+
+//--------------------------------------------------------------------------
+
+    void list_PY8( int& iListPY8,
+                   int& nPY8, int (&kPY8)[8][300000],
+                   double (&pPY8)[7][300000],
+                   double (&vPY8)[5][300000],
+                   Pythia** pythia );
 
 //--------------------------------------------------------------------------
 

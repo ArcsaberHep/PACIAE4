@@ -8,7 +8,7 @@
 !!  interfacing with PYTHIA 6/8.
 
 !!                                             By Ben-Hao at CIAE on 31/07/2002
-!!                                  Last updated by An-Ke at UiO  on 16/08/2025
+!!                                  Last updated by An-Ke at GZNU on 16/08/2025
 
 
         subroutine sfm

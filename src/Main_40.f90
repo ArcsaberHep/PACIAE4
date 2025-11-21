@@ -8,7 +8,7 @@
 !!  the relativistic hh, hA(Ah), AB, ll, lh(hl) and lA(Al) collisions.
 
 !!                                             By Ben-Hao at CIAE on DD/MM/2006
-!!                                  Last updated by An-Ke at GZNU on 06/11/2025
+!!                                  Last updated by An-Ke at GZNU on 21/11/2025
 
 
 
@@ -5144,7 +5144,7 @@
 !***********************************************************************
 !***************************** Event Block *****************************
 !cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
-        phi = VINT(392)
+        phi = VINT(370)
         weight = 1D0
         if( ABS(VINT(100)) >= 1D-10 ) weight = VINT(100)
 !       Prints final particles.

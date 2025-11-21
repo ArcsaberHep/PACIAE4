@@ -939,7 +939,6 @@
         open( 19, file = "rms0.out", status = "unknown" )
 !       Opens and prints the OSCAR file header if nosc > 0.
         if( nosc > 0 )then
-            open( 34, file = "oscar.out", status = "unknown" )
             ! In main.f90.
             call oscar(-1)
         end if
@@ -5000,12 +4999,13 @@
 
 !***********************************************************************
 !***************************** File Header *****************************
-        if(i_stage == -1)then
+        if( i_stage == -1 )then
+            open( 34, file = "oscar.out", status = "unknown" )
             ntest = 1
-            if(ifram == 0)then
+            if( ifram == 0 )then
                 frame = "lab"
                 ebeam = win
-            else if(ifram == 1)then
+            else if( ifram == 1 )then
                 frame = "nncm"
             else
                 frame = "unknown"
@@ -5014,42 +5014,45 @@
             ebeam = win
 
 !cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
-            if(nosc == 0)then
+            if( nosc == 0 )then
+!cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
 
 !cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
-            else if(nosc == 1)then
+            else if( nosc == 1 )then
                 write(34,"(A8)")  "OSC1997A"
                 write(34,"(A12)") "final_id_p_x"
                 write(34,100) PACIAE, VERSION, nap, nzp, nat, nzt, &
                               frame, ebeam, ntest
 100             format(2(A8,2X),"(", I3, ",", I6, ")+(", I3, ",", &
                        I6, ")", 2X, A4, 2X, E10.4, 2X, I8)
+!cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
 
 !cccccccccccccccccccccccccccc   OSC1999A   ccccccccccccccccccccccccccccc
-            else if(nosc == 2)then
+            else if( nosc == 2 )then
                 write(34,"(A10)") "# OSC1999A"
                 write(34,"(A20)") "# full_event_history"
                 write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(VERSION)))
                 write(34,200) nap, nzp, nat, nzt, frame, ebeam, ntest
 200             format("# (", I3, ",", I6, ")+(", I3, ",", &
                        I6, ")", 2X, A4, 2X, E10.4, 2X, I8)
+!cccccccccccccccccccccccccccc   OSC1999A   ccccccccccccccccccccccccccccc
 
 !cccccccccccccccccccccccccccc   OSC2013A   ccccccccccccccccccccccccccccc
             !#TODO(Lei20230214): need to extend.
-            else if(nosc == 3)then
+            else if( nosc == 3 )then
                 write(34,*)"#!OSCAR2013 full_event_history ID "// &
                            "px py pz E m x y z t"
                 write(34,*)"# Units: none "// &
                            "GeV GeV GeV GeV GeV fm fm fm fm "
                 write(34,"(A14)") "# PACIAE " //TRIM((ADJUSTL(VERSION)))
             end if
+!cccccccccccccccccccccccccccc   OSC2013A   ccccccccccccccccccccccccccccc
 
             n0 = 0
             n1 = 0
             n2 = 0
             n3 = 0
-            return
-        endif
+            close(34)
 !***************************** File Header *****************************
 !***********************************************************************
 
@@ -5057,7 +5060,7 @@
 !***********************************************************************
 !***************************** Data Dumping ****************************
         ! Initial nucleon configuration.
-        if(i_stage == 0)then
+        else if( i_stage == 0 )then
             n0 = N
             do j=1,5,1
                 do i=1,N,1
@@ -5067,7 +5070,7 @@
                 end do
             end do
         ! Initial parton state (IPS).
-        else if(i_stage == 1)then
+        else if( i_stage == 1 )then
             n1 = 0
             do i=1,N,1
                 KS = K(i,1)
@@ -5083,7 +5086,7 @@
             !  from the spectators, the diffractive & the special sub-processes,
             !  e.g. NRQCD onia, or hadron beam remnants, or B-framework.
             !  We store them here, too.
-            if(nbh > 0)then
+            if( nbh > 0 )then
                 do i=1,nbh,1
                     KS = kbh(i,1)
                     if( .NOT.IS_EXIST(KS,i_mode) ) cycle
@@ -5096,7 +5099,7 @@
                 end do
             end if
         ! Final parton state (FPS).
-        else if(i_stage == 2)then
+        else if( i_stage == 2 )then
             n2 = 0
             do i=1,N,1
                 KS = K(i,1)
@@ -5112,7 +5115,7 @@
             !  from the spectators, the diffractive & the special sub-processes,
             !  e.g. NRQCD onia, or hadron beam remnants, or B-framework.
             !  We store them here, too.
-            if(nbh > 0)then
+            if( nbh > 0 )then
                 do i=1,nbh,1
                     ! Only for the particles that still exist.
                     KS = kbh(i,1)
@@ -5126,7 +5129,7 @@
                 end do
             end if
         ! Hadronization.
-        else if(i_stage == 3)then
+        else if( i_stage == 3 )then
             n3 = N
             do j=1,5,1
                 do i=1,N,1
@@ -5136,19 +5139,25 @@
                 end do
             end do
         end if
-        if(i_stage < 4) return
+        if( i_stage < 4 ) return
 !***************************** Data Dumping ****************************
 !***********************************************************************
 
 
 !***********************************************************************
 !***************************** Event Block *****************************
-!cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
+        open( 34, file = "oscar.out", status = "old", position = "append" )
         phi = VINT(370)
         weight = 1D0
         if( ABS(VINT(100)) >= 1D-10 ) weight = VINT(100)
+
+!cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
+        if( nosc == 0 )then
+!cccccccccccccccccccccccc   No OSCAR Output   cccccccccccccccccccccccccc
+
+!cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
 !       Prints final particles.
-        if(nosc == 1)then
+        else if( nosc == 1 )then
             write(34,101) iii, neve, N, bp, phi, weight
             do i=1,N,1
                 KS = K(i,1)
@@ -5160,13 +5169,13 @@
                 E = SQRT( P(i,1)**2 + P(i,2)**2 + P(i,3)**2 + dm**2 )
                 write(34,102) i, K(i,2), (P(i,j),j=1,3), E, dm, (V(i,j),j=1,4)
             end do
-101         format(I10, 2(2X, I10), 3(2X, F8.3))
-102         format(I10, 2X, I10, 2X, 9(E12.6, 2X))
+101         format( I10, 2(2X, I10), 3(2X, F8.3) )
+102         format( I10, 2X, I10, 2X, 9(E12.6, 2X) )
 !cccccccccccccccccccccccccccc   OSC1997A   ccccccccccccccccccccccccccccc
 
 !cccccccccccccccccccccccccccc   OSC1999A   ccccccccccccccccccccccccccccc
 !       Prints stage 0, 1, 2, 3 and 4 at once.
-        else if(nosc == 2)then
+        else if( nosc == 2 )then
 !           Initial nucleons configuration.
             mark_stage = 0
             write(34,201) iii, neve, n0, bp, phi, mark_stage, weight
@@ -5225,16 +5234,18 @@
                 write(34,202) i, K(i,2), (P(i,j),j=1,3), E, dm, (V(i,j),j=1,4)
             end do
 !       Prints stage 0, 1, 2, 3 and 4 at once.
-201         format(I10, 2(2X, I10), 2(2X, F8.3), 2X, I10, 2X, F8.3)
-202         format(I10, 2X, I10, 2X, 9(E12.6, 2X))
+201         format( I10, 2(2X, I10), 2(2X, F8.3), 2X, I10, 2X, F8.3 )
+202         format( I10, 2X, I10, 2X, 9(E12.6, 2X) )
 !cccccccccccccccccccccccccccc   OSC1999A   ccccccccccccccccccccccccccccc
 
 !cccccccccccccccccccccccccccc   OSC2013A   ccccccccccccccccccccccccccccc
         !#TODO(Lei20230214): need to extend.
-        else if(nosc == 3)then
+        else if( nosc == 3 )then
             ! Dummy.
         end if
 !cccccccccccccccccccccccccccc   OSC2013A   ccccccccccccccccccccccccccccc
+
+        close(34)
 
 
         return

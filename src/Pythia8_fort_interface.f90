@@ -1,14 +1,14 @@
 !! Pythia8_fort_interface.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2025 PACIAE Group.
+!! Copyright (C) 2026 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: An-Ke Lei, January 2024 - August 2025.
+!! Author: An-Ke Lei, January 2024 - January 2026.
 
 !> This is the Fortran interface program to link PACIAE (Fortran 77/90) with
 !!  PYTHIA 8 (C++).
 
 !!                                               By An-Ke at CCNU on 16/01/2024
-!!                                  Last updated by An-Ke at GZNU on 21/11/2025
+!!                                  Last updated by An-Ke at GZNU on 05/01/2026
 
 
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -112,8 +112,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
 !---Pointers to PACIAE4 objects.
@@ -208,8 +209,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
 !---Pointers to PACIAE4 objects.
@@ -359,8 +361,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !-----------------------------------------------------------------------
 !---Pointers to PACIAE4 objects.
@@ -564,8 +567,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     TYPE(C_PTR) :: localPythia8
 !-----------------------------------------------------------------------
@@ -861,8 +865,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     TYPE(C_PTR) :: localPythia8
 !-----------------------------------------------------------------------
@@ -1098,8 +1103,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
     TYPE(C_PTR) :: localPythia8
 !***********************************************************************
@@ -1349,8 +1355,9 @@
 !---NOTE: DO NOT TOUCH THESES POINTERS IF YOU DON'T KNOW WHAT THEY ARE !!!
 !-----------------------------------------------------------------------
 !---Pointers to PYTHIA8 objects.
-    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
-    COMMON/PYTHIA8_PTR/ pythia8, &
+    TYPE(C_PTR) :: pythia8, pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn, &
+                   pythia8Decayer, pythia8Rescatter
+    COMMON/PYTHIA8_PTR/ pythia8, pythia8Decayer, pythia8Rescatter, &
                         pythia8_pp, pythia8_pn, pythia8_np, pythia8_nn
 !***********************************************************************
 

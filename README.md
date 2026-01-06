@@ -1,14 +1,14 @@
 <!--
 // README.md is a part of the PACIAE event generator.
-// Copyright (C) 2025 PACIAE Group.
+// Copyright (C) 2026 PACIAE Group.
 // PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 // Open source: https://github.com/ArcsaberHep/PACIAE4
-// Author: An-Ke Lei, January 2024 - August 2025.
+// Author: An-Ke Lei, January 2024 - January 2026.
 
 // This is a README file for PACIAE.
 
 //                                               By An-Ke at CCNU on 16/01/2024
-//                                  Last updated by An-Ke at CCNU on 16/08/2025
+//                                  Last updated by An-Ke at GZNU on 06/01/2026
  -->
 
 # The parton and hadron cascade model PACIAE 4
@@ -255,15 +255,30 @@ The released code are available on [https://github.com/ArcsaberHep/PACIAE4/relea
 ## Update notes:
 
 <!----------------------------------------------------------------------------->
-### <font color=red> 08/2025 :</font> In version PACIAE 4.0.03
-- In "analy_40.f90" and "Rms_analysis.f90", fixed analysis code of mean pT, \< pT \>. Analysis code of anisotropic flows were added.
+### <font color=red> 01/2026 :</font> In version PACIAE 4.0.03
 - In "main_40.f90", "Pythia8CppInterface.hpp" and "Pythia8CppInterface.cpp", the random 2*pi angle of the impact parameter was introduced for the Angantyr modes.
 - In "main_40.f90" and "Pythia8CppInterface.cpp", the subprocesses for lepton-induced collisions were adjusted.
-- In "Pythia8CppInterface.cpp", fixed two bugs of "B_PY8" and "C_PY8" frameworks.
-  - When performing lepton-nucleus collisions, nPDF statements might be applied to the lepton.
-  - A "Beams:idB" was wrongly written as "Beams:idA", which caused serious problems for lepton-nucleus collisions when instantiating and initializing subcollisions (*lp*, *ln*, *nl* and *pl*).
+- In "Pythia8_fort_interface.f90" and "Pythia8CppInterface.cpp" a series of helper functions were added.
+- In "Pythia8CppInterface.cpp" and "Pythia8CppInterface.hpp", the PYTHIA 8 interface version compatibility was improved.
+- In "analy_40.f90" and "Rms_analysis.f90", fixed analysis code of mean pT, \< pT \>. Analysis code of anisotropic flows were added.
+- **Bug fix**
+  - In "Pythia8CppInterface.cpp", fixed two bugs of "B_PY8" and "C_PY8" frameworks.
+    - When performing lepton-nucleus collisions, nPDF statements might be applied to the lepton.
+    - A "Beams:idB" was wrongly written as "Beams:idA", which caused serious problems for lepton-nucleus collisions when instantiating and initializing subcollisions (*lp*, *ln*, *nl* and *pl*).
 
-  Thanks to Simón Fonseca for reporting the bug. 
+    Thanks to Simón Fonseca for reporting the bug.
+
+  - In "Parcas_40.f90", fixed a bug of the upper integral limit of the momentum transfer in the inelastic process q1 + q1bar -> g + g, which was 0 leading to a ''nan'' cross section
+
+    Thanks to Guan-Yu Wang for reporting the bug.
+
+  - In "Makefile", fixed a PYTHIA8 dynamic shared library missing bug when PACIAE4 and PYTHIA8 folders were placed in the same directory.
+
+    Thanks to Qiang Wang for reporting the bug.
+
+  - In "Pythia8CppInterface.cpp", an accidental bug of the pA/Ap nPDF was fixed, which assigned a proton nPDF.
+
+    Thanks to Qiang Wang for reporting the bug.
 
 <!----------------------------------------------------------------------------->
 ### <font color=red> 11/2024 : PACIAE 4.0 is now released! </font>

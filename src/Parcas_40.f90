@@ -1,13 +1,13 @@
 !! Parcas_40.f90 is a part of the PACIAE event generator.
-!! Copyright (C) 2025 PACIAE Group.
+!! Copyright (C) 2026 PACIAE Group.
 !! PACIAE is licensed under the GNU GPL v2 or later, see LICENSE for details.
 !! Open source: https://github.com/ArcsaberHep/PACIAE4
-!! Author: Ben-Hao Sa, November 2002 - August 2025.
+!! Author: Ben-Hao Sa, November 2002 - January 2026.
 
 !> This is the program to deal with the parton cascade (partonic rescattering).
 
 !!                                             By Ben-Hao at CIAE on 19/11/2002
-!!                                  Last updated by An-Ke at UiO  on 16/08/2025
+!!                                  Last updated by An-Ke at GZNU on 06/01/2025
 
 
         subroutine parcas( time_par, iijk )
@@ -1547,16 +1547,17 @@
 !       Inelastic process 6, q1 + q1bar -> g + g.
 !       't'-divergence in both full and simplified LO-pQCD.
 !       Extra 'u'-divergence in full one. "threshold energy" becomes 2*t_cut.
-                if( (i_LOpQCD == 0 .OR. i_LOpQCD == 2) &
+                if( (i_LOpQCD == 1 .OR. i_LOpQCD == 3) &
+                    .OR. (i_LOpQCD == 0 .OR. i_LOpQCD == 2) &
                     .AND. s < 2D0*t_cut )then
-                    ilo = -2
-                    return
+                    t_min = -s - t_cut
+                    t_max = -t_cut
+                    sig_out = sigma_2parton( t_min, t_max, s, dM, &
+                                    alpha_s, K_factor, 6, i_LOpQCD )
+                    sigma_relative(6)   = sig_out
+                    KF_outgoing( 1, 6 ) = 21
+                    KF_outgoing( 2, 6 ) = 21
                 end if
-                sig_out = sigma_2parton( t_min, t_max, s, dM, &
-                                alpha_s, K_factor, 6, i_LOpQCD )
-                sigma_relative(6)   = sig_out
-                KF_outgoing( 1, 6 ) = 21
-                KF_outgoing( 2, 6 ) = 21
             end if
 !       Determines the process to be happened according to the relative
 !        cross section.
@@ -1575,7 +1576,7 @@
             lmn = 5
             if( i >= 1 .AND. i <= 3 )then
                 lmn = 4
-            else if( i == 4 .AND. i == 5 )then
+            else if( i == 4 .OR. i == 5 )then
                 lmn = 12
             else if( i == 6 )then
                 lmn = 6
@@ -1684,7 +1685,7 @@
             end do
             lmn = 9
             if( i >= 1 .AND. i <= 3 ) lmn = 7
-            if( i == 4 .AND. i == 5 ) lmn = 13
+            if( i == 4 .OR. i == 5 ) lmn = 13
             ! sig  = sig
             kf3  = KF_outgoing( 1, i )
             kf4  = KF_outgoing( 2, i )
